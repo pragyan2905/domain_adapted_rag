@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3GPP Telecom QA Interface</title>
+    
+    <!-- Google Fonts for premium typography -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Markdown Parser (marked.js) -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="background-blobs">
+        <div class="blob blob-1"></div>
+        <div class="blob blob-2"></div>
+    </div>
+
+    <div class="app-container">
+        <!-- Header & Search -->
+        <header class="glass-panel">
+            <div class="logo">
+                <span class="logo-icon">📡</span>
+                <h1>Telecom QA</h1>
+                <span class="badge">3GPP Rel-17</span>
+            </div>
+            
+            <form id="searchForm" class="search-container">
+                <input type="text" id="searchInput" placeholder="Ask a technical question about 5G specifications..." required autocomplete="off">
+                <button type="submit" id="searchButton">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </button>
+            </form>
+        </header>
+
+        <!-- Loading / Pipeline State -->
+        <div id="loadingState" class="glass-panel hidden">
+            <div class="loader-container">
+                <div class="spinner"></div>
+                <div class="pipeline-steps">
+                    <p class="step active">Executing 12-Step RAG Pipeline...</p>
+                    <p class="step sub-step">1. Retrieving chunks from Vector DB</p>
+                    <p class="step sub-step">2. LLM-as-a-judge validation</p>
+                    <p class="step sub-step">3. Generating final response</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error State -->
+        <div id="errorState" class="glass-panel error-panel hidden">
+            <div class="error-icon">⚠️</div>
+            <div class="error-content">
+                <h3 id="errorTitle">Backend Error</h3>
+                <p id="errorMessage">Ensure the FastAPI server is running on port 8000.</p>
+            </div>
+        </div>
+
+        <!-- Main Results Area -->
+        <main id="resultsArea" class="results-layout hidden">
+            
+            <!-- Left Column: Answer & Citations -->
+            <div class="main-column">
+                <div class="glass-panel answer-panel">
+                    <h2>Generated Answer</h2>
+                    <div id="answerContent" class="markdown-body">
+                        <!-- Markdown content injected here -->
+                    </div>
+                </div>
+
+                <div class="glass-panel citations-panel">
+                    <h2>Retrieved Context (Citations)</h2>
+                    <div id="citationsList" class="citations-list">
+                        <!-- Citations injected here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Guardrails & Metadata -->
+            <aside class="side-column">
+                <div class="glass-panel guardrails-panel">
+                    <h2>Pipeline Guardrails</h2>
+                    
+                    <div class="guardrail-item" id="gr-abstain">
+                        <div class="gr-header">
+                            <span class="gr-status-icon">✅</span>
+                            <span class="gr-title">Hallucination Check</span>
+                        </div>
+                        <p class="gr-desc" id="gr-abstain-desc">System did not abstain.</p>
+                    </div>
+
+                    <div class="guardrail-item" id="gr-web">
+                        <div class="gr-header">
+                            <span class="gr-status-icon">🌐</span>
+                            <span class="gr-title">Web Fallback</span>
+                        </div>
+                        <p class="gr-desc" id="gr-web-desc">Not triggered.</p>
+                    </div>
+
+                    <div class="guardrail-item" id="gr-version">
+                        <div class="gr-header">
+                            <span class="gr-status-icon">✅</span>
+                            <span class="gr-title">Version Conflict</span>
+                        </div>
+                        <p class="gr-desc" id="gr-version-desc">No cross-release conflicts detected.</p>
+                    </div>
+
+                    <div class="guardrail-item" id="gr-citations">
+                        <div class="gr-header">
+                            <span class="gr-status-icon">✅</span>
+                            <span class="gr-title">Citation Resolution</span>
+                        </div>
+                        <p class="gr-desc" id="gr-citations-desc">All claims grounded in DB.</p>
+                    </div>
+
+                </div>
+            </aside>
+        </main>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>

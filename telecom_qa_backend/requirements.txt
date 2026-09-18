@@ -1,0 +1,9 @@
+fastapi
+uvicorn
+pydantic
+qdrant-client
+google-genai
+FlagEmbedding
+ddgs
+python-dotenv
+python-docx

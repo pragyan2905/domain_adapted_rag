@@ -1,0 +1,1829 @@
+3GPP TS 38.211 Release 17
+====================
+
+3GPP TS 38.211 V17.10.0 (2024-12)
+Technical Specification
+3rd Generation Partnership Project;
+Technical Specification Group Radio Access Network;
+NR;
+Physical channels and modulation
+(Release 17)
+The present document has been developed within the 3rd Generation Partnership Project (3GPP TM) and may be further elaborated for the purposes of 3GPP..
+The present document has not been subject to any approval process by the 3GPP Organizational Partners and shall not be implemented.
+This Specification is provided for future development work within 3GPP only. The Organizational Partners accept no liability for any use of this Specification.
+Specifications and Reports for implementation of the 3GPP TM system should be obtained via the 3GPP Organizational Partners' Publications Offices.
+Keywords
+New Radio, Layer 1
+3GPP
+Postal address
+3GPP support office address
+650 Route des Lucioles - Sophia Antipolis
+Valbonne - FRANCE
+Tel.: +33 4 92 94 42 00 Fax: +33 4 93 65 47 16
+Internet
+http://www.3gpp.org
+Copyright Notification
+No part may be reproduced except as authorized by written permission.
+The copyright and the foregoing restriction extend to reproduction in all media.
+© 2024, 3GPP Organizational Partners (ARIB, ATIS, CCSA, ETSI, TSDSI, TTA, TTC).
+All rights reserved.
+UMTS™ is a Trade Mark of ETSI registered for the benefit of its members
+3GPP™ is a Trade Mark of ETSI registered for the benefit of its Members and of the 3GPP Organizational Partners
+LTE™ is a Trade Mark of ETSI registered for the benefit of its Members and of the 3GPP Organizational Partners
+GSM® and the GSM logo are registered and owned by the GSM Association
+Contents
+Foreword	8
+1	Scope	9
+2	References	9
+3	Definitions, symbols and abbreviations	9
+3.1	Definitions	9
+3.2	Symbols	9
+3.3	Abbreviations	11
+4	Frame structure and physical resources	11
+4.1	General	11
+4.2	Numerologies	11
+4.3	Frame structure	12
+4.3.1	Frames and subframes	12
+4.3.2	Slots	12
+4.4	Physical resources	13
+4.4.1	Antenna ports	13
+4.4.2	Resource grid	14
+4.4.3	Resource elements	14
+4.4.4	Resource blocks	14
+4.4.4.1	General	14
+4.4.4.2	Point A	14
+4.4.4.3	Common resource blocks	15
+4.4.4.4	Physical resource blocks	15
+4.4.4.5	Virtual resource blocks	15
+4.4.4.6	Interlaced resource blocks	15
+4.4.5	Bandwidth part	15
+4.4.6	Common MBS frequency resource	16
+4.5	Carrier aggregation	16
+5	Generic functions	16
+5.1	Modulation mapper	16
+5.1.1	π/2-BPSK	17
+5.1.2	BPSK	17
+5.1.3	QPSK	17
+5.1.4	16QAM	17
+5.1.5	64QAM	17
+5.1.6	256QAM	17
+5.1.7	1024QAM	17
+5.2	Sequence generation	18
+5.2.1	Pseudo-random sequence generation	18
+5.2.2	Low-PAPR sequence generation type 1	18
+5.2.2.1	Base sequences of length 36 or larger	18
+5.2.2.2	Base sequences of length less than 36	18
+5.2.3	Low-PAPR sequence generation type 2	22
+5.2.3.1	Sequences of length 30 or larger	22
+5.2.3.2	Sequences of length less than 30	22
+5.3	OFDM baseband signal generation	26
+5.3.1	OFDM baseband signal generation for all channels except PRACH and RIM-RS	26
+5.3.2	OFDM baseband signal generation for PRACH	28
+5.3.3	OFDM baseband signal generation for RIM-RS	30
+5.4	Modulation and upconversion	30
+6	Uplink	31
+6.1	Overview	31
+6.1.1	Overview of physical channels	31
+6.1.2	Overview of physical signals	31
+6.2	Physical resources	31
+6.3	Physical channels	32
+6.3.1	Physical uplink shared channel	32
+6.3.1.1	Scrambling	32
+6.3.1.2	Modulation	33
+6.3.1.3	Layer mapping	33
+6.3.1.4	Transform precoding	33
+6.3.1.5	Precoding	34
+6.3.1.6	Mapping to virtual resource blocks	37
+6.3.1.7	Mapping from virtual to physical resource blocks	37
+6.3.2	Physical uplink control channel	38
+6.3.2.1	General	38
+6.3.2.2	Sequence and cyclic shift hopping	38
+6.3.2.2.1	Group and sequence hopping	38
+6.3.2.2.2	Cyclic shift hopping	39
+6.3.2.3	PUCCH format 0	39
+6.3.2.3.1	Sequence generation	39
+6.3.2.3.2	Mapping to physical resources	40
+6.3.2.4	PUCCH format 1	40
+6.3.2.4.1	Sequence modulation	40
+6.3.2.4.2	Mapping to physical resources	41
+6.3.2.5	PUCCH format 2	41
+6.3.2.5.1	Scrambling	41
+6.3.2.5.2	Modulation	42
+6.3.2.5.2A	Spreading	42
+6.3.2.5.3	Mapping to physical resources	43
+6.3.2.6	PUCCH formats 3 and 4	43
+6.3.2.6.1	Scrambling	43
+6.3.2.6.2	Modulation	44
+6.3.2.6.3	Block-wise spreading	44
+6.3.2.6.4	Transform precoding	45
+6.3.2.6.5	Mapping to physical resources	45
+6.3.3	Physical random-access channel	45
+6.3.3.1	Sequence generation	45
+6.3.3.2	Mapping to physical resources	52
+6.4	Physical signals	72
+6.4.1	Reference signals	72
+6.4.1.1	Demodulation reference signal for PUSCH	72
+6.4.1.1.1	Sequence generation	72
+6.4.1.1.2	(void)	74
+6.4.1.1.3	Precoding and mapping to physical resources	74
+6.4.1.2	Phase-tracking reference signals for PUSCH	78
+6.4.1.2.1	Sequence generation	78
+6.4.1.2.1.1	Sequence generation if transform precoding is not enabled	78
+6.4.1.2.1.2	Sequence generation if transform precoding is enabled	79
+6.4.1.2.2	Mapping to physical resources	79
+6.4.1.2.2.1	Precoding and mapping to physical resources if transform precoding is not enabled	79
+6.4.1.2.2.2	Mapping to physical resources if transform precoding is enabled	81
+6.4.1.3	Demodulation reference signal for PUCCH	82
+6.4.1.3.1	Demodulation reference signal for PUCCH format 1	82
+6.4.1.3.1.1	Sequence generation	82
+6.4.1.3.1.2	Mapping to physical resources	83
+6.4.1.3.2	Demodulation reference signal for PUCCH format 2	83
+6.4.1.3.2.1	Sequence generation	83
+6.4.1.3.2.2	Mapping to physical resources	84
+6.4.1.3.3	Demodulation reference signal for PUCCH formats 3 and 4	84
+6.4.1.3.3.1	Sequence generation	84
+6.4.1.3.3.2	Mapping to physical resources	84
+6.4.1.4	Sounding reference signal	85
+6.4.1.4.1	SRS resource	85
+6.4.1.4.2	Sequence generation	85
+6.4.1.4.3	Mapping to physical resources	86
+6.4.1.4.4	Sounding reference signal slot configuration	91
+7	Downlink	91
+7.1	Overview	91
+7.1.1	Overview of physical channels	91
+7.1.2	Overview of physical signals	91
+7.2	Physical resources	92
+7.3	Physical channels	92
+7.3.1	Physical downlink shared channel	92
+7.3.1.1	Scrambling	92
+7.3.1.2	Modulation	93
+7.3.1.3	Layer mapping	93
+7.3.1.4	Antenna port mapping	94
+7.3.1.5	Mapping to virtual resource blocks	95
+7.3.1.6	Mapping from virtual to physical resource blocks	95
+7.3.2	Physical downlink control channel (PDCCH)	97
+7.3.2.1	Control-channel element (CCE)	97
+7.3.2.2	Control-resource set (CORESET)	97
+7.3.2.3	Scrambling	98
+7.3.2.4	PDCCH modulation	99
+7.3.2.5	Mapping to physical resources	99
+7.3.3	Physical broadcast channel	99
+7.3.3.1	Scrambling	99
+7.3.3.2	Modulation	99
+7.3.3.3	Mapping to physical resources	99
+7.4	Physical signals	99
+7.4.1	Reference signals	99
+7.4.1.1	Demodulation reference signals for PDSCH	99
+7.4.1.1.1	Sequence generation	99
+7.4.1.1.2	Mapping to physical resources	100
+7.4.1.2	Phase-tracking reference signals for PDSCH	104
+7.4.1.2.1	Sequence generation	104
+7.4.1.2.2	Mapping to physical resources	104
+7.4.1.3	Demodulation reference signals for PDCCH	106
+7.4.1.3.1	Sequence generation	106
+7.4.1.3.2	Mapping to physical resources	106
+7.4.1.4	Demodulation reference signals for PBCH	106
+7.4.1.4.1	Sequence generation	106
+7.4.1.4.2	Mapping to physical resources	107
+7.4.1.5	CSI reference signals	107
+7.4.1.5.1	General	107
+7.4.1.5.2	Sequence generation	107
+7.4.1.5.3	Mapping to physical resources	107
+7.4.1.6	RIM reference signals	111
+7.4.1.6.1	General	111
+7.4.1.6.2	Sequence generation	111
+7.4.1.6.3	Mapping to physical resources	112
+7.4.1.6.4	RIM-RS configuration	112
+7.4.1.6.4.1	General	112
+7.4.1.6.4.2	Time-domain parameters and mapping from  to time-domain parameters	112
+7.4.1.6.4.3	Frequency-domain parameters and mapping from  to frequency-domain parameters	113
+7.4.1.6.4.4	Sequence parameters and mapping from  to sequence parameters	114
+7.4.1.6.4.5	Mapping between resource triplet and set ID	114
+7.4.1.7	Positioning reference signals	115
+7.4.1.7.1	General	115
+7.4.1.7.2	Sequence generation	115
+7.4.1.7.3	Mapping to physical resources in a downlink PRS resource	115
+7.4.1.7.4	Mapping to slots in a downlink PRS resource set	116
+7.4.2	Synchronization signals	117
+7.4.2.1	Physical-layer cell identities	117
+7.4.2.2	Primary synchronization signal	117
+7.4.2.2.1	Sequence generation	117
+7.4.2.2.2	Mapping to physical resources	117
+7.4.2.3	Secondary synchronization signal	117
+7.4.2.3.1	Sequence generation	117
+7.4.2.3.2	Mapping to physical resources	117
+7.4.3	SS/PBCH block	118
+7.4.3.1	Time-frequency structure of an SS/PBCH block	118
+7.4.3.1.1	Mapping of PSS within an SS/PBCH block	119
+7.4.3.1.2	Mapping of SSS within an SS/PBCH block	119
+7.4.3.1.3	Mapping of PBCH and DM-RS within an SS/PBCH block	119
+7.4.3.2	Time location of an SS/PBCH block	119
+8	Sidelink	120
+8.1	Overview	120
+8.1.1	Overview of physical channels	120
+8.1.2	Overview of physical signals	120
+8.2	Physical resources	120
+8.2.1	General	120
+8.2.2	Numerologies	120
+8.2.3	Frame structure	121
+8.2.3.1	Frames and subframes	121
+8.2.3.2	Slots	121
+8.2.4	Antenna ports	121
+8.2.5	Resource grid	121
+8.2.6	Resource elements	121
+8.2.7	Resource blocks	121
+8.2.8	Bandwidth part	122
+8.3	Physical channels	122
+8.3.1	Physical sidelink shared channel	122
+8.3.1.1	Scrambling	122
+8.3.1.2	Modulation	123
+8.3.1.3	Layer mapping	123
+8.3.1.4	Precoding	123
+8.3.1.5	Mapping to virtual resource blocks	123
+8.3.1.6	Mapping from virtual to physical resource blocks	124
+8.3.2	Physical sidelink control channel	124
+8.3.2.1	Scrambling	124
+8.3.2.2	Modulation	124
+8.3.2.3	Mapping to physical resources	124
+8.3.3	Physical sidelink broadcast channel	124
+8.3.3.1	Scrambling	124
+8.3.3.2	Modulation	124
+8.3.3.3	Mapping to physical resources	124
+8.3.4	Physical sidelink feedback channel	125
+8.3.4.1	General	125
+8.3.4.2	PSFCH format 0	125
+8.3.4.2.1	Sequence generation	125
+8.3.4.2.2	Mapping to physical resources	125
+8.4	Physical signals	125
+8.4.1	Reference signals	125
+8.4.1.1	Demodulation reference signals for PSSCH	125
+8.4.1.1.1	Sequence generation	125
+8.4.1.1.2	Mapping to physical resources	126
+8.4.1.2	Phase-tracking reference signals for PSSCH	127
+8.4.1.2.1	Sequence generation	127
+8.4.1.2.2	Mapping to physical resources	127
+8.4.1.3	Demodulation reference signals for PSCCH	128
+8.4.1.3.1	Sequence generation	128
+8.4.1.3.2	Mapping to physical resources	128
+8.4.1.4	Demodulation reference signals for PSBCH	129
+8.4.1.4.1	Sequence generation	129
+8.4.1.4.2	Mapping to physical resources	129
+8.4.1.5	CSI reference signals	129
+8.4.1.5.1	General	129
+8.4.1.5.2	Sequence generation	129
+8.4.1.5.3	Mapping to physical resources	129
+8.4.2	Synchronization signals	130
+8.4.2.1	Physical-layer sidelink synchronization identities	130
+8.4.2.2	Sidelink primary synchronization signal	130
+8.4.2.2.1	Sequence generation	130
+8.4.2.2.2	Mapping to physical resources	130
+8.4.2.3	Sidelink secondary synchronization signal	130
+8.4.2.3.1	Sequence generation	130
+8.4.2.3.2	Mapping to physical resources	131
+8.4.3	S-SS/PSBCH block	131
+8.4.3.1	Time-frequency structure of an S-SS/PSBCH block	131
+8.4.3.1.1	Mapping of S-PSS within an S-SS/PSBCH block	131
+8.4.3.1.2	Mapping of S-SSS within an S-SS/PSBCH block	131
+8.4.3.1.3	Mapping of PSBCH and DM-RS within an S-SS/PSBCH block	131
+8.4.3.2	Time location of an S-SS/PSBCH block	132
+8.5	Timing	132
+Annex A (informative):	Change history	133
+Foreword
+This Technical Specification has been produced by the 3rd Generation Partnership Project (3GPP).
+The contents of the present document are subject to continuing work within the TSG and may change following formal TSG approval. Should the TSG modify the contents of the present document, it will be re-released by the TSG with an identifying change of release date and an increase in version number as follows:
+Version x.y.z
+where:
+x	the first digit:
+1	presented to TSG for information;
+2	presented to TSG for approval;
+3	or greater indicates TSG approved document under change control.
+y	the second digit is incremented for all changes of substance, i.e. technical enhancements, corrections, updates, etc.
+z	the third digit is incremented when editorial only changes have been incorporated in the document.
+1	Scope
+The present document describes the physical channels and signals for 5G-NR.
+2	References
+The following documents contain provisions which, through reference in this text, constitute provisions of the present document.
+[1]	3GPP TR 21.905: "Vocabulary for 3GPP Specifications".
+[2]	3GPP TS 38.201: "NR; Physical Layer – General Description"
+[3]	3GPP TS 38.202: "NR; Services provided by the physical layer"
+[4]	3GPP TS 38.212: "NR; Multiplexing and channel coding"
+[5]	3GPP TS 38.213: "NR; Physical layer procedures for control "
+[6]	3GPP TS 38.214: "NR; Physical layer procedures for data "
+[7]	3GPP TS 38.215: "NR; Physical layer measurements"
+[8]	3GPP TS 38.104: "NR; Base Station (BS) radio transmission and reception"
+[9]	void
+[10]	3GPP TS 38.306: "NR; User Equipment (UE) radio access capabilities"
+[11]	3GPP TS 38.321: "NR; Medium Access Control (MAC) protocol specification"
+[12]	3GPP TS 38.133: "NR; Requirements for support of radio resource management"
+[13]	3GPP TS 38.304: "NR; User Equipment (UE) procedures in Idle mode and RRC Inactive state"
+[14]	3GPP TS 38.101-1: "NR; User Equipment (UE) radio transmission and reception; Part 1: Range 1 Standalone"
+[15]	3GPP TS 38.101-2: "NR; User Equipment (UE) radio transmission and reception; Part 2: Range 2 Standalone"
+[16]	3GPP TS 38.101-5: "NR; User Equipment (UE) radio transmission and reception; Part 5: Satellite access Radio Frequency (RF) and performance requirements"
+[17]	3GPP TS 38.108: "Satellite Access Node radio transmission and reception"
+3	Definitions, symbols and abbreviations
+3.1	Definitions
+For the purposes of the present document, the following definitions apply:
+3.2	Symbols
+For the purposes of the present document, the following symbols apply:
+	Resource element with frequency-domain index  and time-domain index  for antenna port  and subcarrier spacing configuration ; see clause 4.4.3
+	Value of resource element  for antenna port and subcarrier spacing configuration ; see clause 4.4.3
+	Amplitude scaling for a physical channel/signal
+	PN sequence; see clause 5.2.1
+	Subcarrier spacing
+	Subcarrier spacing for random-access preambles
+	The ratio between  and ; see clause 4.1
+	Subcarrier index relative to a reference
+	OFDM symbol index relative to a reference
+	Subcarrier spacing configuration, 
+	Number of coded bits to transmit on a physical channel [for codeword ]
+	Number of modulation symbols to transmit on a physical channel [for codeword ]
+	Number of modulation symbols to transmit per layer for a physical channel
+	Scheduled bandwidth for uplink transmission, expressed as a number of subcarriers 
+	Scheduled bandwidth for uplink transmission, expressed as a number of resource blocks
+	Number of modulation symbols to transmit per antenna port for a physical channel
+	Number of transmission layers
+	Size of bandwidth part ; see clause 4.4.4.4
+	Start of bandwidth part ; see clause 4.4.4.4
+	Cyclic prefix length; see clause 5.3.1
+	The size of the resource grid; see clauses 4.4.2 and 5.3
+	The start of the resource grid; see clause 4.4.2
+	The number of PT-RS groups; see clause 6.3.1.4
+	Physical layer cell identity; see clause 7.4.2.1
+	Physical-layer sidelink identity; see clause 8.4.2.1
+	Frequency-domain size of a control resource set; see clause 7.3.2.2
+	Number of resource-element groups in a CORESET; see clause 7.3.2.2
+	Number of samples per PT-RS group; see clause 6.3.1.4
+	Number of subcarriers per resource block, see clause 4.4.4.1
+	Number of slots per subframe for subcarrier spacing configuration , see clause 4.3.2
+	Number of slots per frame for subcarrier spacing configuration , see clause 4.3.2
+	Time duration of a control resource set; see clause 7.3.2.2
+	Length of the PUCCH transmission in OFDM symbols; see clause 6.3.2.1
+	Number of OFDM symbols per subframe for subcarrier spacing configuration ; see clause 4.3.1
+	Number of symbols per slot
+	Timing advance between downlink and uplink; see clause 4.3.1
+	A fixed offset used to calculate the timing advance; see clause 4.3.1
+	Network-controlled timing correction; see clause 4.3.1
+	UE-derived timing correction; see clause 4.3.1
+	Minimum time from reception to transmission for a half-duplex UE; see clause 4.3.2
+	System frame number (SFN)
+	Common resource block number for subcarrier spacing configuration , see clause 4.4.4.3
+	Physical resource block number; see clause 4.4.4.4
+	Radio network temporary identifier
+	Slot number within a subframe for subcarrier spacing configuration ; see clause 4.3.2
+	Slot number within a frame for subcarrier spacing configuration ; see clause 4.3.2
+	Antenna port number
+	Modulation order
+	Number of antenna ports
+	Low-PAPR base sequence; see clause 5.2.2
+	Low-PAPR sequence; see clause 5.2.2
+	The time-continuous signal on antenna port  and subcarrier spacing configuration  for OFDM symbol  in a subframe; see clause 5.3.1
+	Basic time unit for NR; see clause 4.1
+	Radio frame duration; see clause 4.3.1
+	Basic time unit for LTE
+	Subframe duration; see clause 4.3.1
+	Slot duration; see clause 4.3.2
+	Timing advance between downlink and uplink; see clause 4.3.1
+	Precoding matrix for spatial multiplexing
+3.3	Abbreviations
+For the purposes of the present document, the following abbreviations apply:
+BWP	Bandwidth part
+CCE	Control channel element
+CORESET	Control resource set
+CRB	Common resource block
+CSI	Channel-state information
+CSI-RS	CSI reference signal 
+DCI	Downlink Control Information
+DM-RS	Demodulation reference signal
+FR1	Frequency range 1 as defined in [8, TS 38.104]
+FR2	Frequency range 2 as defined in [8, TS 38.104] 
+IAB	Integrated access and backhaul
+IAB-MT	IAB mobile termination 
+IE	Information element
+PBCH	Physical broadcast channel
+PDCCH	Physical downlink control channel
+PDSCH	Physical downlink shared channel
+PRACH	Physical random-access channel 
+PRB	Physical resource block
+PSS	Primary synchronization signal
+PT-RS	Phase-tracking reference signal
+PUCCH	Physical uplink control channel
+PUSCH	Physical uplink shared channel
+REG	Resource-element group
+RIM	Remote interference management
+RIM-RS	Remote interference management reference signal
+SRS	Sounding reference signal
+SSS	Secondary synchronization signal
+VRB	Virtual resource block
+4	Frame structure and physical resources
+4.1	General
+Throughout this specification, unless otherwise noted, the size of various fields in the time domain is expressed in time units  where  Hz and . The constant  where ,  and .
+Throughout this specification, unless otherwise noted, statements using the term "UE" in clauses 4, 5, 6, or 7 are equally applicable to the IAB-MT part of an IAB-node. 
+4.2	Numerologies
+Multiple OFDM numerologies are supported as given by Table 4.2-1 where  and the cyclic prefix for a downlink or uplink bandwidth part are obtained from the higher-layer parameters subcarrierSpacing and cyclicPrefix, respectively. 
+Table 4.2-1: Supported transmission numerologies.
+4.3	Frame structure
+4.3.1	Frames and subframes
+Downlink, uplink, and sidelink transmissions are organized into frames with  duration, each consisting of ten subframes of  duration. The number of consecutive OFDM symbols per subframe is . Each frame is divided into two equally-sized half-frames of five subframes each with half-frame 0 consisting of subframes 0 – 4 and half-frame 1 consisting of subframes 5 – 9.
+There is one set of frames in the uplink and one set of frames in the downlink on a carrier. 
+Uplink frame number  for transmission from the UE shall start  before the start of the corresponding downlink frame at the UE where
+-  and  are given by clause 4.2 of [5, TS 38.213], except for msgA transmission on PUSCH where  shall be used;
+-	 given by clause 4.2 of [5, TS 38.213] is derived from the higher-layer parameters ta-Common, ta-CommonDrift, and ta-CommonDriftVariant if configured, otherwise ;
+-	 given by clause 4.2 of [5, TS 38.213] is computed by the UE based on UE position and serving-satellite-ephemeris-related higher-layers parameters if configured, otherwise .
+Figure 4.3.1-1: Uplink-downlink timing relation.
+4.3.2	Slots
+For subcarrier spacing configuration , slots are numbered  in increasing order within a subframe and  in increasing order within a frame. There are  consecutive OFDM symbols in a slot where  depends on the cyclic prefix as given by Tables 4.3.2-1 and 4.3.2-2. The start of slot  in a subframe is aligned in time with the start of OFDM symbol  in the same subframe.
+OFDM symbols in a slot in a downlink or uplink frame can be classified as 'downlink', 'flexible', or 'uplink'. Signaling of slot formats is described in clause 11.1 of [5, TS 38.213]. 
+In a slot in a downlink frame, the UE shall assume that downlink transmissions only occur in 'downlink' or 'flexible' symbols.
+In a slot in an uplink frame, the UE shall only transmit in 'uplink' or 'flexible' symbols.
+A UE not capable of full-duplex communication and not supporting simultaneous transmission and reception as defined by parameter simultaneousRxTxInterBandENDC, simultaneousRxTxInterBandCA or simultaneousRxTxSUL [10, TS 38.306] among all cells within a group of cells is not expected to transmit in the uplink in one cell within the group of cells earlier than  after the end of the last received downlink symbol in the same or different cell within the group of cells where  is given by Table 4.3.2-3. 
+A UE not capable of full-duplex communication and not supporting simultaneous transmission and reception as defined by parameter simultaneousRxTxInterBandENDC, simultaneousRxTxInterBandCA or simultaneousRxTxSUL [10, TS 38.306] among all cells within a group of cells is not expected to receive in the downlink in one cell within the group of cells earlier than  after the end of the last transmitted uplink symbol in the same or different cell within the group of cells where  is given by Table 4.3.2-3. 
+For DAPS handover operation, a UE not capable of full-duplex communication is not expected to transmit in the uplink to a cell earlier than  after the end of the last received downlink symbol in the different cell where  is given by Table 4.3.2-3. 
+For DAPS handover operation, a UE not capable of full-duplex communication is not expected to receive in the downlink from a cell earlier than  after the end of the last transmitted uplink symbol in the different cell where  is given by Table 4.3.2-3.
+A UE not capable of full-duplex communication is not expected to transmit in the uplink earlier than  after the end of the last received downlink symbol in the same cell where  is given by Table 4.3.2-3. 
+A UE not capable of full-duplex communication is not expected to receive in the downlink earlier than  after the end of the last transmitted uplink symbol in the same cell where  is given by Table 4.3.2-3.
+Table 4.3.2-1: Number of OFDM symbols per slot, slots per frame, and slots per subframe for normal cyclic prefix.
+Table 4.3.2-2: Number of OFDM symbols per slot, slots per frame, and slots per subframe for extended cyclic prefix.
+Table 4.3.2-3: Transition time  and 
+4.4	Physical resources
+4.4.1	Antenna ports
+An antenna port is defined such that the channel over which a symbol on the antenna port is conveyed can be inferred from the channel over which another symbol on the same antenna port is conveyed. 
+Two antenna ports are said to be quasi co-located if the large-scale properties of the channel over which a symbol on one antenna port is conveyed can be inferred from the channel over which a symbol on the other antenna port is conveyed. The large-scale properties include one or more of delay spread, Doppler spread, Doppler shift, average gain, average delay, and spatial Rx parameters. 
+4.4.2	Resource grid
+For each numerology and carrier, a resource grid of  subcarriers and  OFDM symbols is defined, starting at common resource block  indicated by higher-layer signalling. There is one set of resource grids per transmission direction (uplink, downlink, or sidelink) with the subscript set to DL, UL, and SL for downlink, uplink, and sidelink, respectively. When there is no risk for confusion, the subscript  may be dropped. There is one resource grid for a given antenna port , subcarrier spacing configuration , and transmission direction (downlink, uplink, or sidelink). 
+For uplink and downlink, the carrier bandwidth  for subcarrier spacing configuration  is given by the higher-layer parameter carrierBandwidth in the SCS-SpecificCarrier IE. The starting position  for subcarrier spacing configuration  is given by the higher-layer parameter offsetToCarrier in the SCS-SpecificCarrier IE.
+The frequency location of a subcarrier refers to the center frequency of that subcarrier.
+For the downlink, the higher-layer parameter txDirectCurrentLocation in the SCS-SpecificCarrier IE indicates the location of the transmitter DC subcarrier in the downlink for each of the numerologies configured in the downlink. Values in the range 0 – 3299 represent the number of the DC subcarrier and the value 3300 indicates that the DC subcarrier is located outside the resource grid.
+For the uplink, the higher-layer parameter txDirectCurrentLocation in the UplinkTxDirectCurrentBWP IE indicates the location of the transmitter DC subcarrier in the uplink for each of the configured bandwidth parts, including whether the DC subcarrier location is offset by 7.5 kHz relative to the center of the indicated subcarrier or not. Values in the range 0 – 3299 represent the number of the DC subcarrier, the value 3300 indicates that the DC subcarrier is located outside the resource grid, and the value 3301 indicates that the position of the DC subcarrier in the uplink is undetermined.
+4.4.3	Resource elements
+Each element in the resource grid for antenna port  and subcarrier spacing configuration  is called a resource element and is uniquely identified by  where  is the index in the frequency domain and  refers to the symbol position in the time domain relative to some reference point. Resource element  corresponds to a physical resource and the complex value . When there is no risk for confusion, or no particular antenna port or subcarrier spacing is specified, the indices  and  may be dropped, resulting in  or .
+4.4.4	Resource blocks
+4.4.4.1	General
+A resource block is defined as  consecutive subcarriers in the frequency domain. 
+4.4.4.2	Point A
+Point A serves as a common reference point for resource block grids and is obtained from:
+-	offsetToPointA for a PCell downlink where offsetToPointA represents the frequency offset between point A and the lowest subcarrier of the lowest resource block, which overlaps with the SS/PBCH block used by the UE for initial cell selection, expressed in units of resource blocks assuming 15 kHz subcarrier spacing for FR1 and 60 kHz subcarrier spacing for FR2; 
+-	for operation without shared spectrum channel access in FR1 and FR2-1, the lowest resource block has the subcarrier spacing provided by the higher layer parameter subCarrierSpacingCommon;
+-	for operation with shared spectrum channel access in FR1 or FR2, and for operation without shared spectrum channel access in FR2-2, the lowest resource block has the subcarrier spacing same as the SS/PBCH block used by the UE for initial cell selection;
+-	absoluteFrequencyPointA for all other cases where absoluteFrequencyPointA represents the frequency-location of point A expressed as in ARFCN.
+4.4.4.3	Common resource blocks
+Common resource blocks are numbered from 0 and upwards in the frequency domain for subcarrier spacing configuration . The center of subcarrier 0 of common resource block 0 for subcarrier spacing configuration  coincides with 'point A'. 
+The relation between the common resource block number  in the frequency domain and resource elements  for subcarrier spacing configuration  is given by
+where  is defined relative to point A such that  corresponds to the subcarrier centered around point A.
+4.4.4.4	Physical resource blocks
+Physical resource blocks for subcarrier spacing configuration  are defined within a bandwidth part and numbered from 0 to  where  is the number of the bandwidth part. The relation between the physical resource block  in bandwidth part  and the common resource block  is given by
+where  is the common resource block where bandwidth part  starts relative to common resource block 0. When there is no risk for confusion the index  may be dropped.
+4.4.4.5	Virtual resource blocks
+Virtual resource blocks are defined within a bandwidth part and numbered from 0 to  where  is the number of the bandwidth part. 
+4.4.4.6	Interlaced resource blocks
+Multiple interlaces of resource blocks are defined where interlace  consists of common resource blocks , with  being the number of interlaces given by Table 4.4.4.6-1. The relation between the interlaced resource block  in bandwidth part  and interlace  and the common resource block  is given by
+where  is the common resource block where bandwidth part starts relative to common resource block 0. When there is no risk for confusion the index  may be dropped. 
+The UE expects that the number of common resource blocks in an interlace contained within bandwidth part  is no less than 10.
+Table 4.4.4.6-1: The number of resource block interlaces.
+4.4.5	Bandwidth part
+A bandwidth part is a subset of contiguous common resource blocks defined in clause 4.4.4.3 for a given numerology  in bandwidth part  on a given carrier. The starting position  and the number of resource blocks  in a bandwidth part shall fulfil  and , respectively. Configuration of a bandwidth part is described in clause 12 of [5, TS 38.213].
+A UE can be configured with up to four bandwidth parts in the downlink with a single downlink bandwidth part being active at a given time. The UE is not expected to receive PDSCH, PDCCH, or CSI-RS (except for RRM) outside an active bandwidth part.
+A UE can be configured with up to four bandwidth parts in the uplink with a single uplink bandwidth part being active at a given time. If a UE is configured with a supplementary uplink, the UE can in addition be configured with up to four bandwidth parts in the supplementary uplink with a single supplementary uplink bandwidth part being active at a given time. The UE shall not transmit PUSCH or PUCCH outside an active bandwidth part. For an active cell, the UE shall not transmit SRS outside an active bandwidth part.
+Unless otherwise noted, the description in this specification applies to each of the bandwidth parts. When there is no risk of confusion, the index  may be dropped from , , , and .
+4.4.6	Common MBS frequency resource
+A common MBS frequency resource is a contiguous set of common resource blocks. The starting position  of the common MBS frequency resource  is defined relative to point A and the size of the common MBS frequency resource is given by . Resource blocks in a common MBS frequency resource are numbered in the same way as resource blocks in clause 4.4.4.4 with  and  replaced by  and , respectively.
+A UE is not expected to receive PDSCH or PDCCH associated with MBS transmissions scheduled with G-RNTI, G-CS-RNTI or MCCH-RNTI outside the common MBS frequency resource.
+4.5	Carrier aggregation
+Transmissions in multiple cells can be aggregated. Unless otherwise noted, the description in this specification applies to each of the serving cells. 
+For carrier aggregation of cells with unaligned frame boundaries, the slot offset  between a PCell/PScell and an SCell is determined by higher-layer parameter ca-SlotOffset for the SCell. The quantity  is defined as the maximum of the lowest subcarrier spacing configuration among the subcarrier spacings given by the higher-layer parameters scs-SpecificCarrierList configured for PCell/PSCell and the SCell, respectively. The slot offset  fulfills
+-	when the lowest subcarrier spacing configuration among the subcarrier spacings configured for the cell is  for both cells or  for both cells, the start of slot 0 for the cell whose point A has a lower frequency coincides with the start of slot  for the other cell where   if point A of the PCell/PSCell has a frequency lower than the frequency of point A for the SCell, otherwise ;
+-	otherwise, the start of slot 0 for the cell with the lower subcarrier spacing of the lowest subcarrier spacing given by the higher-layer parameters scs-SpecificCarrierList configured for the two cells, or the Pcell/PSCell if both cells have the same lowest subcarrier spacing given by the higher-layer parameters scs-SpecificCarrierList configured for the two cells, coincides with the start of slot  for the other cell where   if the lowest subcarreier spacing configuration given by scs-SpecificCarrierList of the PCell/PSCell is smaller than or equal to the lowest subcarrier spacing given by scs-SpecificCarrierList for the SCell, otherwise .
+5	Generic functions
+5.1	Modulation mapper
+The modulation mapper takes binary digits, 0 or 1, as input and produces complex-valued modulation symbols as output. 
+5.1.1	π/2-BPSK
+In case of π/2-BPSK modulation, bit  is mapped to complex-valued modulation symbol  according to
+5.1.2	BPSK
+In case of BPSK modulation, bit  is mapped to complex-valued modulation symbol  according to
+5.1.3	QPSK
+In case of QPSK modulation, pairs of bits, , are mapped to complex-valued modulation symbols  according to
+5.1.4	16QAM
+In case of 16QAM modulation, quadruplets of bits, , are mapped to complex-valued modulation symbols  according to
+5.1.5	64QAM
+In case of 64QAM modulation, hextuplets of bits, , are mapped to complex-valued modulation symbols  according to
+5.1.6	256QAM
+In case of 256QAM modulation, octuplets of bits, , are mapped to complex-valued modulation symbols  according to
+5.1.7	1024QAM
+In case of 1024QAM modulation, 10-tuplets of bits, , are mapped to complex-valued modulation symbols  according to
+5.2	Sequence generation
+5.2.1	Pseudo-random sequence generation
+Generic pseudo-random sequences are defined by a length-31 Gold sequence. The output sequence  of length, where, is defined by 
+where  and the first m-sequence  shall be initialized with. The initialization of the second m-sequence, , is denoted by  with the value depending on the application of the sequence.
+5.2.2	Low-PAPR sequence generation type 1
+The low-PAPR sequence  is defined by a cyclic shift  of a base sequence  according to 
+where  is the length of the sequence. Multiple sequences are defined from a single base sequence through different values of  and . 
+Base sequences  are divided into groups, where  is the group number and  is the base sequence number within the group, such that each group contains one base sequence () of each length ,  and two base sequences () of each length , . The definition of the base sequence  depends on the sequence length .
+5.2.2.1	Base sequences of length 36 or larger
+For, the base sequence  is given by
+where
+The length  is given by the largest prime number such that.
+5.2.2.2	Base sequences of length less than 36
+For  the base sequence is given by
+where the value of  is given by Tables 5.2.2.2-1 to 5.2.2.2-4. 
+For , the base sequence  is given by
+Table 5.2.2.2-1: Definition of  for.
+Table 5.2.2.2-2: Definition of  for. 
+Table 5.2.2.2-3: Definition of  for  
+Table 5.2.2.2-4: Definition of  for  
+5.2.3	Low-PAPR sequence generation type 2
+The low-PAPR sequence  is defined by a base sequence  according to 
+where  is the length of the sequence. 
+Base sequences  are divided into groups, where  is the group number and  is the base sequence number within the group, such that each group contains one base sequence () of length , . The sequence  is defined by
+where the definition of  depends on the sequence length.
+5.2.3.1	Sequences of length 30 or larger
+For , the sequence  is obtained as the complex-valued modulations symbols resulting from π/2-BPSK modulation as defined in clause 5.1.1 applied to the binary sequence  given by clause 5.2.1, initialized with .
+5.2.3.2	Sequences of length less than 30
+For , the sequence   is given by
+where the value of  is given by Table 5.2.3.2-1. 
+For , the sequence  is obtained as the complex-valued modulations symbols resulting from π/2-BPSK modulation as defined in clause 5.1.1 applied to the binary sequence  given by Tables 5.2.3.2-2 to 5.2.3.2-4.
+Table 5.2.3.2-1: Definition of  for .
+Table 5.2.3.2-2: Definition of  for . 
+Table 5.2.3.2-3: Definition of  for .
+Table 5.2.3.2-4: Definition of  for  
+5.3	OFDM baseband signal generation
+5.3.1	OFDM baseband signal generation for all channels except PRACH and RIM-RS
+The time-continuous signal  on antenna port  and subcarrier spacing configuration  for OFDM symbol  in a subframe for any physical channel or signal except PRACH is defined by
+where  at the start of the subframe, 
+and
+-	 is given by clause 4.2;
+-	 is the subcarrier spacing configuration; 
+-	 is the largest  value among the subcarrier spacing configurations by scs-SpecificCarrierList for each of uplink and downlink and by sl-SCS-SpecificCarrierList for sidelink.
+In case of cyclic prefix extension of the first OFDM symbol  allocated for PUSCH, SRS, or PUCCH transmission, the time-continuous signal  for the interval  preceding the first OFDM symbol for PUSCH, SRS, or PUCCH is given by
+where  refers to the signal in the previous subframe and 
+-	for dynamically scheduled PUSCH, SRS, and PUCCH transmissions
+	where  is given by Table 5.3.1-1 with  for ,  for , and  and  given by the higher-layer parameters cp-ExtensionC2 and cp-ExtensionC3, respectively, and  given by clause 4.3.1. For contention-based random access, or in absence of higher-layer configuration of  and , the value of shall be set to the largest integer fulfilling  for each of the values of . Text is applied to the first UL transmission scheduled by the scheduling DCI.
+-	for a PUSCH transmission using configured grant
+	where   is given by Table 5.3.1-2 with the index  given by the procedure in [6, TS 38.214].
+The starting position of OFDM symbol  for subcarrier spacing configuration in a subframe is given by
+Table 5.3.1-1: The variables  and  for cyclic prefix extension 
+Table 5.3.1-2: The variable  for cyclic prefix extension with configured grants.
+5.3.2	OFDM baseband signal generation for PRACH
+The time-continuous signal  on antenna port  for PRACH is defined by
+where  and 
+-	 is given by clause 6.3.3; 
+-	 is the subcarrier spacing of the initial uplink bandwidth part during initial access. Otherwise,  is the subcarrier spacing of the active uplink bandwidth part; 
+-	 is the largest  value among the subcarrier spacing configurations by the higher-layer parameter scs-SpecificCarrierList;
+-	 is the lowest numbered resource block of the initial uplink bandwidth part and is derived by the higher-layer parameter initialUplinkBWP or initialUplinkBWP-RedCap during initial access. Otherwise,  is the lowest numbered resource block of the active uplink bandwidth part and is derived by the higher-layer parameter BWP-Uplink; 
+-	 is the frequency offset of the lowest PRACH transmission occasion in frequency domain with respect to physical resource block 0 of the active uplink bandwidth part. The quantity  is given by the higher-layer parameter msgA-RO-FrequencyStart if configured and a type-2 random-access procedure is initiated as described in clause 8.1 of [5, TS 38.213], otherwise by msg1-FrequencyStart as described in clause 8.1 of [5 TS 38.213];
+-	 is the PRACH transmission occasion index in frequency domain for a given PRACH transmission occasion in one time instance as given by clause 6.3.3.2; 
+-	 is the number of resource blocks occupied and is given by the parameter allocation expressed in number of RBs for PUSCH in Table 6.3.3.2-1. 
+-	 is the start CRB index of uplink RB set  corresponding to the quantity . The UE assumes that the RB set is defined as when the UE is not provided IntraCellGuardBandsPerSCS for an UL carrier as described in Clause 7 of [6, TS 38.214]
+-	 is the index of the RB set which contains the lowest PRACH transmission occasion in frequency domain indicated by . The UE may assume that  is configured such that each PRACH transmission occasion is fully contained within an RB set.
+-	 and  are given by clause 6.3.3
+-	 where 
+-	for ,  
+-	for kHz,  is the number of times the interval  overlaps with either time instance 0 or time instance  in a subframe
+The starting position  of the PRACH preamble in a subframe (for ) or in a 60 kHz slot (for kHz) is given by
+where 
+-	the subframe or 60 kHz slot is assumed to start at ;
+-	a timing advance value  shall be assumed; 
+-	 and  are given by clause 5.3.1;
+-	 shall be assumed for  kHz, otherwise the value of  corresponds to  kHz and the symbol position  is given by
+where 
+-	 is given by the parameter "starting symbol" in Tables 6.3.3.2-2 to 6.3.3.2-4;
+-	 is the PRACH transmission occasion within the PRACH slot, numbered in increasing order from 0 to  within a RACH slot where  is given Tables 6.3.3.2-2 to 6.3.3.2-4 for  and fixed to 1 for ;
+-	 is given by Tables 6.3.3.2-2 to 6.3.3.2-4;
+-	 is given by
+-	if  kHz, then 
+-	if  kHz and either of "Number of PRACH slots within a subframe" in Tables 6.3.3.2-2 to 6.3.3.2-3 or "Number of PRACH slots within a 60 kHz slot" in Table 6.3.3.2-4 is equal to 1, then , otherwise 
+-	if  kHz and 
+-	the "Number of PRACH slots within a 60 kHz slot" in Table 6.3.3.2-4 is equal to 1, then  for  kHz and  for kHz, or
+-	the "Number of PRACH slots within a 60 kHz slot" in Table 6.3.3.2-4 is equal to 2, then  for kHz and  for kHz.
+If the preamble format given by Tables 6.3.3.2-2 to 6.3.3.2-4 is A1/B1, A2/B2 or A3/B3, then
+-	if , then the PRACH preamble with the corresponding PRACH preamble format from B1, B2 and B3 is transmitted in the PRACH transmission occasion;
+-	otherwise the PRACH preamble with the corresponding PRACH preamble format from A1, A2 and A3 is transmitted in the PRACH transmission occasion
+5.3.3	OFDM baseband signal generation for RIM-RS
+The time-continuous signal  on antenna port  for RIM-RS is defined by
+where
+and 
+-	 where  is the subcarrier spacing configuration for the RIM-RS; 
+-	 is the starting frequency offset of the RIM-RS as given by clause 7.4.1.6.4.3;
+-	 is the length of the RIM-RS sequence where  is the bandwidth of the RIM-RS in resource blocks;
+-	 is the starting symbol given by clause 7.4.1.6.3;
+-	 is given by clause 5.3.1 with ;
+-	 is given by clause 5.3.1 with .
+5.4	Modulation and upconversion
+Modulation and upconversion to the carrier frequency  of the complex-valued OFDM baseband signal for antenna port , subcarrier spacing configuration , and OFDM symbol  in a subframe assumed to start at  is given by 
+-	for PRACH
+-	for RIM-RS
+where  is the configured reference point for RIM-RS;
+-	for all other channels and signals
+NOTE:	For the uplink, the signal  and the baseband signals part thereof should be filtered per UE implementation, as required, to meet the minimum requirements as specified in [14, 38.101-1], [15, 38.101-2], and [16, 38.101-5] for the respective frequency range. 
+6	Uplink
+6.1	Overview
+6.1.1	Overview of physical channels
+An uplink physical channel corresponds to a set of resource elements carrying information originating from higher layers. The following uplink physical channels are defined:
+-	Physical Uplink Shared Channel, PUSCH
+-	Physical Uplink Control Channel, PUCCH
+-	Physical Random Access Channel, PRACH
+6.1.2	Overview of physical signals
+An uplink physical signal is used by the physical layer but does not carry information originating from higher layers. The following uplink physical signals are defined:
+-	Demodulation reference signals, DM-RS
+-	Phase-tracking reference signals, PT-RS
+-	Sounding reference signal, SRS
+6.2	Physical resources
+The frame structure and physical resources the UE shall use when transmitting in the uplink transmissions are defined in Clause 4.
+The following antenna ports are defined for the uplink:
+-	Antenna ports starting with 0 for demodulation reference signals for PUSCH
+-	Antenna ports starting with 1000 for SRS, PUSCH
+-	Antenna ports starting with 2000 for PUCCH
+-	Antenna port 4000 for PRACH 
+If PUSCH repetition Type B as described in clause 6.1 of [6, TS38.214] is applied to a physical channel, the UE transmission shall be such that the channel over which a symbol on the antenna port used for uplink transmission is conveyed can be inferred from the channel over which another symbol on the same antenna port is conveyed if the two symbols correspond to the same actual repetition of a PUSCH transmission with repetition Type B.
+If intra-slot frequency hopping is not enabled for a physical channel and PUSCH repetition Type B is not applied to the physical channel, the UE transmission shall be such that the channel over which a symbol on the antenna port used for uplink transmission is conveyed can be inferred from the channel over which another symbol on the same antenna port is conveyed if the two symbols correspond to the same slot.
+If intra-slot frequency hopping is enabled for a physical channel, the UE transmission shall be such that the channel over which a symbol on the antenna port used for uplink transmission is conveyed can be inferred from the channel over which another symbol on the same antenna port is conveyed only if the two symbols correspond to the same frequency hop, regardless of whether the frequency hop distance is zero or not.
+If DM-RS bundling is applied to PUSCH and/or PUCCH repetitions and/or transport-block processing over multiple slots as described in clause 6.1.7 of [6, 38.214], the UE transmission shall be such that the channel over which a symbol on the antenna port used for uplink transmission is conveyed can be inferred from the channel over which another symbol on the same antenna port is conveyed if the two symbols are transmitted within the same actual time-domain window.
+6.3	Physical channels
+6.3.1	Physical uplink shared channel
+6.3.1.1	Scrambling
+For the single codeword, the block of bits , where  is the number of bits in codeword  transmitted on the physical channel, shall be scrambled prior to modulation, resulting in a block of scrambled bits  according to the following pseudo code
+Set i = 0
+while 
+if 	// UCI placeholder bits
+ =1
+else
+if 	// UCI placeholder bits
+ = 
+else
+ = ( +
+end if
+end if 
+i = i + 1
+end while
+where x and y are tags defined in [4, TS 38.212] and where the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with 
+where
+-	 equals the higher-layer parameter dataScramblingIdentityPUSCH if configured and the RNTI equals the C-RNTI, MCS-C-RNTI, SP-CSI-RNTI or CS-RNTI, and the transmission is not scheduled using DCI format 0_0 in a common search space;
+-	 equals the higher-layer parameter msgA-DataScramblingIndex if configured and the PUSCH transmission is triggered by a Type-2 random access procedure as described in clause 8.1A of [5, TS 38.213];
+-	 otherwise
+-	 is the index of the random-access preamble transmitted for msgA as described in clause 5.1.3A of [11, TS 38.321]
+and where  equals the RA-RNTI for msgA and otherwise corresponds to the RNTI associated with the PUSCH transmission as described in clause 6.1 of [6, TS 38.214] and clause 8.3 of [5, TS 38.213].
+6.3.1.2	Modulation
+For the single codeword , the block of scrambled bits  shall be modulated as described in clause 5.1 using one of the modulation schemes in Table 6.3.1.2-1, resulting in a block of complex-valued modulation symbols . 
+Table 6.3.1.2-1: Supported modulation schemes.
+6.3.1.3	Layer mapping
+For the single codeword , the complex-valued modulation symbols for the codeword to be transmitted shall be mapped onto up to four layers according to Table 7.3.1.3-1. Complex-valued modulation symbols  for codeword  shall be mapped onto the layers ,  where  is the number of layers and  is the number of modulation symbols per layer.
+6.3.1.4	Transform precoding
+If transform precoding is not enabled according to 6.1.3 of [6, TS38.214],  for each layer .
+If transform precoding is enabled according to 6.1.3 of [6, TS38.214],  and  depends on the configuration of phase-tracking reference signals.
+If the procedure in [6, TS 38.214] indicates that phase-tracking reference signals are not being used, the block of complex-valued symbols  for the single layer  shall be divided into  sets, each corresponding to one OFDM symbol and . 
+If the procedure in [6, TS 38.214] indicates that phase-tracking reference signals are being used, the block of complex-valued symbols  shall be divided into sets, each set corresponding to one OFDM symbol, and where set  contains  symbols and is mapped to the complex-valued symbols  corresponding to OFDM symbol  prior to transform precoding, with  and . The index  of PT-RS samples in set , the number of samples per PT-RS group , and the number of PT-RS groups  are defined in clause 6.4.1.2.2.2. The quantity  when OFDM symbol  contains one or more PT-RS samples, otherwise .
+Transform precoding shall be applied according to
+resulting in a block of complex-valued symbols . The variable, where  represents the bandwidth of the PUSCH in terms of resource blocks, and shall fulfil
+where  is a set of non-negative integers. 
+6.3.1.5	Precoding
+The block of vectors ,  shall be precoded according to
+where , . The set of antenna ports  shall be determined according to the procedure in [6, TS 38.214]. 
+For non-codebook-based transmission, the precoding matrix  equals the identity matrix.
+For codebook-based transmission, the precoding matrix  is given by  for single-layer transmission on a single antenna port, otherwise by Tables 6.3.1.5-1 to 6.3.1.5-7 with the TPMI index obtained from the DCI scheduling the uplink transmission or the higher layer parameters according to the procedure in [6, TS 38.214]. 
+When the higher-layer parameter txConfig is not configured, the precoding matrix .
+Table 6.3.1.5-1: Precoding matrix  for single-layer transmission using two antenna ports.
+Table 6.3.1.5-2: Precoding matrix  for single-layer transmission using four antenna ports with transform precoding enabled.
+Table 6.3.1.5-3: Precoding matrix  for single-layer transmission using four antenna ports with transform precoding disabled.
+Table 6.3.1.5-4: Precoding matrix  for two-layer transmission using two antenna ports with transform precoding disabled.
+Table 6.3.1.5-5: Precoding matrix  for two-layer transmission using four antenna ports with transform precoding disabled.
+Table 6.3.1.5-6: Precoding matrix  for three-layer transmission using four antenna ports with transform precoding disabled.
+Table 6.3.1.5-7: Precoding matrix  for four-layer transmission using four antenna ports with transform precoding disabled.
+6.3.1.6	Mapping to virtual resource blocks
+For each of the antenna ports used for transmission of the PUSCH, the block of complex-valued symbols  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  in the virtual resource blocks assigned for transmission which meet all of the following criteria: 
+-	they are in the virtual resource blocks assigned for transmission, and
+-	the corresponding resource elements in the corresponding physical resource blocks are not used for transmission of the associated DM-RS, PT-RS, or DM-RS intended for other co-scheduled UEs as described in clause 6.4.1.1.3
+The mapping to resource elements  allocated for PUSCH according to [6, TS 38.214] shall be in increasing order of first the index  over the assigned virtual resource blocks, where  is the first subcarrier in the lowest-numbered virtual resource block assigned for transmission, and then the index , with the starting position given by [6, TS 38.214]. 
+6.3.1.7	Mapping from virtual to physical resource blocks
+Virtual resource blocks shall be mapped to physical resource blocks according to non-interleaved mapping.
+For non-interleaved VRB-to-PRB mapping for uplink resource allocation types 0 and 1 [6, TS 38.214], virtual resource block  is mapped to physical resource block  except for PUSCH scheduled by RAR UL grant or PUSCH scheduled by DCI format 0_0 with CRC scrambled by TC-RNTI in active uplink bandwidth part  starting at , including all resource blocks of the initial uplink bandwidth part starting at , and having the same subcarrier spacing and cyclic prefix as the initial uplink bandwidth part, in which case virtual resource block  is mapped to physical resource block . 
+For non-interleaved VRB-to-PRB mapping for uplink resource allocation type 2 [6, TS 38.214], virtual resource block  is mapped to physical resource block .
+6.3.2	Physical uplink control channel
+6.3.2.1	General
+The physical uplink control channel supports multiple formats as shown in Table 6.3.2.1-1. In case intra-slot frequency hopping is configured for PUCCH formats 1, 3, or 4 according to clause 9.2.1 of [5, TS38.213], the number of symbols in the first hop is given by  where  is the length of the PUCCH transmission in OFDM symbols.
+Table 6.3.2.1-1: PUCCH formats.
+6.3.2.2	Sequence and cyclic shift hopping
+PUCCH formats 0, 1, 3, and 4 use sequences  given by clause 5.2.2 with  where the sequence group  and the sequence number  depend on the sequence hopping in clause 6.3.2.2.1 and the cyclic shift  depends on the cyclic shift hopping in clause 6.3.2.2.2.
+6.3.2.2.1	Group and sequence hopping
+The sequence group  and the sequence number  within the group depends on the higher-layer parameter pucch-GroupHopping:
+-	if pucch-GroupHopping equals 'neither'
+	where  is given by the higher-layer parameter hoppingId if configured, otherwise .
+-	if pucch-GroupHopping equals 'enable' 
+	where the pseudo-random sequence  is defined by clause 5.2.1 and shall be initialized at the beginning of each radio frame with  where  is given by the higher-layer parameter hoppingId if configured, otherwise .
+-	if pucch-GroupHopping equals 'disable'
+	where the pseudo-random sequence  is defined by clause 5.2.1 and shall be initialized at the beginning of each radio frame with  where  is given by the higher-layer parameter hoppingId if configured, otherwise .
+The frequency hopping index  if intra-slot frequency hopping is disabled by the higher-layer parameter intraSlotFrequencyHopping. If frequency hopping is enabled by the higher-layer parameter intraSlotFrequencyHopping,  for the first hop and  for the second hop.
+6.3.2.2.2	Cyclic shift hopping
+The cyclic shift  varies as a function of the symbol and slot number according to
+where
+-	 is the slot number in the radio frame
+-	 is the OFDM symbol number in the PUCCH transmission where  corresponds to the first OFDM symbol of the PUCCH transmission,
+-	 is the index of the OFDM symbol in the slot that corresponds to the first OFDM symbol of the PUCCH transmission in the slot given by [5, TS 38.213]
+-	 is given by [5, TS 38.213] for PUCCH format 0 and 1 while for PUCCH format 3 and 4 is defined in clause 6.4.1.3.3.1
+-	 except for PUCCH format 0 when it depends on the information to be transmitted according to clause 9.2 of [5, TS 38.213]. 
+-	 is given by
+-	 for PUCCH formats 0 and 1 if PUCCH shall use interlaced mapping according to any of the higher-layer parameters useInterlacePUCCH-PUSCH in BWP-UplinkCommon or useInterlacePUCCH-PUSCH in BWP-UplinkDedicated, where  is the resource block number within the interlace;
+-	 otherwise
+The function  is given by
+where the pseudo-random sequence  is defined by clause 5.2.1. The pseudo-random sequence generator shall be initialized with , where  is given by the higher-layer parameter hoppingId if configured, otherwise .
+6.3.2.3	PUCCH format 0
+6.3.2.3.1	Sequence generation
+The sequence  shall be generated according to
+where  is given by clause 6.3.2.2 with  depending on the information to be transmitted according to clause 9.2 of [5, TS 38.213]. The quantity  is given by clause 9.2.1 of [5, TS 38.213].
+6.3.2.3.2	Mapping to physical resources
+The sequence  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  assigned for transmission according to clause 9.2.1 of [5, TS 38.213] in increasing order of first the index  over the assigned physical resources spanning  resource blocks, and then the index  on antenna port . 
+For interlaced transmission, the mapping operation shall be repeated for each resource block in the interlace and in the active bandwidth part over the assigned physical resource blocks according to clause 9.2.1 of [5, TS 38.213], with the resource-block dependent sequence generated according to clause 6.3.2.2.
+6.3.2.4	PUCCH format 1
+6.3.2.4.1	Sequence modulation
+The block of bits  shall be modulated as described in clause 5.1 using BPSK if  and QPSK if , resulting in a complex-valued symbol . 
+The complex-valued symbol  shall be multiplied with a sequence  according to
+where  is given by clause 6.3.2.2. The quantity  is given by clause 9.2.1 of [5, TS 38.213].
+The block of complex-valued symbols  shall be block-wise spread with the orthogonal sequence  according to
+where  is given by Table 6.3.2.4.1-1. Intra-slot frequency hopping shall be assumed when the higher-layer parameter intraSlotFrequencyHopping is provided, regardless of whether the frequency-hop distance is zero or not, and interlaced mapping is not enabled, otherwise no intra-slot frequency hopping shall be assumed.
+The orthogonal sequence  is given by Table 6.3.2.4.1-2 where  is the index of the orthogonal sequence to use according to clause 9.2.1 of [5, TS 38.213]. In case of a PUCCH transmission spanning multiple slots according to clause 9.2.6 of [5, TS38.213], the complex-valued symbol  is repeated for the subsequent slots.
+Table 6.3.2.4.1-1: Number of PUCCH symbols and the corresponding .
+Table 6.3.2.4.1-2: Orthogonal sequences  for PUCCH format 1. 
+6.3.2.4.2	Mapping to physical resources
+The sequence  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  which meet all of the following criteria: 
+-	they are in the resource blocks assigned for transmission,
+-	they are not used by the associated DM-RS 
+The mapping to resource elements  not reserved for other purposes shall be in increasing order of first the index  over the assigned physical resource blocks according to clause 9.2.1 of [5, TS 38.213], and then the index  on antenna port . 
+For interlaced transmission, the mapping operation shall be repeated for each resource block in the interlace and in the active bandwidth part over the assigned physical resource blocks according to clause 9.2.1 of [5, TS 38.213], with the resource-block dependent sequence generated according to clause 6.3.2.2.
+6.3.2.5	PUCCH format 2
+6.3.2.5.1	Scrambling
+The block of bits , where  is the number of bits transmitted on the physical channel, shall be scrambled prior to modulation, resulting in a block of scrambled bits  according to the following pseudo code
+Set i = 0
+while 
+if 	// UCI placeholder bits
+else
+end if 
+i = i + 1
+end while
+where y is the tag defined in [4, TS38.212] and the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with 
+where
+-	 equals the higher-layer parameter dataScramblingIdentityPUSCH if configured,
+-	 otherwise
+and  is given by the C-RNTI.
+6.3.2.5.2	Modulation
+The block of scrambled bits  shall be modulated as described in clause 5.1 using QPSK, resulting in a block of complex-valued modulation symbols  where . 
+6.3.2.5.2A	Spreading
+Spreading shall be applied according to
+resulting in a block of complex-valued symbols .
+If the higher layer parameter interlace1 is not configured, and the higher-layer parameter occ-Length is configured,
+-	 is given by the higher-layer parameter occ-Length; 
+-	 is given by Tables 6.3.2.5A-1 and 6.3.2.5A-2 where , the quantity  is the index of the orthogonal sequence to use given by the higher-layer parameter occ-Index, and  is the interlaced resource block number as defined in clause 4.4.4.6 within the interlace given by the higher-layer parameter Interlace0.
+otherwise  and 
+Table 6.3.2.5A-1: Orthogonal sequences  for PUCCH format 2 when .
+Table 6.3.2.5A-2: Orthogonal sequences  for PUCCH format 2 when .
+6.3.2.5.3	Mapping to physical resources
+The block of complex-valued symbols  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  which meet all of the following criteria: 
+-	they are in the resource blocks assigned for transmission,
+-	they are not used by the associated DM-RS. 
+The mapping to resource elements  not reserved for other purposes shall be in increasing order of first the index  over the assigned physical resource blocks according to clause 9.2.1 of [5, TS 38.213], and then the index  on antenna port .
+6.3.2.6	PUCCH formats 3 and 4
+6.3.2.6.1	Scrambling
+The block of bits , where  is the number of bits transmitted on the physical channel, shall be scrambled prior to modulation, resulting in a block of scrambled bits  according to the following pseudo code
+Set i = 0
+while 
+if 	// UCI placeholder bits
+else
+end if 
+i = i + 1
+end while
+where y is the tag defined in [4, TS38.212] and the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with 
+where
+-	 equals the higher-layer parameter dataScramblingIdentityPUSCH if configured,
+-	 otherwise
+and  is given by the C-RNTI.
+6.3.2.6.2	Modulation
+The block of scrambled bits  shall be modulated as described in clause 5.1 using QPSK unless π/2-BPSK is configured, resulting in a block of complex-valued modulation symbols  where  for QPSK and  for π/2-BPSK. 
+6.3.2.6.3	Block-wise spreading
+For both PUCCH format 3 and 4,   with  representing the bandwidth of the PUCCH in terms of resource blocks according to clauses 9.2.3, 9.2.5.1 and 9.2.5.2 of [5, TS 38.213] and shall for non-interlaced mapping fulfil
+where  is a set of non-negative integers and . For interlaced mapping,  if a single interlace is configured and  if two interlaces are configured.
+For PUCCH format 3, if interlaced mapping is not configured, no block-wise spreading is applied and
+where  is given by clauses 9.2.3, 9.2.5.1 and 9.2.5.2 of [5, TS 38.213] and .
+For PUCCH format 3 with interlaced mapping and PUCCH format 4, block-wise spreading shall be applied according to 
+where 
+-	for PUCCH format 3 with interlaced mapping,  if a single interlace is configured and ,  if two interlaces are configured;
+-	for PUCCH format 4,  is given by the higher-layer parameter occ-Length;
+and  is given by Tables 6.3.2.6.3-1 and 6.3.2.6.3-2 for  where  is the index of the orthogonal sequence to use according to clause 9.2.1 of [5, TS 38.213]. The quantity  is given by the higher-layer parameter occ-Length if provided, otherwise .
+Table 6.3.2.6.3-1: Orthogonal sequences  for PUCCH format 3 with interlaced mapping and PUCCH format 4 when .
+Table 6.3.2.6.3-2: Orthogonal sequences  for PUCCH format 3 with interlaced mapping and PUCCH format 4 when .
+6.3.2.6.4	Transform precoding
+The block of complex-valued symbols  shall be transform precoded according to
+resulting in a block of complex-valued symbols . 
+6.3.2.6.5	Mapping to physical resources
+The block of modulation symbols  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  which meet all of the following criteria: 
+-	they are in the resource blocks assigned for transmission,
+-	they are not used by the associated DM-RS
+The mapping to resource elements  not reserved for other purposes shall be in increasing order of first the index  over the assigned physical resource blocks according to clause 9.2.1 of [5, TS 38.213], and then the index  on antenna port . 
+In case of intra-slot frequency hopping according to clause 9.2.1 of [5, TS 38.213],  OFDM symbols shall be transmitted in the first hop and  symbols in the second hop where  is the total number of OFDM symbols used in one slot for PUCCH transmission.
+6.3.3	Physical random-access channel
+6.3.3.1	Sequence generation
+The set of random-access preambles  shall be generated according to
+from which the frequency-domain representation shall be generated according to
+where , , , or  depending on the PRACH preamble format as given by Tables 6.3.3.1-1 and 6.3.3.1-2.
+There are 64 preambles defined in each time-frequency PRACH occasion, enumerated in increasing order of first increasing cyclic shift  of a logical root sequence, and then in increasing order of the logical root sequence index, starting with the index obtained from the higher-layer parameter prach-RootSequenceIndex or rootSequenceIndex-BFR or by msgA-PRACH-RootSequenceIndex if configured and a type-2 random-access procedure is initiated as described in clause 8.1 of [5, TS 38.213]. Additional preamble sequences, in case 64 preambles cannot be generated from a single root Zadoff-Chu sequence, are obtained from the root sequences with the consecutive logical indexes until all the 64 sequences are found. The logical root sequence order is cyclic; the logical index 0 is consecutive to . The sequence number  is obtained from the logical root sequence index according to Tables 6.3.3.1-3 to 6.3.3.1-4B.
+The cyclic shift  is given by
+where  is given by Tables 6.3.3.1-5 to 6.3.3.1-7, the higher-layer parameter msgA-RestrictedSetConfig, if provided, determines the type of restricted sets (unrestricted, restricted type A, restricted type B); otherwise, the higher-layer parameter restrictedSetConfig determines the type of restricted sets (unrestricted, restricted type A, restricted type B), and Tables 6.3.3.1-1 and 6.3.3.1-2 indicate the type of restricted sets supported for the different preamble formats. 
+The variable  is given by
+where  is the smallest non-negative integer that fulfils . The parameters for restricted sets of cyclic shifts depend on . 
+For restricted set type A, the parameters are given by:
+-	for 
+-	for 
+For restricted set type B, the parameters are given by:
+-	for 
+-	for 
+-	for 
+-	for 
+-	for 
+-	for 
+For all other values of , there are no cyclic shifts in the restricted set.
+Table 6.3.3.1-1: PRACH preamble formats for  and  kHz.
+Table 6.3.3.1-2: Preamble formats for  and  kHz where .
+Table 6.3.3.1-3: Mapping from logical index  to sequence number  for preamble formats with .
+Table 6.3.3.1-4: Mapping from logical index  to sequence number  for preamble formats with .
+Table 6.3.3.1-4A: Mapping from logical index  to sequence number  for preamble formats with .
+Table 6.3.3.1-4B: Mapping from logical index  to sequence number  for preamble formats with .
+Table 6.3.3.1-5:  for preamble formats with  kHz.
+Table 6.3.3.1-6:  for preamble formats with  kHz.
+Table 6.3.3.1-7:  for preamble formats with  .
+6.3.3.2	Mapping to physical resources
+The preamble sequence shall be mapped to physical resources according to
+where  is an amplitude scaling factor in order to conform to the transmit power specified in [5, TS38.213], and  is the antenna port. Baseband signal generation shall be done according to clause 5.3 using the parameters in Table 6.3.3.1-1 or Table 6.3.3.1-2 with  given by Table 6.3.3.2-1.
+Random access preambles can only be transmitted in the time resources obtained from Tables 6.3.3.2-2 to 6.3.3.2-4 and depends on FR1 or FR2 and the spectrum type as defined in [8, TS38.104] or [17, TS38.108]. The PRACH configuration index in Tables 6.3.3.2-2 to 6.3.3.2-4 is
+-	for Table 6.3.3.2-3 given by the higher-layer parameter prach-ConfigurationIndex, or by msgA-PRACH-ConfigurationIndex if configured; and
+-	for Tables 6.3.3.2-2 and 6.3.3.2-4 given by the higher-layer parameter prach-ConfigurationIndex, or by msgA-PRACH-ConfigurationIndex if configured.
+For the IAB-MT part of an IAB-node, the following applies:
+-	if the higher-layer parameter prach-ConfigurationPeriodScaling-IAB is configured, the variable  used in  of Tables 6.3.3.2-2 to 6.3.3.2-4 shall be replaced by  , where  and  is given by the higher-layer parameter prach-ConfigurationPeriodScaling-IAB and the IAB-node does not expect  to be larger than 64;
+-	if the higher-layer parameter prach-ConfigurationFrameOffset-IAB is configured, the variable  used in  of Tables 6.3.3.2-2 to 6.3.3.2-4 shall be replaced by  where  is given by the higher-layer parameter prach-ConfigurationFrameOffset-IAB, and ;
+-	if the higher-layer parameter prach-ConfigurationSOffset-IAB is configured, the subframe number  from Tables 6.3.3.2-2 to 6.3.3.2-3 and the slot number  from Table 6.3.3.2-4 shall be replaced by  where  is given by the higher-layer parameter prach-ConfigurationSOffset-IAB, and  is the number of subframes in a frame when using Tables 6.3.3.2-2 to 6.3.3.2-3 and the number of slots in a frame for 60 kHz subcarrier spacing when using in Table 6.3.3.2-4.
+Random access preambles can only be transmitted in the frequency resources given by either the higher-layer parameter msg1-FrequencyStart or msgA-RO-FrequencyStart if configured as described in clause 8.1 of [5 TS 38.213]. The PRACH frequency resources , where  equals the higher-layer parameter msg1-FDM or msgA-RO-FDM if configured, are numbered in increasing order within the initial uplink bandwidth part during initial access, starting from the lowest frequency. Otherwise,  are numbered in increasing order within the active uplink bandwidth part, starting from the lowest frequency.
+For operation with shared spectrum channel access, for , a UE expects to be provided with higher-layer parameter msg1-FrequencyStart or msgA-RO-FrequencyStart if configured, and higher-layer parameter msg1-FDM or msgA-RO-FDM if configured, such that a random-access preamble is confined within a single RB set. The UE assumes that the RB set is defined as when the UE is not provided intraCellGuardBandsPerSCS for an UL carrier as described in Clause 7 of [6, TS 38.214].
+For operation with shared spectrum channel access, for  or  and Type-2 random access, a UE expects to be provided with higher-layer parameter msgA-RO-FDM equals to one.
+For the purpose of slot numbering in the tables, the following subcarrier spacing shall be assumed:
+-	15 kHz for FR1
+-	60 kHz for FR2.
+For handover purposes to a target cell in paired or unpaired spectrum where the target cell uses , the UE may assume the absolute value of the time difference between radio frame  in the current cell and radio frame  in the target cell is less than  if the association pattern period in clause 8.1 of [5, TS 38.213] is not equal to 10 ms.
+For inter frequency handover purposes where the source cell is either in paired or unpaired spectrum and the target cell is in unpaired spectrum and uses , the UE may assume the absolute value of the time difference between radio frame  in the current cell and radio frame  in the target cell is less than 
+Table 6.3.3.2-1: Supported combinations of  and , and the corresponding value of .
+Table 6.3.3.2-2: Random access configurations for FR1 and paired spectrum/supplementary uplink.
+Table 6.3.3.2-3: Random access configurations for FR1 and unpaired spectrum. 
+Table 6.3.3.2-4: Random access configurations for FR2 and unpaired spectrum. 
+6.4	Physical signals
+6.4.1	Reference signals
+6.4.1.1	Demodulation reference signal for PUSCH
+6.4.1.1.1	Sequence generation
+6.4.1.1.1.1	Sequence generation when transform precoding is disabled
+If transform precoding for PUSCH is not enabled, the sequence  shall be generated according to
+.
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialized with
+where  is the OFDM symbol number within the slot,  is the slot number within a frame, and
+-	 are given by the higher-layer parameters scramblingID0 and scramblingID1, respectively, in the DMRS-UplinkConfig IE if provided and the PUSCH is scheduled by DCI format 0_1 or 0_2, or by a PUSCH transmission with a configured grant; 
+-	 is given by the higher-layer parameter scramblingID0 in the DMRS-UplinkConfig IE if provided and the PUSCH is scheduled by DCI format 0_0 with the CRC scrambled by C-RNTI, MCS-C-RNTI, or CS-RNTI; 
+-	 are, for each msgA PUSCH configuration, given by the higher-layer parameters msgA-ScramblingID0 and msgA-ScramblingID1, respectively, in the msgA-DMRS-Config IE if provided and the PUSCH transmission is triggered by a Type-2 random access procedure as described in clause 8.1A of [5, TS 38.213];
+-	  otherwise;
+-	 and  are given by
+-	if the higher-layer parameter dmrs-Uplink in the DMRS-UplinkConfig IE is provided
+	where  is the CDM group defined in clause 6.4.1.1.3.
+-	otherwise 
+The quantity  is
+-	indicated by the DM-RS initialization field, if present, either in the DCI associated with the PUSCH transmission if DCI format 0_1 or 0_2, in [4, TS 38.212] is used;
+-	indicated by the higher layer parameter dmrs-SeqInitialization, if present, for a Type 1 PUSCH transmission with a configured grant; 
+-	determined by the mapping between preamble(s) and a PUSCH occasion and the associated DMRS resource for a PUSCH transmission of Type-2 random access process in [5, TS 38.213];
+-	determined by the mapping between SS/PBCH block(s) and a PUSCH occasion and the associated DMRS resource for a configured-grant based PUSCH transmission in RRC_INACTIVE state [5, TS 38.213];
+-	otherwise .
+6.4.1.1.1.2	Sequence generation when transform precoding is enabled
+If transform precoding for PUSCH is enabled, the reference-signal sequence  shall be generated according to
+where  with  depends on the configuration:
+-	if the higher-layer parameter dmrs-UplinkTransformPrecoding is configured, π/2-BPSK modulation is used for PUSCH, and the PUSCH transmission is not a msg3 transmission, and the transmission is not scheduled using DCI format 0_0 in a common search space,  is given by clause 5.2.3 with  given by
+	where  unless given by the DCI according to clause 7.3.1.1.2 in  [4, TS38.212] for a transmission scheduled by DCI format 0_1, or given by the DCI according to clause 7.3.1.1.3 in  [4, TS38.212] for a transmission scheduled by DCI format 0_2 if the antenna ports field in the DCI format 0_2 is not 0 bit, or given by the higher-layer parameter antennaPort for a PUSCH transmission scheduled by a type-1 configured grant; and
+-	 are given by the higher-layer parameters pi2BPSK-ScramblingID0 and pi2BPSK-ScramblingID1, respectively, in the DMRS-UplinkConfig IE if provided and the PUSCH is scheduled by DCI format 0_1, or by DCI format 0_2 if the antenna ports field in the DCI format 0_2 is not 0 bit, or by a PUSCH transmission with a configured grant; 
+-	 is given by the higher-layer parameter pi2BPSK-ScramblingID0 in the DMRS-UplinkConfig IE if provided and the PUSCH is scheduled by DCI format 0_0 with the CRC scrambled by C-RNTI, MCS-C-RNTI, or CS-RNTI, or by DCI format 0_2 if the antenna ports field in the DCI format 0_2 is  0 bit;
+-	 otherwise; 
+-	otherwise,  is given by clause 5.2.2 with .
+The sequence group , where  is given by
+-	 if  is configured by the higher-layer parameter nPUSCH-Identity in the DMRS-UplinkConfig IE, and 
+-	the higher-layer parameter dmrs-UplinkTransformPrecoding is not configured or the higher-layer parameter dmrs-UplinkTransformPrecoding is configured and π/2-BPSK modulation is not used for PUSCH, and 
+-	the PUSCH is neither scheduled by RAR UL grant nor scheduled by DCI format 0_0 with CRC scrambled by TC-RNTI according to clause 8.3 in [5, TS 38.213]; 
+-	 if the higher-layer parameter dmrs-UplinkTransformPrecoding is configured, π/2-BPSK modulation is used for PUSCH, the PUSCH transmission is not a msg3 transmission, and the transmission is not scheduled using DCI format 0_0 in a common search space;
+-	 otherwise
+where  and the sequence number  are given by:
+-	if neither group, nor sequence hopping is enabled
+-	if group hopping is enabled and sequence hopping is disabled 
+	where the pseudo-random sequence  is defined by clause 5.2.1 and shall be initialized with  at the beginning of each radio frame
+-	if sequence hopping is enabled and group hopping is disabled
+	where the pseudo-random sequence  is defined by clause 5.2.1 and shall be initialized with  at the beginning of each radio frame. 
+The hopping mode is controlled by higher-layer parameters:
+-	for PUSCH transmission scheduled by RAR UL grant or by DCI format 0_0 with CRC scrambled by TC-RNTI, sequence hopping is disabled and group hopping is enabled or disabled by the higher-layer parameter groupHoppingEnabledTransformPrecoding;
+-	for all other transmissions, sequence hopping and group hopping are enabled or disabled by the respective higher-layer parameters sequenceHopping and sequenceGroupHopping if these parameters are provided, otherwise, the same hopping mode as for Msg3 shall be used.
+The UE is not expected to handle the case of combined sequence hopping and group hopping.
+The quantity  above is the OFDM symbol number in the slot except for the case of double-symbol DMRS in which case  is the OFDM symbol number in the slot of the first symbol of the double-symbol DMRS.
+6.4.1.1.2	(void)
+6.4.1.1.3	Precoding and mapping to physical resources 
+The sequence  shall be mapped to the intermediate quantity  according to 
+-	if transform precoding is not enabled, 
+-	if transform precoding is enabled
+where , , and  are given by Tables 6.4.1.1.3-1 and 6.4.1.1.3-2 and the configuration type is given by the higher-layer parameter DMRS-UplinkConfig, and both  and  correspond to . The intermediate quantity  if Δ corresponds to any other antenna ports than. 
+The intermediate quantity  shall be precoded, multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [6, TS 38.214], and mapped to physical resources according to
+where 
+-	the precoding matrix  is given by clause 6.3.1.5, 
+-	the set of antenna ports  is given by clause 6.3.1.5, and
+-	the set of antenna ports  is given by [6, TS 38.214];
+and the following conditions are fulfilled:
+-	the resource elements  are within the common resource blocks allocated for PUSCH transmission.
+The reference point for  is 
+-	subcarrier 0 in common resource block 0 if transform precoding is not enabled, and
+-	subcarrier 0 of the lowest-numbered resource block of the scheduled PUSCH allocation if transform precoding is enabled.
+The reference point for  and the position  of the first DM-RS symbol depends on the mapping type:
+-	for PUSCH mapping type A: 
+-	 is defined relative to the start of the slot if frequency hopping is disabled and relative to the start of each hop in case frequency hopping is enabled
+-	 is given by the higher-layer parameter dmrs-TypeA-Position
+-	for PUSCH mapping type B: 
+-	 is defined relative to the start of the scheduled PUSCH resources if frequency hopping is disabled and relative to the start of each hop in case frequency hopping is enabled
+-	 
+The position(s) of the DM-RS symbols is given by  and duration  where
+-	 is the duration between the first OFDM symbol of the slot and the last OFDM symbol of the scheduled PUSCH resources in the slot for PUSCH mapping type A according to Tables 6.4.1.1.3-3 and 6.4.1.1.3-4 if intra-slot frequency hopping is not used, or 
+-	 is the duration of scheduled PUSCH resources for PUSCH mapping type B according to Tables 6.4.1.1.3-3 and 6.4.1.1.3-4 if intra-slot frequency hopping is not used, or
+-	 is the duration per hop according to Table 6.4.1.1.3-6 if intra-slot frequency hopping is used. 
+-	if the higher-layer parameter maxLength in DMRS-UplinkConfig is not configured, or for a msgA transmission msgA-MaxLength in msgA-DMRS-Config is not configured, the tables shall be used according to single-symbol DM-RS
+-	if the higher-layer parameter maxLength in DMRS-UplinkConfig is equal to 'len2', the associated DCI or configured grant configuration determines whether single-symbol or double-symbol DM-RS shall be used
+-	if the higher-layer parameter msgA-MaxLength in msgA-DMRS-Config is equal to 'len2', double-symbol DM-RS shall be used
+-	if the higher-layer parameter dmrs-AdditionalPosition is not set to 'pos0' and intra-slot frequency hopping is enabled according to clause 7.3.1.1.2 in [4, TS 38.212] and by higher layer, Tables 6.4.1.1.3-6 shall be used assuming dmrs-AdditionalPosition is equal to 'pos1' for each hop.
+For PUSCH mapping type A, 
+-	the case dmrs-AdditionalPosition is equal to 'pos3' is only supported when dmrs-TypeA-Position is equal to 'pos2';
+-	 symbols in Table 6.4.1.1.3-4 is only applicable when dmrs-TypeA-Position is equal to 'pos2'.
+For msgA transmitted using PUSCH mapping type A, 
+-	the case msgA-DMRS-AdditionalPosition is equal to 'pos3' is only supported when dmrs-TypeA-Position is equal to 'pos2';
+-	'dmrs-AdditionalPosition' in Tables 6.4.1.1.3-3 to 6.4.1.1.3-6 shall be replaced by msgA-DMRS-AdditionalPosition;
+-	only PUSCH DM-RS configuration type 1 is supported.
+For msgA transmitted using PUSCH mapping type B, 
+-	'dmrs-AdditionalPosition' in Tables 6.4.1.1.3-3 to 6.4.1.1.3-6 shall be replaced by msgA-DMRS-AdditionalPosition;
+-	only PUSCH DM-RS configuration type 1 is supported.
+The time-domain index  and the supported antenna ports  are given by Table 6.4.1.1.3-5. 
+Table 6.4.1.1.3-1: Parameters for PUSCH DM-RS configuration type 1.
+Table 6.4.1.1.3-2: Parameters for PUSCH DM-RS configuration type 2.
+Table 6.4.1.1.3-3: PUSCH DM-RS positions  within a slot for single-symbol DM-RS and intra-slot frequency hopping disabled.
+Table 6.4.1.1.3-4: PUSCH DM-RS positions  within a slot for double-symbol DM-RS and intra-slot frequency hopping disabled.
+Table 6.4.1.1.3-5: PUSCH DM-RS time index .
+Table 6.4.1.1.3-6: PUSCH DM-RS positions  within a slot for single-symbol DM-RS and intra-slot frequency hopping enabled. 
+6.4.1.2	Phase-tracking reference signals for PUSCH
+6.4.1.2.1	Sequence generation
+6.4.1.2.1.1	Sequence generation if transform precoding is not enabled
+If transform precoding is not enabled, the precoded phase-tracking reference signal for subcarrier  on layer  is given by
+where
+-	antenna ports  or  associated with PT-RS transmission are given by clause 6.2.3 of [6, TS 38.214]
+-	 is given by clause 6.4.1.1.1.1 
+-	at the position of the first DM-RS symbol in absence of PUSCH intra-slot frequency hopping
+-	at the position of the first DM-RS symbol in hop  in presence of PUSCH intra-slot frequency hopping 
+6.4.1.2.1.2	Sequence generation if transform precoding is enabled
+If transform precoding is enabled, the phase-tracking reference signal  to be mapped in position  before transform precoding, where  depends on the number of PT-RS groups , the number of samples per PT-RS group , and  according to Table 6.4.1.2.2.2-1, shall be generated according to
+.
+where the pseudo-random sequence  is defined in clause 5.2.1 and  is given by Table 6.4.1.2.1.2-1. The pseudo-random sequence generator shall be initialized with
+where  is the lowest OFDM symbol number in the PUSCH allocation in slot  that contains PT-RS according to clause 6.4.1.2.2.2 and  is given by the higher-layer parameter nPUSCH-Identity. 
+Table 6.4.1.2.1.2-1: The orthogonal sequence .
+6.4.1.2.2	Mapping to physical resources
+6.4.1.2.2.1	Precoding and mapping to physical resources if transform precoding is not enabled
+The UE shall transmit phase-tracking reference signals only in the resource blocks used for the PUSCH, and only if the procedure in [6, TS 38.214] indicates that phase-tracking reference signals are being used.
+The PUSCH PT-RS shall be mapped to resource elements according to
+when all the following conditions are fulfilled
+-	 is within the OFDM symbols allocated for the PUSCH transmission
+-	resource element  is not used for DM-RS
+-	 and  correspond to 
+The quantities  and  are given by Tables 6.4.1.1.3-1 and 6.4.1.1.3-2, the configuration type is given by the higher-layer parameter dmrs-Type in the DMRS-UplinkConfig IE, and the precoding matrix  is given by clause 6.3.1.5. The quantity  is an amplitude scaling factor to conform with the transmit power specified in clause 6.2.2 of [6, TS 38.214].
+The set of time indices  defined relative to the start of the PUSCH allocation is defined by
+1. set and 
+2. if any symbol in the interval  overlaps with a symbol used for DM-RS according to clause 6.4.1.1.3
+-	set 
+-	set  to the symbol index of the DM-RS symbol in case of a single-symbol DM-RS or to the symbol index of the second DM-RS symbol in case of a double-symbol DM-RS
+-	repeat from step 2 as long as  is inside the PUSCH allocation
+3. add  to the set of time indices for PT-RS
+4. increment  by one
+5. repeat from step 2 above as long as  is inside the PUSCH allocation
+where  is defined in Table 6.2.3.1-1 of [6, TS 38.214].
+For the purpose of PT-RS mapping, the resource blocks allocated for PUSCH transmission are numbered from 0 to  from the lowest scheduled resource block to the highest. The corresponding subcarriers in this set of resource blocks are numbered in increasing order starting from the lowest frequency from 0 to . The subcarriers to which the PT-RS shall be mapped are given by
+where
+-	
+-	 is given by Table 6.4.1.2.2.1-1 for the DM-RS port associated with the PT-RS port according to clause 6.2.3 in [6, TS 38.214]. If the higher-layer parameter resourceElementOffset in PTRS-UplinkConfig is not configured, the column corresponding to 'offset00' shall be used.
+-	is the RNTI associated with the DCI scheduling the transmission using C-RNTI, CS-RNTI, MCS-C-RNTI, SP-CSI-RNTI, or is the CS-RNTI in case of configured grant
+-	 is the number of resource blocks scheduled
+-	 is given by [6, TS 38.214].
+Table 6.4.1.2.2.1-1: The parameter  .
+6.4.1.2.2.2	Mapping to physical resources if transform precoding is enabled
+The UE shall transmit phase-tracking reference signals only in the resource blocks and OFDM symbols used for the PUSCH, and only if the procedure in [6, TS 38.214] indicates that phase-tracking reference signals are being used.
+The sequence  shall be multiplied by  and mapped to  complex valued symbols in  where
+-	 are the complex-valued symbols in OFDM symbol  before transform precoding according to clause 6.3.1.4
+-	 depends on the number of PT-RS groups , the number of samples per PT-RS group , and  according to Table 6.4.1.2.2.2-1
+-	 is the ratio between amplitude of one of the outermost constellation points for the modulation scheme used for PUSCH and one of the outermost constellation points for π/2-BPSK as defined in clause 6.2.3 of [TS 38.214]
+The set of time indices  for which PT-RS shall be transmitted is defined relative to the start of the PUSCH allocation and is defined by
+1. set  and 
+2. if any symbol in the interval  overlaps with a symbol used for DM-RS according to clause 6.4.1.1.3
+-	set 
+-	set  to the symbol index of the DM-RS symbol in case of a single-symbol DM-RS and to the symbol index of the second DM-RS symbol in case of a double-symbol DM-RS
+-	repeat from step 2 as long as  is inside the PUSCH allocation
+3. add  to the set of time indices for PT-RS
+4. increment  by one
+5. repeat from step 2 above as long as  is inside the PUSCH allocation
+where  is given by the higher-layer parameter timeDensityTransformPrecoding in the PTRS-UplinkConfig IE.
+Table 6.4.1.2.2.2-1: PT-RS symbol mapping.
+6.4.1.3	Demodulation reference signal for PUCCH
+6.4.1.3.1	Demodulation reference signal for PUCCH format 1
+6.4.1.3.1.1	Sequence generation
+The reference signal sequence is defined by
+where  is given by Table 6.4.1.3.1.1-1,  by clause 9.2.1 of [5, TS 38.213], and the sequence  is given by clause 5.2.2. 
+Intra-slot frequency hopping shall be assumed when the higher-layer parameter intraSlotFrequencyHopping is enabled, regardless of whether the frequency-hop distance is zero or not, otherwise no intra-slot frequency hopping shall be assumed.
+The orthogonal sequence  is given by Table 6.3.2.4.1.-2 with the same index  as used in clause 6.3.2.4.1.
+Table 6.4.1.3.1.1-1: Number of DM-RS symbols and the corresponding .
+6.4.1.3.1.2	Mapping to physical resources
+The sequence shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, 38.213] and mapped in sequence starting with  to resource elements  in a slot on antenna port  according to
+where  corresponds to the first OFDM symbol of the PUCCH transmission and  shall be within the resource blocks assigned for PUCCH transmission according to [5, TS 38.213]. 
+For interlaced transmission, the mapping operation shall be repeated for each resource block in the interlace and in the active bandwidth part over the assigned physical resource blocks according to clause 9.2.1 of [5, TS 38.213], with the resource-block dependent sequence generated according to clause 6.3.2.2.
+6.4.1.3.2	Demodulation reference signal for PUCCH format 2
+6.4.1.3.2.1	Sequence generation
+The reference-signal sequence  shall be generated according to
+where the pseudo-random sequence  is defined in clause 5.2. The pseudo-random sequence generator shall be initialized with
+where  is the OFDM symbol number within the slot,  is the slot number within the radio frame, and  and  are defind in clause 6.3.2.5.2A.
+The quantity  is given by the higher-layer parameter scramblingID0 in the DMRS-UplinkConfig IE if provided and by  otherwise. If a UE is configured with both dmrs-UplinkForPUSCH-MappingTypeA and dmrs-UplinkForPUSCH-MappingTypeB, scramblingID0 is obtained from dmrs-UplinkForPUSCH-MappingTypeB.
+6.4.1.3.2.2	Mapping to physical resources
+The sequence shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, 38.213] and mapped in sequence starting with  to resource elements  in a slot on antenna port  according to
+where  is defined relative to subcarrier 0 of common resource block 0 and  shall be within the resource blocks assigned for PUCCH transmission according to clause 9.2.1 of [5, TS 38.213]. 
+6.4.1.3.3	Demodulation reference signal for PUCCH formats 3 and 4
+6.4.1.3.3.1	Sequence generation
+The reference-signal sequence  shall be generated according to
+where  is given by clause 6.3.2.6.3 and  depends on the configuration:
+-	if the higher-layer parameter dmrs-UplinkTransformPrecodingPUCCH is configured, and -BPSK is used for PUCCH,  is given by clause 5.2.3 with  and  given by clause 6.4.1.3.2.1. The sequence group  and the sequence number  depend on the sequence hopping in clause 6.3.2.2.1.
+-	otherwise, for PUCCH format 3, PUCCH format 4 with =1, and PUCCH format 4 with >1 when -BPSK is not used for PUCCH,  is given by clause 6.3.2.2 and the cyclic shift  varies with the symbol number and slot number according to clause 6.3.2.2.2 with 
+-	 for PUCCH format 3 without interlaced mapping;
+-	 obtained from Table 6.4.1.3.3.1-1 with the orthogonal sequence index  given by clause 6.3.2.6.3 for PUCCH format 3 with interlaced mapping and PUCCH format 4. 
+Table 6.4.1.3.3.1-1: Cyclic shift index  for PUCCH format 3 with interlaced mapping and PUCCH format 4.
+6.4.1.3.3.2	Mapping to physical resources
+The sequence shall be multiplied with the amplitude scaling factor , , in order to conform to the transmit power specified in [5, 38.213] and mapped in sequence starting with  to resource elements  on antenna port  according to
+where 
+-	 is defined relative to subcarrier 0 of the lowest-numbered resource block assigned for PUCCH transmission, 
+-	 is given by Table 6.4.1.3.3.2-1 for the case with and without intra-slot frequency hopping and with and without additional DM-RS as described in clause 9.2.1 of [TS 38.213], where  corresponds to the first OFDM symbol of the PUCCH transmission. 
+The resource elements  shall be within the resource blocks assigned for PUCCH transmission according to clause 9.2.1 of [5, TS 38.213]. 
+Table 6.4.1.3.3.2-1: DM-RS positions for PUCCH format 3 and 4.
+6.4.1.4	Sounding reference signal
+6.4.1.4.1	SRS resource
+An SRS resource is configured by the SRS-Resource IE or the SRS-PosResource IE and consists of
+-	 antenna ports , where the number of antenna ports is given by the higher layer parameter nrofSRS-Ports if configured, otherwise , and  when the SRS resource is in a SRS resource set with higher-layer parameter usage in SRS-ResourceSet not set to 'nonCodebook', or determined according to [6, TS 38.214] when the SRS resource is in a SRS resource set with higher-layer parameter usage in SRS-ResourceSet set to 'nonCodebook'
+-	 consecutive OFDM symbols given by the field nrofSymbols contained in the higher layer parameter resourceMapping
+-	, the starting position in the time domain given by  where the offset  counts symbols backwards from the end of the slot and is given by the field startPosition contained in the higher layer parameter resourceMapping and 
+-	, the frequency-domain starting position of the sounding reference signal
+6.4.1.4.2	Sequence generation
+The sounding reference signal sequence for an SRS resource shall be generated according to
+where  is given by clause 6.4.1.4.3,  is given by clause 5.2.2 with  and the transmission comb number  is contained in the higher-layer parameter transmissionComb. The cyclic shift  for antenna port  is given as 
+,
+where  is contained in the higher layer parameter transmissionComb. The maximum number of cyclic shifts  are given by Table 6.4.1.4.2-1.
+The sequence group  and the sequence number  in clause 5.2.2 depends on the higher-layer parameter groupOrSequenceHopping in the SRS-Resource IE or the SRS-PosResource IE. The SRS sequence identity  is given by the higher layer parameter sequenceId in the SRS-Resource IE. The quantity  is the OFDM symbol number within the SRS resource.
+-	if groupOrSequenceHopping equals 'neither', neither group, nor sequence hopping shall be used and 
+-	if groupOrSequenceHopping equals 'groupHopping', group hopping but not sequence hopping shall be used and 
+	where the pseudo-random sequence  is defined by clause 5.2.1 and shall be initialized with  at the beginning of each radio frame.
+-	if groupOrSequenceHopping equals 'sequenceHopping', sequence hopping but not group hopping shall be used and
+	where the pseudo-random sequence  is defined by clause 5.2.1 and shall be initialized with  at the beginning of each radio frame. 
+Table 6.4.1.4.2-1: Maximum number of cyclic shifts  as a function of .
+6.4.1.4.3	Mapping to physical resources
+When SRS is transmitted on a given SRS resource, the sequence  for each OFDM symbol  and for each of the antenna ports of the SRS resource shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, 38.213] and mapped in sequence starting with  to resource elements  in a slot for each of the antenna ports  according to
+The length of the sounding reference signal sequence is given by
+where  is given by a selected row of Table 6.4.1.4.3-1 with  where  is given by the field b-SRS contained in the higher-layer parameter freqHopping if configured, otherwise . The row of the table is selected according to the index  given by the field c-SRS contained in the higher-layer parameter freqHopping. The quantity   is given by the higher-layer parameter FreqScalingFactor if configured, otherwise . When FreqScalingFactor is configured, the UE expects the length of the SRS sequence to be a multiple of 6.
+The frequency-domain starting position  is defined by
+where 
+and
+-	 is given by the higher-layer parameter StartRBIndex if configured, otherwise ; 
+-	 is given by Table 6.4.1.4.3-3 with
+	if the higher-layer parameter EnableStartRBHopping is configured, otherwise .
+If  the reference point for  is subcarrier 0 in common resource block 0, otherwise the reference point is the lowest subcarrier of the BWP. 
+If the SRS is configured by the IE SRS-PosResource, the quantity  is given by Table 6.4.1.4.3-2, otherwise .
+The frequency domain shift value  adjusts the SRS allocation with respect to the reference point grid and is contained in the higher-layer parameter freqDomainShift in the SRS-Resource IE or the SRS-PosResource IE. The transmission comb offset  is contained in the higher-layer parameter transmissionComb in the SRS-Resource IE or the SRS-PosResource IE and  is a frequency position index.
+Frequency hopping of the sounding reference signal is configured by the parameter , given by the field b-hop contained in the higher-layer parameter freqHopping if configured, otherwise .
+If , frequency hopping is disabled and the frequency position index  remains constant (unless re-configured) and is defined by
+for all  OFDM symbols of the SRS resource. The quantity  is given by the higher-layer parameter freqDomainPosition if configured, otherwise , and the values of  and  for  are given by the selected row of Table 6.4.1.4.3-1 corresponding to the configured value of .
+If , frequency hopping is enabled and the frequency position indices  are defined by
+where  is given by Table 6.4.1.4.3-1,
+and where  regardless of the value of . The quantity  counts the number of SRS transmissions. For the case of an SRS resource configured as aperiodic by the higher-layer parameter resourceType, it is given by  within the slot in which the  symbol SRS resource is transmitted. The quantity  is the repetition factor given by the field repetitionFactor if configured, otherwise .
+For the case of an SRS resource configured as periodic or semi-persistent by the higher-layer parameter resourceType, the SRS counter is given by
+for slots that satisfy . The periodicity  in slots and slot offset  are given in clause 6.4.1.4.4.
+Table 6.4.1.4.3-1: SRS bandwidth configuration.
+Table 6.4.1.4.3-2: The offset  for SRS as a function of  and .
+Table 6.4.1.4.3-3: The quantity  as a function of .
+6.4.1.4.4	Sounding reference signal slot configuration
+For an SRS resource configured as periodic or semi-persistent by the higher-layer parameter resourceType, a periodicity  (in slots) and slot offset  are configured according to the higher-layer parameter periodicityAndOffset-p or periodicityAndOffset-sp in the SRS-Resource IE, or periodicityAndOffset-p or periodicityAndOffset-sp in the SRS-PosResource IE. Candidate slots in which the configured SRS resource may be used for SRS transmission are the slots satisfying
+SRS is transmitted as described in clause 11.1 of [5, TS 38.213].
+7	Downlink
+7.1	Overview
+7.1.1	Overview of physical channels
+A downlink physical channel corresponds to a set of resource elements carrying information originating from higher layers. The following downlink physical channels are defined:
+-	Physical Downlink Shared Channel, PDSCH
+-	Physical Broadcast Channel, PBCH
+-	Physical Downlink Control Channel, PDCCH.
+7.1.2	Overview of physical signals
+A downlink physical signal corresponds to a set of resource elements used by the physical layer but does not carry information originating from higher layers. 
+The following downlink physical signals are defined:
+-	Demodulation reference signals, DM-RS
+-	Phase-tracking reference signals, PT-RS
+-	Positioning reference signal, PRS
+-	Channel-state information reference signal, CSI-RS
+-	Primary synchronization signal, PSS
+-	Secondary synchronization signal, SSS
+7.2	Physical resources
+The frame structure and physical resources the UE shall assume when receiving downlink transmissions are defined in Clause 4.
+The following antenna ports are defined for the downlink:
+-	Antenna ports starting with 1000 for PDSCH
+-	Antenna ports starting with 2000 for PDCCH
+-	Antenna ports starting with 3000 for channel-state information reference signals
+-	Antenna ports starting with 4000 for SS/PBCH block transmission
+-	Antenna ports starting with 5000 for positioning reference signals 
+The UE shall not assume that two antenna ports are quasi co-located with respect to any QCL type unless specified otherwise.
+For DM-RS associated with a PDSCH, the channel over which a PDSCH symbol on one antenna port is conveyed can be inferred from the channel over which a DM-RS symbol on the same antenna port is conveyed only if the two symbols are within the same resource as the scheduled PDSCH, in the same slot, and in the same PRG as described in clause 5.1.2.3 of [6, TS 38.214]. 
+For DM-RS associated with a PDCCH, the channel over which a PDCCH symbol on one antenna port is conveyed can be inferred from the channel over which a DM-RS symbol on the same antenna port is conveyed only if the two symbols are within resources for which the UE may assume the same precoding being used as described in clause 7.3.2.2.
+For DM-RS associated with a PBCH, the channel over which a PBCH symbol on one antenna port is conveyed can be inferred from the channel over which a DM-RS symbol on the same antenna port is conveyed only if the two symbols are within a SS/PBCH block transmitted within the same slot, and with the same block index according to clause 7.4.3.1.
+7.3	Physical channels
+7.3.1	Physical downlink shared channel
+7.3.1.1	Scrambling
+Up to two codewords  can be transmitted. In case of single-codeword transmission, .
+For each codeword , the UE shall assume the block of bits , where  is the number of bits in codeword  transmitted on the physical channel, are scrambled prior to modulation, resulting in a block of scrambled bits according to
+where the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with
+where
+-	 equals the higher-layer parameter dataScramblingIdentityPDSCH if configured and the RNTI equals the C-RNTI, MCS-C-RNTI, or CS-RNTI, and the transmission is not scheduled using DCI format 1_0 in a common search space; 
+-	 equals the higher-layer parameter dataScramblingIdentityPDSCH in pdsch-ConfigMulticast if configured in a common MBS frequency resource for multicast and the RNTI equals the G-RNTI or G-CS-RNTI;
+-	 equals the higher-layer parameter dataScramblingIdentityPDSCH in pdsch-ConfigMCCH or pdsch-ConfigMTCH if configured in a common MBS frequency resource for broadcast and the RNTI equals the MCCH-RNTI or G-RNTI, respectively;
+-	 equals
+-	the higher-layer parameter dataScramblingIdentityPDSCH if the codeword is scheduled using a CORESET with CORESETPoolIndex equal to 0;
+-	the higher-layer parameter dataScramblingIdentityPDSCH2 if the codeword is scheduled using a CORESET with CORESETPoolIndex equal to 1;
+	if the higher-layer parameters dataScramblingIdentityPDSCH and dataScramblingIdentityPDSCH2 are configured together with the higher-layer parameter CORESETPoolIndex containing two different values, and the RNTI equals the C-RNTI, MCS-C-RNTI, or CS-RNTI, and the transmission is not scheduled using DCI format 1_0 in a common search space;
+-	 otherwise
+and where  corresponds to the RNTI associated with the PDSCH transmission as described in clause 5.1 of [6, TS 38.214].
+7.3.1.2	Modulation
+For each codeword , the UE shall assume the block of scrambled bits  are modulated as described in clause 5.1 using one of the modulation schemes in Table 7.3.1.2-1, resulting in a block of complex-valued modulation symbols . 
+Table 7.3.1.2-1: Supported modulation schemes.
+7.3.1.3	Layer mapping
+The UE shall assume that complex-valued modulation symbols for each of the codewords to be transmitted are mapped onto one or several layers according to Table 7.3.1.3-1. Complex-valued modulation symbols  for codeword  shall be mapped onto the layers ,  where  is the number of layers and  is the number of modulation symbols per layer.
+Table 7.3.1.3-1: Codeword-to-layer mapping for spatial multiplexing.
+7.3.1.4	Antenna port mapping
+The block of vectors ,  shall be mapped to antenna ports according to
+where , . The set of antenna ports  shall be determined according to the procedure in [4, TS 38.212]. 
+7.3.1.5	Mapping to virtual resource blocks
+The UE shall, for each of the antenna ports used for transmission of the physical channel, assume the block of complex-valued symbols  conform to the downlink power allocation specified in [6, TS 38.214] and are mapped in sequence starting with  to resource elements  in the virtual resource blocks assigned for transmission which meet all of the following criteria: 
+-	they are in the virtual resource blocks assigned for transmission; 
+-	the corresponding physical resource blocks are declared as available for PDSCH according to clause 5.1.4 of [6, TS 38.214];
+-	the corresponding resource elements in the corresponding physical resource blocks are
+-	not used for transmission of the associated DM-RS or DM-RS intended for other co-scheduled UEs as described in clause 7.4.1.1.2;
+-	not used for non-zero-power CSI-RS, which is according to clause 7.4.1.5 and not configured by TRS-ResourceSet IE, if the corresponding physical resource blocks are for a PDSCH scheduled by a PDCCH with the CRC scrambled by C-RNTI, MCS-C-RNTI, CS-RNTI, G-RNTI for multicast, G-CS-RNTI, or a PDSCH with SPS, except if the non-zero-power CSI-RS is a CSI-RS configured by the higher-layer parameter CSI-RS-Resource-Mobility in the MeasObjectNR IE or except if the non-zero-power CSI-RS is an aperiodic non-zero-power CSI-RS resource;
+-	not used for PT-RS according to clause 7.4.1.2;
+-	not declared as 'not available for PDSCH according to clause 5.1.4 of [6, TS 38.214].
+The mapping to resource elements  allocated for PDSCH according to [6, TS 38.214] and not reserved for other purposes shall be in increasing order of first the index  over the assigned virtual resource blocks, where  is the first subcarrier in the lowest-numbered virtual resource block assigned for transmission, and then the index . 
+7.3.1.6	Mapping from virtual to physical resource blocks
+The UE shall assume the virtual resource blocks are mapped to physical resource blocks according to the indicated mapping scheme, non-interleaved or interleaved mapping. If no mapping scheme is indicated, the UE shall assume non-interleaved mapping.
+For non-interleaved VRB-to-PRB mapping, virtual resource block  is mapped to physical resource block , except for PDSCH transmissions scheduled with DCI format 1_0 in a common search space in which case virtual resource block  is mapped to physical resource block  where  is the lowest-numbered physical resource block in the control resource set where the corresponding DCI was received. When two PDCCH candidates from two linked common search space sets as indicated by the higher-layer parameter searchSpaceLinking are detected, and the two linked common search space sets are associated with different control resource sets, the control resource set with the lowest number among the two linked control resource sets is used to determine .
+For interleaved VRB-to-PRB mapping, the mapping process is defined by:
+-	Resource block bundles are defined as
+-	for PDSCH transmissions scheduled with DCI format 1_0 with the CRC scrambled by SI-RNTI in Type0-PDCCH common search space in CORESET 0, the set of  resource blocks in CORESET 0 are divided into  resource-block bundles in increasing order of the resource-block number and bundle number where  is the bundle size and  is the size of CORESET 0.
+-	resource block bundle  consists of  resource blocks if  and  resource blocks otherwise,
+-	all other resource block bundles consists of  resource blocks.
+-	for PDSCH transmissions scheduled with DCI format 1_0 in any common search space in bandwidth part  with starting position , other than Type0-PDCCH common search space in CORESET 0, the set of  virtual resource blocks , where  is the size of CORESET 0 if CORESET 0 is configured for the cell and the size of initial downlink bandwidth part if CORESET 0 is not configured for the cell, are divided into  virtual resource-block bundles in increasing order of the virtual resource-block number and virtual bundle number and the set of  physical resource blocks  are divided into  physical resource-block bundles in increasing order of the physical resource-block number and physical bundle number, where ,  is the bundle size, and  is the lowest-numbered physical resource block in the control resource set where the corresponding DCI was received. When two PDCCH candidates from two linked search space sets as indicated by the higher-layer parameter searchSpaceLinking are detected, and the two linked search space sets are associated with different control resource sets, the control resource set with the lowest number among the two linked control resource sets is used to determine .
+-	resource block bundle 0 consists of  resource blocks,
+-	resource block bundle  consists of  resource blocks if  and  resource blocks otherwise,
+-	all other resource block bundles consists of  resource blocks.
+-	for all other PDSCH transmissions, the set of  resource blocks in bandwidth part  with starting position  are divided into  resource-block bundles in increasing order of the resource-block number and bundle number where  is the bundle size for bandwidth part  provided by the higher-layer parameter vrb-ToPRB-Interleaver for DCI formats 1_0 and 1_1 in a UE-specific search space, or vrb-ToPRB-InterleaverDCI-1-2 for DCI format 1_2, and
+-	resource block bundle 0 consists of  resource blocks,
+-	resource block bundle  consists of  resource blocks if  and  resource blocks otherwise,
+-	all other resource block bundles consists of  resource blocks.
+-	Virtual resource blocks in the interval  are mapped to physical resource blocks according to
+-	virtual resource block bundle  is mapped to physical resource block bundle 
+-	virtual resource block bundle  is mapped to physical resource block bundle  where 
+-	The UE is not expected to be configured with  simultaneously with a PRG size of 4 as defined in [6, TS 38.214]
+The UE may assume that the same precoding in the frequency domain is used within a PRB bundle and the bundle size is determined by clause 5.1.2.3 in [6, TS 38.214]. The UE shall not make any assumption that the same precoding is used for different bundles of common resource blocks. 
+For PDSCH transmissions scheduled by DCI format 4_1 or 4_2, and using G-RNTI or G-CS-RNTI, the quantities  and   in this clause are replaced by  and , respectively, and  is the bundle size for the common MBS frequency resource provided by the higher-layer parameter vrb-ToPRB-Interleaver in pdsch-ConfigMulticast.
+For PDSCH transmissions scheduled by DCI format 4_0, and using G-RNTI or MCCH-RNTI, the quantities  and   in this clause are replaced by  and , respectively, and .
+7.3.2	Physical downlink control channel (PDCCH)
+7.3.2.1	Control-channel element (CCE)
+A physical downlink control channel consists of one or more control-channel elements (CCEs) as indicated in Table 7.3.2.1-1.
+Table 7.3.2.1-1: Supported PDCCH aggregation levels.
+7.3.2.2	Control-resource set (CORESET)
+A control-resource set consists of  resource blocks in the frequency domain and  symbols in the time domain.
+A control-channel element consists of 6 resource-element groups (REGs) where a resource-element group equals one resource block during one OFDM symbol. Resource-element groups within a control-resource set are numbered in increasing order in a time-first manner, starting with 0 for the first OFDM symbol and the lowest-numbered resource block in the control resource set.
+A UE can be configured with multiple control-resource sets. Each control-resource set is associated with one CCE-to-REG mapping only.
+The CCE-to-REG mapping for a control-resource set can be interleaved or non-interleaved and is described by REG bundles:
+-	REG bundle  is defined as REGs  where  is the REG bundle size, , and  is the number of REGs in the CORESET
+-	CCE  consists of REG bundles  where  is an interleaver
+For non-interleaved CCE-to-REG mapping,  and .
+For interleaved CCE-to-REG mapping, for  and  for . The interleaver is defined by 
+where .
+The UE is not expected to handle configurations resulting in the quantity  not being an integer.
+For a CORESET configured by the ControlResourceSet IE: 
+-	 is given by the higher-layer parameter frequencyDomainResources;
+-	 is given by the higher-layer parameter duration, where  is supported only if the higher-layer parameter dmrs-TypeA-Position equals 'pos3';
+-	interleaved or non-interleaved mapping is given by the higher-layer parameter cce-REG-MappingType;
+-	 equals 6 for non-interleaved mapping and is given by the higher-layer parameter reg-BundleSize for interleaved mapping;
+-	 is given by the higher-layer parameter interleaverSize;
+-	 is given by the higher-layer parameter shiftIndex if provided, otherwise ;
+-	for both interleaved and non-interleaved mapping, the UE may assume 
+-	the same precoding being used within a REG bundle if the higher-layer parameter precoderGranularity equals sameAsREG-bundle; 
+-	the same precoding being used across the all resource-element groups within the set of contiguous resource blocks in the CORESET, and that no resource elements in the CORESET overlap with an SSB or LTE cell-specific reference signals as indicated by the higher-layer parameter lte-CRS-ToMatchAround, lte-CRS-PatternList1, or lte-CRS-PatternList2, if the higher-layer parameter precoderGranularity equals allContiguousRBs.
+For CORESET 0 configured by the ControlResourceSetZero IE:
+-	 and  are defined by clause 13 of [5, TS 38.213];
+-	the UE may assume interleaved mapping 
+-	;
+-	;
+-	
+-	the UE may assume normal cyclic prefix when CORESET 0 is configured by MIB or SIB1;
+-	the UE may assume the same precoding being used within a REG bundle.
+7.3.2.3	Scrambling
+The UE shall assume the block of bits , where  is the number of bits transmitted on the physical channel, is scrambled prior to modulation, resulting in a block of scrambled bits  according to
+where the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with
+where
+-	for a UE-specific search space as defined in clause 10 of [5, TS 38.213],  equals the higher-layer parameter pdcch-DMRS-ScramblingID if configured;
+-	for a PDCCH with the CRC scrambled by G-RNTI, G-CS-RNTI, or MCCH-RNTI in a common search space as defined in clause 10 of [5, TS 38.213],  equals the higher-layer parameter pdcch-DMRS-ScramblingID if configured in a common MBS frequency resource;
+-	 otherwise
+and where 
+-	 is given by the C-RNTI for a PDCCH in a UE-specific search space if the higher-layer parameter pdcch-DMRS-ScramblingID is configured, and
+-	 otherwise.
+7.3.2.4	PDCCH modulation
+The UE shall assume the block of bits  to be QPSK modulated as described in clause 5.1.3, resulting in a block of complex-valued modulation symbols .
+7.3.2.5	Mapping to physical resources
+The UE shall assume the block of complex-valued symbols  to be scaled by a factor  and mapped to resource elements  used for the monitored PDCCH and not used for the associated PDCCH DMRS in increasing order of first , then . The antenna port .
+7.3.3	Physical broadcast channel
+7.3.3.1	Scrambling
+The UE shall assume the block of bits, where  is the number of bits transmitted on the physical broadcast channel, are scrambled prior to modulation, resulting in a block of scrambled bits  according to
+where the scrambling sequence  is given by clause 5.2. The scrambling sequence shall be initialized with  at the start of each SS/PBCH block where
+-	for ,  is the two least significant bits of the candidate SS/PBCH block index
+-	for ,  is the three least significant bits of the candidate SS/PBCH block index
+with  being the maximum number of candidate SS/PBCH blocks in a half frame, as described in [5, TS 38.213].
+7.3.3.2	Modulation
+The UE shall assume the block of bits  are QPSK modulated as described in clause 5.1.3, resulting in a block of complex-valued modulation symbols . 
+7.3.3.3	Mapping to physical resources
+Mapping to physical resources is described in clause 7.4.3.
+7.4	Physical signals
+7.4.1	Reference signals
+7.4.1.1	Demodulation reference signals for PDSCH
+7.4.1.1.1	Sequence generation
+The UE shall assume the sequence  is defined by
+.
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialized with
+where  is the OFDM symbol number within the slot,   is the slot number within a frame, and
+-	 are given by the higher-layer parameters scramblingID0 and scramblingID1, respectively, in the DMRS-DownlinkConfig IE if provided and the PDSCH is scheduled by PDCCH using DCI format 1_1 or 1_2 with the CRC scrambled by C-RNTI, MCS-C-RNTI, or CS-RNTI;
+-	 is given by the higher-layer parameter scramblingID0 in the DMRS-DownlinkConfig IE if provided and the PDSCH is scheduled by PDCCH using DCI format 1_0 with the CRC scrambled by C-RNTI, MCS-C-RNTI, or CS-RNTI;
+-	 are given by the higher-layer parameters scramblingID0 and scramblingID1, respectively, in the DMRS-DownlinkConfig IE in pdsch-ConfigMulticast if provided in a common MBS frequency resource for multicast and the PDSCH is scheduled by PDCCH using DCI format 4_2 with the CRC scrambled by G-RNTI or G-CS-RNTI;
+-	 is given by the higher-layer parameter scramblingID0 in the DMRS-DownlinkConfig IE in pdsch-ConfigMulticast if provided in a common MBS frequency resource for multicast and the PDSCH is scheduled by PDCCH using DCI format 4_1 with the CRC scrambled by G-RNTI or G-CS-RNTI;
+-	 is given by the higher-layer parameter scramblingID0 in pdsch-ConfigMCCH or pdsch-ConfigMTCH if provided in a common MBS frequency resource for broadcast and the PDSCH is scheduled by PDCCH with the CRC scrambled by MCCH-RNTI or G-RNTI, respectively;
+-	 otherwise; 
+-	 given by
+-	if the higher-layer parameter dmrs-Downlink in the DMRS-DownlinkConfig IE is provided
+	where λ is the CDM group defined in clause 7.4.1.1.2.
+-	otherwise by 
+The quantity  is given by the DM-RS sequence initialization field, if present, in the DCI associated with the PDSCH transmission if DCI format 1_1, 1_2, or 4_2 in [4, TS 38.212] is used, otherwise .
+7.4.1.1.2	Mapping to physical resources
+The UE shall assume the PDSCH DM-RS being mapped to physical resources according to configuration type 1 or configuration type 2 as given by the higher-layer parameter dmrs-Type.
+The UE shall assume the sequence  is scaled by a factor  to conform with the transmission power specified in [6, TS 38.214] and mapped to resource elements  according to
+where , , and  are given by Tables 7.4.1.1.2-1 and 7.4.1.1.2-2 and the following conditions are fulfilled:
+-	the resource elements are within the common resource blocks allocated for PDSCH transmission
+The reference point for  is 
+-	subcarrier 0 of the lowest-numbered resource block in CORESET 0 if the corresponding PDCCH is associated with CORESET 0 and Type0-PDCCH common search space and is addressed to SI-RNTI;
+-	otherwise, subcarrier 0 in common resource block 0 
+The reference point for  and the position  of the first DM-RS symbol depends on the mapping type:
+-	for PDSCH mapping type A: 
+-	 is defined relative to the start of the slot
+-	if the higher-layer parameter dmrs-TypeA-Position is equal to 'pos3' and  otherwise
+-	for PDSCH mapping type B: 
+-	 is defined relative to the start of the scheduled PDSCH resources
+-	 
+The position(s) of the DM-RS symbols is given by  and duration  where
+-	for PDSCH mapping type A,  is the duration between the first OFDM symbol of the slot and the last OFDM symbol of the scheduled PDSCH resources in the slot 
+-	for PDSCH mapping type B,  is the duration of the scheduled PDSCH resources
+and according to Tables 7.4.1.1.2-3 and 7.4.1.1.2-4. 
+For PDSCH mapping type A
+-	the case dmrs-AdditionalPosition equals to 'pos3' is only supported when dmrs-TypeA-Position is equal to 'pos2';
+-	 and  symbols in Tables 7.4.1.1.2-3 and 7.4.1.1.2-4 respectively is only applicable when dmrs-TypeA-Position is equal to 'pos2';
+-	single-symbol DM-RS,  except if all of the following conditions are fulfilled in which case :
+-	the higher-layer parameter lte-CRS-ToMatchAround, lte-CRS-PatternList1, or lte-CRS-PatternList2 is configured; and
+-	the higher-layer parameter dmrs-AdditionalPosition is equal to 'pos1' and ; and
+-	the UE has indicated it is capable of additionalDMRS-DL-Alt 
+For PDSCH mapping type B
+-	if the PDSCH duration   OFDM symbols for normal cyclic prefix or  OFDM symbols for extended cyclic prefix, and the front-loaded DM-RS of the PDSCH allocation collides with resources reserved for a search space set associated with a CORESET,  shall be incremented such that the first DM-RS symbol occurs immediately after the CORESET and until no collision with any CORESET occurs, and
+-	if the PDSCH duration  is 2 symbols, the UE is not expected to receive a DM-RS symbol beyond the second symbol;
+-	if the PDSCH duration  is 5 symbols and if one additional single-symbol DMRS is configured, the UE only expects the additional DM-RS to be transmitted on the 5th symbol when the front-loaded DM-RS symbol is in the 1st symbol of the PDSCH duration, otherwise the UE should expect that the additional DM-RS is not transmitted;
+-	if the PDSCH duration  is 7 symbols for normal cyclic prefix or 6 symbols for extended cyclic prefix: 
+-	if one additional single-symbol DM-RS is configured, the UE only expects the additional DM-RS to be transmitted on the 5th or 6th symbol when the front-loaded DM-RS symbol is in the 1st or 2nd symbol, respectively, of the PDSCH duration, otherwise the UE should expect that the additional DM-RS is not transmitted;
+-	if the PDSCH duration   OFDM symbols, the UE is not expected to receive the front-loaded DM-RS beyond the 4th symbol;
+-	if the PDSCH duration  is 12 or 13 symbols, the UE is not expected to receive DM-RS mapped to symbol 12 or later in the slot;
+-	for all values of the PDSCH duration  other than 2, 5, and 7 symbols, the UE is not expected to receive DM-RS beyond the :th symbol;
+-	if the PDSCH duration  is less than or equal to 4 OFDM symbols, only single-symbol DM-RS is supported. 
+-	if the higher-layer parameter lte-CRS-ToMatchAround, lte-CRS-PatternList1, or lte-CRS-PatternList2 is configured, the PDSCH duration  symbols for normal cyclic prefix, the subcarrier spacing configuration , single-symbol DM-RS is configured, and at least one PDSCH DM-RS symbol in the PDSCH allocation collides with a symbol containing resource elements as indicated by the higher-layer parameter lte-CRS-ToMatchAround, lte-CRS-PatternList1, or lte-CRS-PatternList2, then  shall be incremented by one in all slots.
+The time-domain index  and the supported antenna ports  are given by Table 7.4.1.1.2-5 where 
+-	single-symbol DM-RS is used if the higher-layer parameter maxLength in the DMRS-DownlinkConfig IE is not configured
+-	single-symbol or double-symbol DM-RS is determined by the associated DCI if the higher-layer parameter maxLength in the DMRS-DownlinkConfig IE is equal to 'len2'.
+In absence of CSI-RS configuration, and unless otherwise configured, the UE may assume PDSCH DM-RS and SS/PBCH block to be quasi co-located with respect to Doppler shift, Doppler spread, average delay, delay spread, and, when applicable, spatial Rx parameters. Unless specified otherwise, the UE may assume that the PDSCH DM-RS within the same CDM group are quasi co-located with respect to Doppler shift, Doppler spread, average delay, delay spread, and spatial Rx (when applicable). The UE may assume that DMRS ports associated with a TCI state as described in clause 5.1.6.2 of [6, TS 38.214] of a PDSCH are QCL with QCL Type A, Type D (when applicable) and average gain.
+The UE may assume that no DM-RS collides with the SS/PBCH block.
+Table 7.4.1.1.2-1: Parameters for PDSCH DM-RS configuration type 1.
+Table 7.4.1.1.2-2: Parameters for PDSCH DM-RS configuration type 2.
+Table 7.4.1.1.2-3: PDSCH DM-RS positions  for single-symbol DM-RS.
+Table 7.4.1.1.2-4: PDSCH DM-RS positions  for double-symbol DM-RS.
+Table 7.4.1.1.2-5: PDSCH DM-RS time index  and antenna ports .
+7.4.1.2	Phase-tracking reference signals for PDSCH
+7.4.1.2.1	Sequence generation
+The phase-tracking reference signal for subcarrier  is given by
+where	 is the demodulation reference signal given by clause 7.4.1.1.2 at position  and subcarrier 
+7.4.1.2.2	Mapping to physical resources
+The UE shall assume phase-tracking reference signals being present only in the resource blocks used for the PDSCH, and only if the procedure in [6, TS 38.214] indicates phase-tracking reference signals being used.
+If present, the UE shall assume the PDSCH PT-RS is scaled by a factor  to conform with the transmission power specified in clause 4.1 of [6, TS 38.214] and mapped to resource elements according to
+when all the following conditions are fulfilled
+-	 is within the OFDM symbols allocated for the PDSCH transmission
+-	resource element    is not used for DM-RS, non-zero-power CSI-RS (except for those configured for mobility measurements or with resourceType in corresponding CSI-ResourceConfig configured as 'aperiodic'), zero-power CSI-RS, SS/PBCH block, a detected PDCCH according to clause 5.1.4.1 of [6, TS38.214], or is declared as 'not available' by clause 5.1.4 of [6, TS 38.214]
+The set of time indices  defined relative to the start of the PDSCH allocation is defined by
+1.	set  and 
+2.	if any symbol in the interval  overlaps with a symbol used for DM-RS according to clause 7.4.1.1.2
+-	set 
+-	set  to the symbol index of the DM-RS symbol in case of a single-symbol DM-RS and to the symbol index of the second DM-RS symbol in case of a double-symbol DM-RS
+-	repeat from step 2 as long as  is inside the PDSCH allocation
+3.	add  to the set of time indices for PT-RS
+4.	increment  by one
+5.	repeat from step 2 above as long as  is inside the PDSCH allocation
+where .
+For the purpose of PT-RS mapping, the resource blocks allocated for PDSCH transmission are numbered from 0 to  from the lowest scheduled resource block to the highest. The corresponding subcarriers in this set of resource blocks are numbered in increasing order starting from the lowest frequency from 0 to . The subcarriers to which the UE shall assume the PT-RS is mapped are given by
+where 
+-	
+-	 is given by Table 7.4.1.2.2-1 for the DM-RS port associated with the PT-RS port according to clause 5.1.6.3 in [6, TS 38.214]. If the higher-layer parameter resourceElementOffset in the PTRS-DownlinkConfig IE is not configured, the column corresponding to 'offset00' shall be used.
+-	 is the RNTI associated with the DCI scheduling the transmission
+-	 is the number of resource blocks scheduled
+-	 is given by [6, TS 38.214].
+Table 7.4.1.2.2-1: The parameter .
+7.4.1.3	Demodulation reference signals for PDCCH
+7.4.1.3.1	Sequence generation
+The UE shall assume the reference-signal sequence  for OFDM symbol  is defined by
+.
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialized with
+where  is the OFDM symbol number within the slot,  is the slot number within a frame, and
+-	 is given by the higher-layer parameter pdcch-DMRS-ScramblingID if provided;
+-	 is given by the higher-layer parameter pdcch-DMRS-ScramblingID if configured for a common search space in a common MBS frequency resource;
+-	 otherwise.
+7.4.1.3.2	Mapping to physical resources
+The UE shall assume the sequence  is mapped to resource elements  according to
+where the following conditions are fulfilled
+-	they are within the resource element groups constituting the PDCCH the UE attempts to decode if the higher-layer parameter precoderGranularity equals sameAsREG-bundle,
+-	all resource-element groups within the set of contiguous resource blocks in the CORESET where the UE attempts to decode the PDCCH if the higher-layer parameter precoderGranularity equals allContiguousRBs.
+The reference point for  is 
+-	subcarrier 0 of the lowest-numbered resource block in the CORESET if the CORESET is configured by the PBCH or by the controlResourceSetZero field in the PDCCH-ConfigCommon IE,
+-	subcarrier 0 in common resource block 0 otherwise
+The quantity  is the OFDM symbol number within the slot.
+The antenna port .
+A UE not attempting to detect a PDCCH in a CORESET shall not make any assumptions on the presence or absence of DM-RS in the CORESET.
+In absence of CSI-RS configuration, and unless otherwise configured, the UE may assume PDCCH DM-RS and SS/PBCH block to be quasi co-located with respect to Doppler shift, Doppler spread, average delay, delay spread, and, when applicable, spatial Rx parameters.
+7.4.1.4	Demodulation reference signals for PBCH
+7.4.1.4.1	Sequence generation
+The UE shall assume the reference-signal sequence  for an SS/PBCH block is defined by
+where  is given by clause 5.2. The scrambling sequence generator shall be initialized at the start of each SS/PBCH block occasion with 
+where
+-	for ,  where  is the number of the half-frame in which the PBCH is transmitted in a frame with  for the first half-frame in the frame and  for the second half-frame in the frame, and  is the two least significant bits of the candidate SS/PBCH block index as defined in [5, TS 38.213]
+-	for ,  where  is the three least significant bits of the candidate SS/PBCH block index as defined in [5, TS 38.213]
+with  being the maximum number of candidate SS/PBCH blocks in a half frame, as described in [5, TS 38.213]. 
+7.4.1.4.2	Mapping to physical resources
+Mapping to physical resources is described in clause 7.4.3.
+7.4.1.5	CSI reference signals
+7.4.1.5.1	General
+Zero-power (ZP) and non-zero-power (NZP) CSI-RS are defined
+-	for a non-zero-power CSI-RS configured by the NZP-CSI-RS-Resource IE or by the CSI-RS-Resource-Mobility field in the CSI-RS-ResourceConfigMobility IE or by the TRS-ResourceSet IE, the sequence shall be generated according to clause 7.4.1.5.2 and mapped to resource elements according to clause 7.4.1.5.3
+-	for a zero-power CSI-RS configured by the ZP-CSI-RS-Resource IE, the UE shall assume that the resource elements defined in clause 7.4.1.5.3 are not used for PDSCH transmission subject to clause 5.1.4.2 of [6, TS 38.214]. The UE performs the same measurement/reception on channels/signals except PDSCH regardless of whether they collide with ZP CSI-RS or not. 
+7.4.1.5.2	Sequence generation
+The UE shall assume the reference-signal sequence  is defined by
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialised with
+at the start of each OFDM symbol where  is the slot number within a radio frame,  is the OFDM symbol number within a slot, and  equals the higher-layer parameter scramblingID or sequenceGenerationConfig.
+7.4.1.5.3	Mapping to physical resources
+For each CSI-RS configured, the UE shall assume the sequence  being mapped to resources elements  according to 
+when the following conditions are fulfilled:
+-	the resource element  is within the resource blocks occupied by the CSI-RS resource for which the UE is configured
+The reference point for  is subcarrier 0 in common resource block 0.
+The value of  is given by the higher-layer parameter density in the CSI-RS-ResourceMapping IE or the CSI-RS-CellMobility IE and the number of ports  is given by the higher-layer parameter nrofPorts. For NZP CSI-RS configured by the TRS-ResourceSet IE, the density  and number of ports .
+The UE is not expected to receive CSI-RS and DM-RS on the same resource elements.
+The UE shall assume  for a non-zero-power CSI-RS where  is selected such that the power offset specified by the higher-layer parameter powerControlOffsetSS in the NZP-CSI-RS-Resource IE or in the TRS-ResourceSet IE, if provided, is fulfilled.
+The quantities , , , and  are given by Tables 7.4.1.5.3-1 to 7.4.1.5.3-5 where each  in a given row of Table 7.4.1.5.3-1 corresponds to a CDM group of size 1 (no CDM) or size 2, 4, or 8. The CDM type is provided by the higher layer parameter cdm-Type in the CSI-RS-ResourceMapping IE. For NZP CSI-RS configured by the TRS-ResourceSet IE, the CDM type is 'noCDM'. The indices  and  index resource elements within a CDM group.
+The time-domain locations  and  are provided by the higher-layer parameters firstOFDMSymbolInTimeDomain and firstOFDMSymbolInTimeDomain2, respectively, in the CSI-RS-ResourceMapping IE or the CSI-RS-ResourceConfigMobility IE and defined relative to the start of a slot. For NZP CSI-RS configured by TRS-ResourceSet IE, the time-domain location  is provided by the higher-layer parameter firstOFDMSymbolInTimeDomain or firstOFDMSymbolInTimeDomain+4.
+The frequency-domain location is given by a bitmap provided by the higher-layer parameter frequencyDomainAllocation in the CSI-RS-ResourceMapping IE, the CSI-RS-ResourceConfigMobility IE, or the TRS-ResourceSet IE, with the bitmap and value of  in Table 7.4.1.5.3-1 given by
+-	,  for row 1 of Table 7.4.1.5.3-1
+-	,  for row 2 of Table 7.4.1.5.3-1
+-	,  for row 4 of Table 7.4.1.5.3-1
+-	,  for all other cases
+where  is the bit number of the  bit in the bitmap set to one, repeated across every  of the resource blocks configured for CSI-RS reception by the UE. The starting position and number of the resource blocks in which the UE shall assume that CSI-RS is transmitted are given by the higher-layer parameters freqBand and density in the CSI-RS-ResourceMapping IE for the bandwidth part given by the higher-layer parameter BWP-Id in the CSI-ResourceConfig IE or given by the higher-layer parameters nrofPRBs in the CSI-RS-CellMobility IE where the the startPRB given by csi-rs-MeasurementBW is relative to common resource block 0. For NZP CSI-RS configured by TRS-ResourceSet IE, the starting position and number of the resource blocks in which the CSI-RS can be transmitted are given by the higher-layer parameters nrofRBs, and startingRB in the TRS-ResourceSet IE, where startingRB is relative to common resource block 0 and the density .
+The UE shall assume that a CSI-RS is transmitted using antenna ports  numbered according to
+where  is the sequence index provided by Tables 7.4.1.5.3-2 to 7.4.1.5.3-5,  is the CDM group size, and  is the number of CSI-RS ports. The CDM group index  given in Table 7.4.1.5.3-1 corresponds to the time/frequency locations  for a given row of the table. The CDM groups are numbered in order of increasing frequency domain allocation first and then increasing time domain allocation. 
+For a CSI-RS resource configured as periodic or semi-persistent by the higher-layer parameter resourceType, configured by the higher-layer parameter CSI-RS-CellMobility or configured by the higher-layer parameter TRS-ResourceSet, the UE shall assume that the CSI-RS is transmitted in slots satisfying
+where the periodicity  (in slots) and slot offset  are obtained from the higher-layer parameter CSI-ResourcePeriodicityAndOffset, slotConfig or periodicityAndOffset. The UE shall assume that CSI-RS is transmitted in a candidate slot as described in clause 11.1 of [5, TS 38.213], clause 10.4B of [5, TS 38.213]. 
+The UE may assume that antenna ports within a CSI-RS resource are quasi co-located with QCL Type A, Type D (when applicable), and average gain.
+Table 7.4.1.5.3-1: CSI-RS locations within a slot.
+Table 7.4.1.5.3-2: The sequences  and  for cdm-Type equal to 'noCDM'.
+Table 7.4.1.5.3-3: The sequences  and  for cdm-Type equal to 'fd-CDM2'.
+Table 7.4.1.5.3-4: The sequences  and  for cdm-Type equal to 'cdm4-FD2-TD2'.
+Table 7.4.1.5.3-5: The sequences  and  for cdm-Type equal to 'cdm8-FD2-TD4'.
+7.4.1.6	RIM reference signals
+7.4.1.6.1	General
+RIM-RS can be used by an gNB to measure inter-cell interference and to provide information about the experienced interference to other gNBs. Up to two different types of RIM-RS can be configured where 
+-	the first RIM-RS type can be used to convey information,
+-	the second RIM-RS type depends on configuration only.
+7.4.1.6.2	Sequence generation
+The RIM-RS receiver shall assume the reference-signal sequence  is defined by
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialised with 
+where
+-	 is given by clause 7.4.1.6.4.4; 
+-	 where the pseudo-random sequence  is given by clause 5.2.1,  initialized with  where the multiplier factor  and the offset ;
+-	 is the number of RIM-RS transmission periods since  where 
+-	 is the time in seconds relative to  of 00:00:00 on 1 January 1900, calculated as continuous time without leap second and traceable to a common time reference, and
+-	 is the RIM-RS transmission periodicity in seconds assuming that the first RIM-RS transmission period starts at , and where   is given by clause 7.4.1.6.4.2.
+7.4.1.6.3	Mapping to physical resources
+The RIM-RS receiver shall assume the reference signal being mapped to physical resources according to
+where   is an amplitude scaling factor in order to control the RIM-RS transmission power and  is the antenna port. Baseband signal generation shall be done according to clause 5.3.3.
+The starting position  for RIM-RS type  in slot  in a frame is given by
+in slots satisfying
+where
+-	 counts the number of times the SFN periods within the RIM-RS transmission period;
+-	 where  is the symbol offset of the reference point after the starting boundary of the uplink-downlink switching period in which the RIM-RS is mapped to and  is obtained as described in clause 7.4.1.6.4.2;
+-	 is the total number of slots in a RIM-RS transmission period as defined in clause 7.4.1.6.4.2;
+-	 is the slot offset of the uplink-downlink switching period with index  with respect to the starting boundary of the RIM-RS transmission period and is defined in clause 7.4.1.6.4.2;
+-	 is the RIM-RS transmission periodicity in units of uplink-downlink switching period as defined in clause 7.4.1.6.4.2. 
+7.4.1.6.4	RIM-RS configuration
+7.4.1.6.4.1	General
+A resource for RIM-RS transmission is defined by the indices , , and  used as indices into configured lists of time, frequency, and sequence parameters, respectively.
+All RIM-RS resources occupy the same number of resource blocks, . At most 32 RIM-RS resources can be configured within a 10 ms period.
+7.4.1.6.4.2	Time-domain parameters and mapping from  to time-domain parameters
+RIM-RS are transmitted periodically with the RIM-RS transmission period  defined in units of the uplink-downlink switching period determined from one or two configured uplink-downlink periods. 
+-	If a single uplink-downlink period is configured for RIM-RS purposes, 
+-	 is the RIM-RS transmission periodicity in terms of uplink-downlink switching periods given by
+where  ms;
+-	 is the total number of slots in a RIM-RS transmission period;
+-	 is the slot offset of the uplink-downlink switching period with index  with respect to the starting boundary of the RIM-RS transmission period 
+-	If two uplink-downlink periods are configured for RIM-RS purposes, 
+-	 is the RIM-RS transmission periodicity in terms of  pairs of uplink-downlink switching periods and is given by
+	where each pair consists of a first period of  ms and a second period of  ms and where  divides 20 ms;
+-	 is the total number of slots in a RIM-RS transmission period;
+-	 is the slot offset of the uplink-downlink switching period with index  with respect to the starting boundary of the RIM-RS transmission period 
+The intermediate quantity  is given by
+where 
+-	 and  are the total number of setIDs for RIM-RS type 1 and RIM-RS type 2, respectively;
+-	 is the number of candidate frequency resources configured in the network;
+-	 is the number of candidate sequences assigned for RIM-RS type  in the network;
+-	 and  are the number of consecutive uplink-downlink switching periods for RIM-RS type 1 and RIM-RS type 2, respectively. If near-far functionality is not configured, , otherwise  and the first and second half of the  consecutive uplink-downlink switching periods are for near functionality and far functionality, respectively.
+The quantity  is obtained from entry  in a list of configured symbol offsets for RIM-RS .
+7.4.1.6.4.3	Frequency-domain parameters and mapping from  to frequency-domain parameters
+The frequency-domain parameter  in clause 5.3.3 is the frequency offset relative to a configured reference point for RIM-RS and is obtained from entry  in a list of configured frequency offsets expressed in units of resource blocks. 
+The number of candidate frequency resources configured in the network, , shall fulfil
+If , the frequency difference between any pair of configured frequency offsets in the list is not smaller than . 
+The number of resource blocks for RIM-RS is given by 
+7.4.1.6.4.4	Sequence parameters and mapping from  to sequence parameters
+The scrambling identity  clause 7.4.1.6.2 is obtained from entry  in a list of configured scrambling identities.
+7.4.1.6.4.5	Mapping between resource triplet and set ID
+The resource indices , , and  are determined from the index  in the set ID  according to
+where
+-	 is given by
+-	 is the number of candidate frequency resources configured in the network;
+-	 is the number of sequence candidates for the current RIM-RS resource given by
+-	 is the starting time offset given by
+-	 is given by
+where  is the number of candidate sequences assigned for RIM-RS type 1
+-	 is the number of consecutive uplink-downlink periods for RIM-RS type  as given by clause 7.4.1.6.4.2;
+-	.
+The set ID is determined from the resource triplet according to
+7.4.1.7	Positioning reference signals
+7.4.1.7.1	General
+A positioning frequency layer consists of one or more downlink PRS resource sets, each of which consists of one or more downlink PRS resources as described in [6, TS 38.214].
+7.4.1.7.2	Sequence generation
+The UE shall assume the reference-signal sequence  is defined by
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialised with
+where  is the slot number, the downlink PRS sequence ID  is given by the higher-layer parameter dl-PRS-SequenceID, and  is the OFDM symbol within the slot to which the sequence is mapped.
+7.4.1.7.3	Mapping to physical resources in a downlink PRS resource
+For each downlink PRS resource configured, the UE shall assume the sequence  is scaled with a factor  and mapped to resources elements  according to 
+when the following conditions are fulfilled:
+-	the resource element  is within the resource blocks occupied by the downlink PRS resource for which the UE is configured;
+-	the symbol  is not used by any SS/PBCH block used by a serving cell for downlink PRS transmitted from the same serving cell or any SS/PBCH block from a non-serving cell whose time frequency location is provided to the UE by higher layers for downlink PRS transmitted from the same non-serving cell;
+-	the slot number satisfies the conditions in clause 7.4.1.7.4.
+and where 
+-	the antenna port 
+-	 is the first symbol of the downlink PRS within a slot and given by the higher-layer parameter dl-PRS-ResourceSymbolOffset;
+-	the size of the downlink PRS resource in the time domain  is given by the higher-layer parameter dl-PRS-NumSymbols;
+-	the comb size  is given by the higher-layer parameter dl-PRS-CombSizeN-AndReOffset for a downlink PRS resource configured for RTT-based propagation delay compensation, otherwise by the higher-layer parameter dl-PRS-CombSizeN such that the combination  is one of {2, 2},{4, 2}, {6, 2}, {12, 2}, {4, 4}, {12, 4}, {6, 6}, {12, 6} and {12, 12};
+-	the resource-element offset  is obtained from the higher-layer parameter dl-PRS-CombSizeN-AndReOffset;
+-	the quantity  is given by Table 7.4.1.7.3-1.
+If the downlink PRS resource is configured for RTT based propagation delay compensation as described in clause 9 of [6, TS 38.214], the reference point for  is subcarrier 0 in common resource block 0; Otherwise, the reference point for  is the location of the point A of the positioning frequency layer, in which the downlink PRS resource is configured where point A is given by the higher-layer parameter dl-PRS-PointA.
+Table 7.4.1.7.3-1: The frequency offset  as a function of .
+7.4.1.7.4	Mapping to slots in a downlink PRS resource set
+For a downlink PRS resource in a downlink PRS resource set, the UE shall assume the downlink PRS resource being transmitted when the slot and frame numbers fulfil
+and one of the following conditions are fulfilled:
+-	the higher-layer parameters dl-PRS-MutingOption1 and dl-PRS-MutingOption2 are not provided;
+-	the higher-layer parameter dl-PRS-MutingOption1 is provided with bitmap  but dl-PRS-MutingOption2 with bitmap  is not provided, and bit  is set;
+-	the higher-layer parameter dl-PRS-MutingOption2 is provided with bitmap  but dl-PRS-MutingOption1 with bitmap  is not provided, and bit  is set;
+-	the higher-layer parameters dl-PRS-MutingOption1 with bitmap  and dl-PRS-MutingOption2 with  are both provided, and both bit  and  are set.
+where
+-	 is bit  in the bitmap given by the higher-layer parameter dl-PRS-MutingOption1 where  is the size of the bitmap; 
+-	 is bit  in the bitmap given by the higher-layer parameter dl-PRS-MutingOption2;
+-	the periodicity  and the slot offset  are given by the higher-layer parameter dl-PRS-Periodicity-and-ResourceSetSlotOffset;
+-	the downlink PRS resource slot offset  is given by the higher-layer parameter dl-PRS-ResourceSlotOffset; 
+-	the repetition factor  is given by the higher-layer parameter dl-PRS-ResourceRepetitionFactor;
+-	the muting repetition factor  is given by the higher-layer parameter dl-PRS-MutingBitRepetitionFactor;
+-	the time gap  is given by the higher-layer parameter dl-PRS-ResourceTimeGap;
+For a downlink PRS resource in a downlink PRS resource set configured for RTT-based propagation delay compensation, the UE shall assume the downlink PRS resource being transmitted as described in clause 9 of [6, TS 38.214]; otherwise, the UE shall assume the downlink PRS resource being transmitted as described in clause 5.1.6.5 of [6, TS 38.214].
+7.4.2	Synchronization signals
+7.4.2.1	Physical-layer cell identities
+There are 1008 unique physical-layer cell identities given by
+where  and .
+7.4.2.2	Primary synchronization signal
+7.4.2.2.1	Sequence generation
+The sequence  for the primary synchronization signal is defined by 
+where
+and
+7.4.2.2.2	Mapping to physical resources
+Mapping to physical resources is described in clause 7.4.3.
+7.4.2.3	Secondary synchronization signal
+7.4.2.3.1	Sequence generation
+The sequence  for the secondary synchronization signal is defined by 
+where
+and
+7.4.2.3.2	Mapping to physical resources
+Mapping to physical resources is described in clause 7.4.3.
+7.4.3	SS/PBCH block 
+7.4.3.1	Time-frequency structure of an SS/PBCH block
+In the time domain, an SS/PBCH block consists of 4 OFDM symbols, numbered in increasing order from 0 to 3 within the SS/PBCH block, where PSS, SSS, and PBCH with associated DM-RS are mapped to symbols as given by Table 7.4.3.1-1. 
+In the frequency domain, an SS/PBCH block consists of 240 contiguous subcarriers with the subcarriers numbered in increasing order from 0 to 239 within the SS/PBCH block. The quantities  and  represent the frequency and time indices, respectively, within one SS/PBCH block. The UE may assume that the complex-valued symbols corresponding to resource elements denoted as 'Set to 0' in Table 7.4.3.1-1 are set to zero. The quantity  in Table 7.4.3.1-1 is given by . The quantity  is the subcarrier offset from subcarrier 0 in common resource block  to subcarrier 0 of the SS/PBCH block, where  is obtained from the higher-layer parameter offsetToPointA. 
+-	For operation with shared spectrum channel access in FR2-2 and for operation without shared spectrum channel access, the 4 least significant bits of  are given by the higher-layer parameter ssb-SubcarrierOffset and for FR1 the most significant bit of  is given by  in the PBCH payload as defined in clause 7.1.1 of [4, TS 38.212]. 
+-	For operation with shared spectrum channel access in FR1, the 4 least significant bits of  are given by the higher-layer parameter ssb-SubcarrierOffset and the most significant bit of  is given by  in the PBCH payload as defined in clause 7.1.1 of [4, TS 38.212]. If  ,  ; otherwise, .
+If ssb-SubcarrierOffset is not provided,  is derived from the frequency difference between the SS/PBCH block and Point A.
+The UE may assume that the complex-valued symbols corresponding to resource elements that are part of a common resource block partially or fully overlapping with an SS/PBCH block and not used for SS/PBCH transmission are set to zero in the OFDM symbols partially or fully overlapping with OFDM symbols where SS/PBCH is transmitted. 
+For an SS/PBCH block, the UE shall assume 
+-	antenna port  is used for transmission of PSS, SSS, PBCH and DM-RS for PBCH,
+-	the same cyclic prefix length and subcarrier spacing for the PSS, SSS, PBCH and DM-RS for PBCH,
+-	for SS/PBCH block type A,  and  with the quantities , and  expressed in terms of 15 kHz subcarrier spacing, and
+-	for SS/PBCH block type B in FR2-1,  and  with the quantity  expressed in terms of the subcarrier spacing provided by the higher-layer parameter subCarrierSpacingCommon and  expressed in terms of 60 kHz subcarrier spacing; 
+-	for SS/PBCH block type B in FR2-2,  and  with the quantity  expressed in terms of the SS/PBCH block subcarrier spacing and  expressed in terms of 60 kHz subcarrier spacing; 
+-	the centre of subcarrier 0 of resource block   coincides with the centre of subcarrier 0 of a common resource block with the subcarrier spacing 
+-	provided by the higher-layer parameter subCarrierSpacingCommon for operation without shared spectrum channel access in FR1 and FR2-1; and 
+-	same as the subcarrier spacing of the SS/PBCH block for operation without shared spectrum access in FR2-2 and for operation with shared spectrum channel access. 
+-	This common resource block overlaps with subcarrier 0 of the first resource block of the SS/PBCH block.
+The UE may assume that SS/PBCH blocks transmitted with the same block index on the same center frequency location are quasi co-located with respect to Doppler spread, Doppler shift, average gain, average delay, delay spread, and, when applicable, spatial Rx parameters. The UE shall not assume quasi co-location for any other SS/PBCH block transmissions other than what is specified in [5, TS 38.213].
+Table 7.4.3.1-1: Resources within an SS/PBCH block for PSS, SSS, PBCH, and DM-RS for PBCH. 
+7.4.3.1.1	Mapping of PSS within an SS/PBCH block
+The UE shall assume the sequence of symbols constituting the primary synchronization signal to be scaled by a factor  to conform to the PSS power allocation specified in [5, TS 38.213] and mapped to resource elements  in increasing order of  where  and  are given by Table 7.4.3.1-1 and represent the frequency and time indices, respectively, within one SS/PBCH block.
+7.4.3.1.2	Mapping of SSS within an SS/PBCH block
+The UE shall assume the sequence of symbols  constituting the secondary synchronization signal to be scaled by a factor  and mapped to resource elements  in increasing order of  where  and  are given by Table 7.4.3.1-1 and represent the frequency and time indices, respectively, within one SS/PBCH block.
+7.4.3.1.3	Mapping of PBCH and DM-RS within an SS/PBCH block
+The UE shall assume the sequence of complex-valued symbols  constituting the physical broadcast channel to be scaled by a factor  to conform to the PBCH power allocation specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  which meet all the following criteria:
+-	they are not used for PBCH demodulation reference signals
+The mapping to resource elements  not reserved for PBCH DM-RS shall be in increasing order of first the index  and then the index , where  and  represent the frequency and time indices, respectively, within one SS/PBCH block and are given by Table 7.4.3.1-1.
+The UE shall assume the sequence of complex-valued symbols  constituting the demodulation reference signals for the SS/PBCH block to be scaled by a factor of  to conform to the PBCH power allocation specified in [5, TS 38.213] and to be mapped to resource elements  in increasing order of first  and then  where  and  are given by Table 7.4.3.1-1 and represent the frequency and time indices, respectively, within one SS/PBCH block.
+7.4.3.2	Time location of an SS/PBCH block
+The locations in the time domain where a UE shall monitor for a possible SS/PBCH block are described in clause 4.1 of [5, TS 38.213].
+8	Sidelink
+8.1	Overview
+8.1.1	Overview of physical channels
+A sidelink physical channel corresponds to a set of resource elements carrying information originating from higher layers. The following sidelink physical channels are defined:
+-	Physical Sidelink Shared Channel, PSSCH
+-	Physical Sidelink Broadcast Channel, PSBCH
+-	Physical Sidelink Control Channel, PSCCH
+-	Physical Sidelink Feedback Channel, PSFCH
+8.1.2	Overview of physical signals
+A sidelink physical signal corresponds to a set of resource elements used by the physical layer but does not carry information originating from higher layers. 
+The following sidelink physical signals are defined:
+-	Demodulation reference signals, DM-RS
+-	Channel-state information reference signal, CSI-RS
+-	Phase-tracking reference signals, PT-RS
+-	Sidelink primary synchronization signal, S-PSS
+-	Sidelink secondary synchronization signal, S-SSS
+8.2	Physical resources
+8.2.1	General
+The OFDM symbol immediately following the last symbol used for PSSCH, PSFCH, or S-SSB serves as a guard symbol. 
+The first OFDM symbol of a PSSCH and its associated PSCCH is duplicated as described in clauses 8.3.1.5 and 8.3.2.3. The first OFDM symbol of a PSFCH is duplicated as described in clause 8.3.4.2.2
+8.2.2	Numerologies
+Multiple OFDM numerologies are supported as given by Table 8.2.2-1 where  and the cyclic prefix for a sidelink bandwidth part are obtained from the higher-layer parameter sl-BWP. 
+Table 8.2.2-1: Supported transmission numerologies.
+8.2.3	Frame structure
+8.2.3.1	Frames and subframes
+The frame and subframe structure for sidelink transmission is defined in clause 4.3.1.
+8.2.3.2	Slots
+The slot structure for sidelink transmission is defined in clause 4.3.2.
+8.2.4	Antenna ports
+An antenna port is defined in clause 4.4.1. 
+The following antenna ports are defined for the sidelink:
+-	Antenna ports starting with 1000 for PSSCH
+-	Antenna ports starting with 2000 for PSCCH
+-	Antenna ports starting with 3000 for CSI-RS
+-	Antenna ports starting with 4000 for S-SS/PSBCH
+-	Antenna ports starting with 5000 for PSFCH
+For DM-RS associated with a PSBCH, the channel over which a PSBCH symbol on one antenna port is conveyed can be inferred from the channel over which a DM-RS symbol on the same antenna port is conveyed only if the two symbols are within a S-SS/PSBCH block transmitted within the same slot, and with the same block index. 
+For DM-RS associated with a PSSCH, the channel over which a PSSCH symbol on one antenna port is conveyed can be inferred from the channel over which a DM-RS symbol on the same antenna port is conveyed only if the two symbols are within the same frequency resource as the scheduled PSSCH and in the same slot. 
+For DM-RS associated with a PSCCH, the channel over which a PSCCH symbol on one antenna port is conveyed can be inferred from the channel over which a DM-RS symbol on the same antenna port is conveyed only if the two symbols are within the same frequency resource as the transmitted PSCCH and in the same slot.
+8.2.5	Resource grid
+The resource grid for sidelink transmission is defined in clause 4.4.2.
+For sidelink, the carrier bandwidth  and the starting position  for subcarrier spacing configuration  are obtained from the higher-layer parameter sl-SCS-SpecificCarrierList. 
+For the sidelink, the higher-layer parameter sl-TxDirectCurrentLocation indicates the location of the transmitter DC subcarrier in the sidelink for each of the configured bandwidth parts. Values in the range 0 – 3299 represent the number of the DC subcarrier, the value 3300 indicates that the DC subcarrier is located outside the resource grid, and the value 3301 indicates that the position of the DC subcarrier in the sidelink is undetermined. The DC subcarrier location offset relative to the center of the indicated subcarrier is given by  if frequencyShift7p5khzSL is provided and by   otherwise, where  is given by the higher-layer parameter valueN.
+8.2.6	Resource elements
+Resource elements are defined in clause 4.4.3.
+8.2.7	Resource blocks
+Resource blocks are defined in clause 4.4.4.
+Point A for sidelink transmission/reception is obtained from the higher-layer parameter sl-AbsoluteFrequencyPointA.
+8.2.8	Bandwidth part
+Configuration of the single bandwidth part for sidelink transmission is described in clause 16 of [5, TS 38.213].
+8.3	Physical channels
+8.3.1	Physical sidelink shared channel
+8.3.1.1	Scrambling
+For the single codeword , the block of bits , where  is the number of bits in codeword  transmitted on the physical channel as defined in [4, TS 38.212], shall be scrambled prior to modulation.
+Scrambling shall be done according to the following pseudo code
+set  
+set 
+while 
+if 	// SCI placeholder bits
+else
+end if 
+i = i + 1
+end while
+where the scrambling sequence  is given by clause 5.2.1 and
+-	for 
+-	
+-	The scrambling sequence generator shall be initialized with
+	where  and the quantity  equals the decimal representation of the CRC on the PSCCH associated with the PSSCH according to  with  and  given by clause 8.3.2 in [4, TS 38.212].
+-	for 
+-	
+-	The scrambling sequence generator shall be initialized with
+	where  and the quantity  equals the decimal representation of the CRC on the PSCCH associated with the PSSCH according to  with  and  given by clause 8.3.2 in [4, TS 38.212].
+8.3.1.2	Modulation
+For the single codeword , the block of scrambled bits shall be modulated, resulting in a block of complex-valued modulation symbols  where .
+Modulation for  shall be done as described in clause 5.1 using QPSK, where .
+Modulation for   shall be done as described in clause 5.1 using one of the modulation schemes in Table 8.3.1.2-1 where .
+Table 8.3.1.2-1: Supported modulation schemes.
+8.3.1.3	Layer mapping
+Layer mapping shall be done according to clause 7.3.1.3 with the number of layers , resulting in , .
+8.3.1.4	Precoding
+The block of vectors  shall be precoded according to clasue 6.3.1.5 where the precoding matrix  equals the identity matrix and .
+8.3.1.5	Mapping to virtual resource blocks
+For each of the antenna ports used for transmission of the PSSCH, the block of complex-valued symbols  shall be multiplied with the amplitude scaling factor   in order to conform to the transmit power specified in [5, TS 38.213] and mapped to resource elements  in the virtual resource blocks assigned for transmission, where  is the first subcarrier in the lowest-numbered virtual resource block assigned for transmission.
+The mapping operation shall be done in two steps:
+-	first, the complex-valued symbols corresponding to the bit for the 2nd-stage SCI in increasing order of first the index  over the assigned virtual resource blocks and then the index , starting from the first PSSCH symbol carrying an associated DM-RS and meeting all of the following criteria:
+-	the corresponding resource elements in the corresponding physical resource blocks are not used for transmission of the associated DM-RS, PT-RS, or PSCCH;
+-	secondly, the complex-valued modulation symbols not corresponding to the 2nd -stage SCI shall be in increasing order of first the index  over the assigned virtual resource blocks, and then the index  with the starting position given by [6, TS 38.214] and meeting all of the following criteria:
+-	the resource elements are not used for 2nd-stage SCI in the first step; 
+-	the corresponding resource elements in the corresponding physical resource blocks are not used for transmission of the associated DM-RS, PT-RS, CSI-RS, or PSCCH.
+The resource elements used for the PSSCH in the first OFDM symbol in the mapping operation above, including any DM-RS, PT-RS, or CSI-RS occurring in the first OFDM symbol, shall be duplicated in the OFDM symbol immediately preceding the first OFDM symbol in the mapping.
+8.3.1.6	Mapping from virtual to physical resource blocks
+Virtual resource blocks shall be mapped to physical resource blocks according to non-interleaved mapping.
+For non-interleaved VRB-to-PRB mapping, virtual resource block  is mapped to physical resource block .
+8.3.2	Physical sidelink control channel
+8.3.2.1	Scrambling
+The block of bits , where  is the number of bits transmitted on the physical channel, shall be scrambled prior to modulation, resulting in a block of scrambled bits  according to
+where the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with 
+8.3.2.2	Modulation
+The block of scrambled bits  shall be modulated as described in clause 5.1 using QPSK, resulting in a block of complex-valued modulation symbols  where . 
+8.3.2.3	Mapping to physical resources
+The set of complex-valued modulation symbols   shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  assigned for transmission according to clause 16.4 of [5, TS 38.213], and not used for the demodulation reference signals associated with PSCCH, in increasing order of first the index  over the assigned physical resources, and then the index  on antenna port. 
+The resource elements used for the PSCCH in the first OFDM symbol in the mapping operation above, including any DM-RS, PT-RS, or CSI-RS occurring in the first OFDM symbol, shall be duplicated in the immediately preceding OFDM symbol.
+8.3.3	Physical sidelink broadcast channel
+8.3.3.1	Scrambling
+The block of bits, where  is the number of bits transmitted on the physical sidelink broadcast channel, shall be scrambled prior to modulation, resulting in a block of scrambled bits  according to
+where the scrambling sequence  is given by clause 5.2.1. The scrambling sequence generator shall be initialized with  at the start of each S-SS/PSBCH block.
+8.3.3.2	Modulation
+The block of bits  shall be QPSK modulated as described in clause 5.1.3, resulting in a block of complex-valued modulation symbols  where . 
+8.3.3.3	Mapping to physical resources
+Mapping to physical resources is described in clause 8.4.3.
+8.3.4	Physical sidelink feedback channel
+8.3.4.1	General
+8.3.4.2	PSFCH format 0
+8.3.4.2.1	Sequence generation
+The sequence  shall be generated according to
+where  is given by clause 6.3.2.2 with the following exceptions:
+-	 is given by clause 16.3 of [5, TS 38.213]; 
+-	 is given by clause 16.3 of [5, TS 38.213];
+-	;
+-	 is the index of the OFDM symbol in the slot that corresponds to the second OFDM symbol of the PSFCH transmission in the slot given by [5, TS 38.213];
+-	 and  with  given by the higher-layer parameter sl-PSFCH-HopID if configured; otherwise, .
+-	 with  given by the higher-layer parameter sl-PSFCH-HopID if configured; otherwise, .
+8.3.4.2.2	Mapping to physical resources
+The sequence  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  assigned for transmission of the second PSFCH symbol according to clause 16.3 of [5, TS 38.213] in increasing order of the index  over the assigned physical resources on antenna port. 
+The resource elements used for the PSFCH in the OFDM symbol in the mapping operation above shall be duplicated in the immediately preceding OFDM symbol.
+8.4	Physical signals
+8.4.1	Reference signals
+8.4.1.1	Demodulation reference signals for PSSCH
+8.4.1.1.1	Sequence generation
+The sequence  shall be generated according to
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialized with
+where  is the OFDM symbol number within the slot,  is the slot number within a frame, and  where the quantity  equals the decimal representation of CRC on the PSCCH associated with the PSSCH according to  with  and  given by clause 7.3.2 in [4, TS 38.212].
+8.4.1.1.2	Mapping to physical resources
+The sequence  shall be mapped to the intermediate quantity  according to clause 6.4.1.1.3 using configuration type 1 without transform precoding, and where , , and  are given by Table 8.4.1.1.2-2, and  is specified in clause 8.4.1.1.1.
+The patterns used for the PSSCH DM-RS is indicated in the SCI as described in clause 8.3.1.1 of [4, TS 38.212].
+The intermediate quantity  shall be precoded, multiplied with the amplitude scaling factor  specified in clause 8.3.1.5, and mapped to physical resources according to
+where 
+-	the precoding matrix  is given by clause 8.3.1.4, 
+-	the set of antenna ports  is given by clause 8.3.1.4, and
+-	the set of antenna ports  is given by [6, TS 38.214];
+and the following conditions are fulfilled:
+-	the resource elements  are within the common resource blocks allocated for PSSCH transmission.
+The quantity  is defined relative to subcarrier 0 in common resource block 0 and the quantity  is defined relative to the start of the scheduled resources for transmission of PSSCH and the associated PSCCH, including the OFDM symbol duplicated as described in clauses 8.3.1.5 and 8.3.2.3.
+The position(s) of the DM-RS symbols is given by  according to Table 8.4.1.1.2-1 where the number of PSSCH DM-RS is indicated in the SCI, and  is the duration of the scheduled resources for transmission of PSSCH and the associated PSCCH, including the OFDM symbol duplicated as described in clauses 8.3.1.5 and 8.3.2.3.
+Table 8.4.1.1.2-1: PSSCH DM-RS time-domain location.
+Table 8.4.1.1.2-2: Parameters for PSSCH DM-RS.
+8.4.1.2	Phase-tracking reference signals for PSSCH
+8.4.1.2.1	Sequence generation 
+The precoded sidelink phase-tracking reference signal for subcarrier  on layer  is given by
+where
+-	antenna ports  or  associated with PT-RS transmission are given by clause 8.2.3 of [6, TS 38.214];
+-	 is given by clause 8.4.1.1.1 at the position of the first PSSCH symbol carrying an associated DM-RS.
+8.4.1.2.2	Mapping to physical resources
+The UE shall transmit phase-tracking reference signals only in the resource blocks used for the PSSCH, and only if the procedure in [6, TS 38.214] indicates that phase-tracking reference signals are being used.
+The PSSCH PT-RS shall be mapped to resource elements according to
+when all the following conditions are fulfilled
+-	 is within the OFDM symbols allocated for the PSSCH transmission;
+-	resource element  is not used for PSCCH, nor DM-RS associated with PSSCH;
+-	 and  correspond to 
+The precoding matrix  is given by clause 8.3.1.4. 
+The set of time indices  defined relative to the start of the PSSCH allocation is defined by
+1. set and 
+2. if any symbol in the interval  overlaps with a symbol used for DM-RS according to clause 8.4.1.1.2
+-	set 
+-	set  to the symbol index of the DM-RS symbol
+-	repeat from step 2 as long as  is inside the PSSCH allocation
+3. add  to the set of time indices for PT-RS
+4. increment  by one
+5. repeat from step 2 above as long as  is inside the PSSCH allocation
+where  is given by clause 8.4.3 of [6, TS 38.214].
+For the purpose of PT-RS mapping, the resource blocks allocated for PSSCH transmission are numbered from 0 to  from the lowest scheduled resource block to the highest. The corresponding subcarriers in this set of resource blocks are numbered in increasing order starting from the lowest frequency from 0 to . The subcarriers to which the PT-RS shall be mapped are given by
+where
+-	
+-	 is given by Table 8.4.1.2.2-1 for the DM-RS port associated with the PT-RS port according to clause 8.2.3 in [6, TS 38.214]. 
+-	 is the number of resource blocks scheduled;
+-	 is given by [6, TS 38.214];
+-	 where the quantity  equals the decimal representation of CRC on the PSCCH associated with the PSSCH according to  with  and  given by clause 7.3.2 in [4, TS 38.212].
+PSSCH PT-RS shall not be mapped to resource elements containing PSCCH or PSCCH DMRS by puncturing PSSCH PT-RS.
+A UE is not expected to receive sidelink CSI-RS and PSSCH PT-RS on the same resource elements.
+Table 8.4.1.2.2-1: The parameter  .
+8.4.1.3	Demodulation reference signals for PSCCH
+8.4.1.3.1	Sequence generation
+The sequence  shall be generated according to
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialized with
+where 
+-	 is the OFDM symbol number within the slot, 
+-	 is the slot number within a frame, and
+-	 is given by the higher-layer parameter sl-DMRS-ScrambleID.
+8.4.1.3.2	Mapping to physical resources
+The sequence  shall be multiplied with the amplitude scaling factor  in order to conform to the transmit power specified in [5, 38.213] and mapped in sequence starting with  to resource elements  in a slot on antenna port  according to
+where the following conditions are fulfilled
+-	they are within the resource elements constituting the PSCCH 
+The quantity  is given by Table 8.4.1.3.2-1 and  shall be randomly selected by the UE.
+The reference point for  is subcarrier 0 in common resource block 0.
+The quantity  is the OFDM symbol number within the slot. 
+Table 8.4.1.3.2-1: The quantity .
+8.4.1.4	Demodulation reference signals for PSBCH
+8.4.1.4.1	Sequence generation
+The reference-signal sequence  for an S-SS/PSBCH block is defined by
+where  is given by clause 5.2. The scrambling sequence generator shall be initialized at the start of each S-SS/PSBCH block occasion with 
+8.4.1.4.2	Mapping to physical resources
+Mapping to physical resources is described in clause 8.4.3.
+8.4.1.5	CSI reference signals
+8.4.1.5.1	General
+8.4.1.5.2	Sequence generation
+The sequence  shall be generated according to
+where the pseudo-random sequence  is defined in clause 5.2.1. The pseudo-random sequence generator shall be initialised with
+at the start of each OFDM symbol where  is the slot number within a radio frame,  is the OFDM symbol number within a slot, and  where the quantity  equals the decimal representation of CRC for the sidelink control information mapped to the PSCCH associated with the CSI-RS according to  with  and  given by clause 7.3.2 in [4, TS 38.212].
+8.4.1.5.3	Mapping to physical resources
+Mapping to resource elements shall be done according to clause 7.4.1.5.3 with the following exceptions:
+-	only 1 and 2 antenna ports are supported, ;
+-	only density  is supported;
+-	zero-power CSI-RS is not supported; 
+-	the quantity  is an amplitude scaling factor to conform with the transmit power specified in clause 8.2.1 of [6, TS 38.214].
+8.4.2	Synchronization signals
+8.4.2.1	Physical-layer sidelink synchronization identities
+There are 672 unique physical-layer sidelink synchronization identities given by
+where  and . The sidelink synchronization identities are divided into two sets, id_net consisting of  and id_oon consisting of .
+8.4.2.2	Sidelink primary synchronization signal
+8.4.2.2.1	Sequence generation
+The sequence  for the sidelink primary synchronization signal is defined by 
+where 
+and
+8.4.2.2.2	Mapping to physical resources
+Mapping to physical resources is described in clause 8.4.3.
+8.4.2.3	Sidelink secondary synchronization signal
+8.4.2.3.1	Sequence generation
+The sequence  for the sidelink secondary synchronization signal is defined by 
+where
+and
+8.4.2.3.2	Mapping to physical resources
+Mapping to physical resources is described in clause 8.4.3.
+8.4.3	S-SS/PSBCH block
+8.4.3.1	Time-frequency structure of an S-SS/PSBCH block
+In the time domain, an S-SS/PSBCH block consists of  OFDM symbols, numbered in increasing order from 0 to  within the S-SS/PSBCH block, where S-PSS, S-SSS, and PSBCH with associated DM-RS are mapped to symbols as given by Table 8.4.3.1-1. The number of OFDM symbols in an S-SS/PSBCH block  for normal cyclic prefix and  for extended cyclic prefix. The first OFDM symbol in an S-SS/PSBCH block is the first OFDM symbol in the slot.
+In the frequency domain, an S-SS/PSBCH block consists of 132 contiguous subcarriers with the subcarriers numbered in increasing order from 0 to 131 within the sidelink S-SS/PSBCH block. The quantities  and  represent the frequency and time indices, respectively, within one sidelink S-SS/PSBCH block. 
+For an S-SS/PSBCH block, the UE shall use 
+-	antenna port 4000 for transmission of S-PSS, S-SSS, PSBCH and DM-RS for PSBCH;
+-	the same cyclic prefix length and subcarrier spacing for the S-PSS, S-SSS, PSBCH and DM-RS for PSBCH,
+Table 8.4.3.1-1: Resources within an S-SS/PSBCH block for S-PSS, S-SSS, PSBCH, and DM-RS. 
+8.4.3.1.1	Mapping of S-PSS within an S-SS/PSBCH block
+The sequence of symbols  constituting the sidelink primary synchronization signal in one OFDM symbol shall be scaled by a factor  to conform to the S-PSS power allocation specified in [5, TS 38.213] and mapped to resource elements  in increasing order of  in each of the symbols , where  and  are given by Table 8.4.3.1-1 and represent the frequency and time indices, respectively, within one S-SS/PSBCH block.
+8.4.3.1.2	Mapping of S-SSS within an S-SS/PSBCH block
+The sequence of symbols  constituting the sidelink secondary synchronization signal in one OFDM symbol shall be scaled by a factor  to conform to the S-SSS power allocation specified in [5, TS 38.213] and mapped to resource elements  in increasing order of  in each of the symbols , where  and  are given by Table 8.4.3.1-1 and represent the frequency and time indices, respectively, within one S-SS/PSBCH block.
+8.4.3.1.3	Mapping of PSBCH and DM-RS within an S-SS/PSBCH block
+The sequence of complex-valued symbols  constituting the physical sidelink broadcast channel shall be scaled by a factor  to conform to the PSBCH power allocation specified in [5, TS 38.213] and mapped in sequence starting with  to resource elements  which meet all the following criteria:
+-	they are not used for PSBCH demodulation reference signals
+The mapping to resource elements  not reserved for PSBCH DM-RS shall be in increasing order of first the index  and then the index, where  and  represent the frequency and time indices, respectively, within one S-SS/PSBCH block and are given by Table 8.4.3.1-1.
+The sequence of complex-valued symbols  constituting the demodulation reference signals for the S-SS/PSBCH block shall be scaled by a factor of  to conform to the PSBCH power allocation specified in [5, TS 38.213] and mapped to resource elements  in increasing order of first  and then  where  and  are given by Table 8.4.3.1-1 and represent the frequency and time indices, respectively, within one S-SS/PSBCH block.
+8.4.3.2	Time location of an S-SS/PSBCH block
+The locations in the time domain where a UE shall monitor for a possible S-SS/PSBCH block are described in clause 16.1  of [5, TS 38.213].
+8.5	Timing
+Transmission of a sidelink radio frame number  from the UE shall start  seconds before the start of the corresponding timing reference frame at the UE. The UE is not required to receive sidelink or downlink transmissions earlier than the value of , which is given in [12, TS 38.133], after the end of a sidelink transmission.
+For sidelink transmissions:
+If the UE has a serving cell fulfilling the S criterion according to clause 8.2 of [13, TS 38.304]
+-	The timing of reference radio frame  equals that of downlink radio frame  in the cell with the same uplink carrier frequency as the sidelink and
+-	 is given by clause 4.3.1 of [TS 38.211],
+Otherwise 
+-	The timing of reference radio frame i and  value are given by clause 12.2.2, 12.2.3, 12.2.4 or 12.2.5 of [12, TS 38.133]. 
+Figure 8.5-1: Sidelink timing relation
+The quantity  equals to 0.
+Annex A (informative):
+Change history
