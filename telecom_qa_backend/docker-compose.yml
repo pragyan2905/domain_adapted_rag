@@ -6,3 +6,13 @@ services:
       - "6334:6334"   # gRPC
     volumes:
       - ./qdrant_storage:/qdrant/storage
+
+  redis:
+    image: redis/redis-stack:latest
+    ports:
+      - "6380:6379"
+      - "8002:8001" # RedisInsight UI (optional, mapped to 8002 to avoid backend collision)
+    environment:
+      - REDIS_ARGS=--maxmemory 100mb --maxmemory-policy allkeys-lru --protected-mode no
+    volumes:
+      - ./redis_storage:/data

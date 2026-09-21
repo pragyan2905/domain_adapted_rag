@@ -7,3 +7,4 @@ FlagEmbedding
 ddgs
 python-dotenv
 python-docx
+redis
