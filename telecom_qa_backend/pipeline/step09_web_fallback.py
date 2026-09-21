@@ -39,5 +39,8 @@ def execute(context: QueryContext, web_search: WebSearch) -> QueryContext:
         )
         
         context.selected_evidence.append(web_chunk)
-        
+        # Also append to the citations list so the frontend sees it
+        if res.url not in context.citations:
+            context.citations.append(res.url)
+            
     return context
