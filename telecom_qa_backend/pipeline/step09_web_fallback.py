@@ -1,19 +1,13 @@
 import uuid
 from core.schemas import QueryContext, RetrievedChunk, ChunkMetadata, SourceType
-from core.interfaces import WebSearch, Generator
+from core.interfaces import WebSearch
 
-# We import the exact logic from Step 8 to re-validate
-from pipeline.step08_validation import execute as run_validation
-
-def execute(context: QueryContext, web_search: WebSearch, generator: Generator) -> QueryContext:
+def execute(context: QueryContext, web_search: WebSearch) -> QueryContext:
     """
     Step 9: Web Fallback (Conditional Branch)
-    This step ONLY runs if Step 8 (Validation) explicitly flagged the 
-    local Qdrant evidence as insufficient.
+    This step ONLY runs if the Combo Generation step explicitly flagged that
+    it needs a web search to answer the question.
     """
-    if context.evidence_validation and context.evidence_validation.is_sufficient:
-        return context  # We have what we need, skip the web
-        
     query = context.understanding.normalized_query if context.understanding else context.original_query
     
     # 1. Hit the Web Search API
@@ -46,8 +40,4 @@ def execute(context: QueryContext, web_search: WebSearch, generator: Generator) 
         
         context.selected_evidence.append(web_chunk)
         
-    # 3. Re-run Step 8 Validation on the newly expanded evidence pool
-    # We mutate context.evidence_validation with the new verdict
-    context = run_validation(context, generator)
-    
     return context

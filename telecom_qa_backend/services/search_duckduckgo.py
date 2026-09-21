@@ -12,8 +12,8 @@ class DuckDuckGoSearch(WebSearch):
     This is free, requires no API keys, and is strictly domain-restricted to 3GPP/ETSI.
     """
     def search(self, query: str, max_results: int = 3) -> List[WebSearchResult]:
-        # Hard-enforce the domain restriction so it only pulls from official standards sites, alliances, and top vendors
-        restricted_query = f"{query} (site:3gpp.org OR site:etsi.org OR site:o-ran.org OR site:ericsson.com OR site:gsma.com OR site:qualcomm.com OR site:nokia.com)"
+        # Perform a generic unrestricted web search
+        restricted_query = query
         
         results = []
         try:

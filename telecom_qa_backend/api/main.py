@@ -18,8 +18,8 @@ from services.search_duckduckgo import DuckDuckGoSearch
 # Pipeline Steps
 from pipeline import (
     step01_understanding, step02_representation, step03_retrieval, step04_fusion,
-    step05_filtering, step06_reranking, step07_selection, step08_validation,
-    step09_web_fallback, step10_abstention, step11_generation, step12_guardrails
+    step05_filtering, step06_reranking, step07_selection,
+    step09_web_fallback, step11_generation, step12_guardrails
 )
 
 # -------------------------------------------------------------------------
@@ -87,10 +87,16 @@ async def query_endpoint(request: QueryRequest):
         ctx = step05_filtering.execute(ctx)
         ctx = step06_reranking.execute(ctx, reranker)
         ctx = step07_selection.execute(ctx)
-        ctx = step08_validation.execute(ctx, generator)
-        ctx = step09_web_fallback.execute(ctx, web_search, generator)
-        ctx = step10_abstention.execute(ctx)
+        
+        # Combo Validation/Generation Step (First Pass with Local DB)
         ctx = step11_generation.execute(ctx, generator)
+        
+        # Fallback Loop
+        if ctx.needs_web_search:
+            ctx = step09_web_fallback.execute(ctx, web_search)
+            # Second Pass with Web Data
+            ctx = step11_generation.execute(ctx, generator)
+            
         ctx = step12_guardrails.execute(ctx)
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Pipeline failed at execution: {str(e)}")

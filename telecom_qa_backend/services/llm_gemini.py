@@ -30,6 +30,7 @@ class GeminiGenerator(Generator):
                 response = self.client.models.generate_content(
                     model=self.model_name,
                     contents=prompt,
+                    config=types.GenerateContentConfig(response_mime_type="application/json")
                 )
                 # The pipeline parses the JSON content itself, so we just return the raw text
                 return GenerationResult(

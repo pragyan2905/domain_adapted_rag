@@ -57,6 +57,7 @@ class GuardrailFlags(BaseModel):
     ungrounded_numbers: List[str] = Field(default_factory=list)
     version_conflict_detected: bool = False
     web_fallback_used: bool = False
+    answered_from_general_knowledge: bool = False
 
 class QueryContext(BaseModel):
     """
@@ -92,3 +93,4 @@ class QueryContext(BaseModel):
     citations: List[str] = Field(default_factory=list)  # List of chunk_ids
     guardrails: GuardrailFlags = Field(default_factory=GuardrailFlags)
     confidence_score: float = 0.0
+    needs_web_search: bool = False

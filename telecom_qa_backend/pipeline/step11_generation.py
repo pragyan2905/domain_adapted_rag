@@ -8,11 +8,6 @@ def execute(context: QueryContext, generator: Generator) -> QueryContext:
     If not abstained, prompts the LLM to write the final answer based strictly
     on the validated evidence, and enforces strict citation formatting.
     """
-    if context.is_abstained:
-        context.final_answer = f"ABSTAIN: {context.abstention_reason}"
-        context.citations = []
-        return context
-        
     query = context.understanding.normalized_query if context.understanding else context.original_query
     
     # Format evidence for the generator
@@ -26,15 +21,19 @@ def execute(context: QueryContext, generator: Generator) -> QueryContext:
 You are an expert telecom 3GPP standards assistant.
 A user asked: "{query}"
 
-You must answer the question using ONLY the evidence provided below.
-When you make a claim, you MUST cite the Evidence ID in brackets, like this: [123e4567-e89b-12d3-a456-426614174000].
-
-EVIDENCE:
+You have been provided with retrieved evidence from a local database:
 {evidence_text}
 
+Task:
+1. Attempt to answer the user's question using ONLY the provided evidence. If you do this, you MUST cite the Evidence ID in brackets, like this: [123e4567-e89b-12d3-a456-426614174000]. Do NOT combine brackets (e.g. do not do [UUID1, UUID2]), and never use simple numbers like [1].
+2. If the provided evidence is NOT sufficient to fully answer the question, try to answer the question using your own broad general knowledge of telecommunications. If you do this, DO NOT use any citations.
+3. If the evidence is insufficient AND you are not completely confident in your general knowledge to answer the question accurately, you must set the "needs_web_search" flag to true and leave the content blank.
+
 Return a JSON object with the following exact keys:
-1. "content": The text of your final answer, including bracketed citations.
+1. "content": The text of your final answer (if applicable).
 2. "citations": A list of strings containing all the Evidence IDs you cited.
+3. "needs_web_search": boolean. true ONLY if you cannot answer using evidence AND you are not confident in your general knowledge.
+4. "answered_from_general_knowledge": boolean. true ONLY if you ignored the evidence and answered from memory.
 
 Output strictly raw JSON.
 """
@@ -51,8 +50,11 @@ Output strictly raw JSON.
         data = json.loads(raw_content.strip())
         context.final_answer = data.get("content", "Error generating response.")
         context.citations = data.get("citations", [])
+        context.needs_web_search = data.get("needs_web_search", False)
+        context.guardrails.answered_from_general_knowledge = data.get("answered_from_general_knowledge", False)
     except Exception as e:
         context.final_answer = "Error parsing LLM generation output."
         context.citations = []
+        context.needs_web_search = False
         
     return context

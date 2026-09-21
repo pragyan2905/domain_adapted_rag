@@ -68,9 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
             data.citations.forEach((cit, index) => {
                 const citeNum = index + 1;
                 
-                // Replace the ugly UUID in the text with a clean superscript [1]
-                const regex = new RegExp(`\\[${cit}\\]`, 'g');
-                displayAnswer = displayAnswer.replace(regex, `<sup>[${citeNum}]</sup>`);
+                // Replace the ugly UUID wherever it appears with a clean number
+                const regex = new RegExp(cit, 'g');
+                displayAnswer = displayAnswer.replace(regex, citeNum);
                 
                 // Render the citation card with the matching number
                 const card = document.createElement('div');
@@ -90,6 +90,11 @@ document.addEventListener('DOMContentLoaded', () => {
             answerContent.innerHTML = `<div style="color: var(--status-error); font-weight: 500;">
                 ⚠️ System Abstained: ${data.abstention_reason || "Insufficient information to answer."}
             </div>`;
+        } else if (data.guardrails.answered_from_general_knowledge) {
+            // Warn the user inside the answer box too
+            answerContent.innerHTML = `<div style="margin-bottom: 1rem; color: var(--status-warning); font-weight: 500;">
+                ⚠️ Note: The local database and web search were insufficient. This answer was generated using the AI's general knowledge.
+            </div>` + marked.parse(displayAnswer);
         } else {
             // Use marked.js to render the cleaned markdown
             answerContent.innerHTML = marked.parse(displayAnswer);
@@ -98,16 +103,16 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. Update Guardrails
         updateGuardrail(
             grAbstain, grAbstainDesc, 
-            !data.is_abstained, 
-            data.is_abstained ? "System abstained due to lack of confidence." : "System successfully answered."
+            !data.guardrails.answered_from_general_knowledge, 
+            data.guardrails.answered_from_general_knowledge ? "Answer generated from AI memory." : "Answer grounded in documents."
         );
 
         updateGuardrail(
             grWeb, grWebDesc, 
             !data.guardrails.web_fallback_used, 
-            data.guardrails.web_fallback_used 
-                ? (data.is_abstained ? "Web search attempted but found no answer." : "Answer augmented via Web Search.") 
-                : "Pure 3GPP data used."
+            data.guardrails.answered_from_general_knowledge 
+                ? "N/A (Web search bypassed for AI memory)" 
+                : (data.guardrails.web_fallback_used ? "Answer augmented via Web Search." : "Pure 3GPP data used.")
         );
 
         updateGuardrail(
@@ -120,7 +125,9 @@ document.addEventListener('DOMContentLoaded', () => {
         updateGuardrail(
             grCitations, grCitationsDesc, 
             !hasUnresolvedCitations, 
-            hasUnresolvedCitations ? "Warning: LLM hallucinated citations." : "All claims grounded in DB."
+            data.guardrails.answered_from_general_knowledge 
+                ? "N/A (No citations required for AI memory)"
+                : (hasUnresolvedCitations ? "Warning: LLM hallucinated citations." : "All claims grounded in DB.")
         );
 
         // Show the results area
