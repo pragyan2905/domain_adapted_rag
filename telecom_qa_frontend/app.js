@@ -76,8 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const card = document.createElement('div');
                 card.className = 'citation-card';
                 card.innerHTML = `
-                    <span class="citation-id">[${citeNum}] CHUNK: ${cit.substring(0, 8)}...</span>
-                    <div class="citation-text">Hover to see full text (mocked for UI)</div>
+                    <span class="citation-id">[${citeNum}] Source: ${cit}</span>
                 `;
                 citationsList.appendChild(card);
             });
