@@ -126,7 +126,7 @@ async def query_endpoint(request: QueryRequest):
     )
     
     # Save to Semantic Cache
-    if redis_cache and query_vector and not ctx.is_abstained:
+    if redis_cache and query_vector and not ctx.is_abstained and "Error communicating with LLM" not in response.answer:
         ttl = 2592000 # 30 days default for pure 3GPP data
         if ctx.guardrails.answered_from_general_knowledge or ctx.guardrails.web_fallback_used:
             ttl = 86400 # 24 hours for dynamic/web data

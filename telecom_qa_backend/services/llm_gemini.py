@@ -15,7 +15,7 @@ class GeminiGenerator(Generator):
     Uses the new google-genai SDK (replaces deprecated google-generativeai).
     This acts as our placeholder until the local Qwen QLoRA model is merged.
     """
-    def __init__(self, api_key: str, model_name: str = "gemini-3.5-flash"):
+    def __init__(self, api_key: str, model_name: str = "gemini-3.5-flash-lite"):
         self.client = genai.Client(api_key=api_key)
         self.model_name = model_name
 
