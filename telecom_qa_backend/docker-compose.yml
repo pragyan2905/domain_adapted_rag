@@ -16,3 +16,20 @@ services:
       - REDIS_ARGS=--maxmemory 100mb --maxmemory-policy allkeys-lru --protected-mode no
     volumes:
       - ./redis_storage:/data
+
+  backend:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8001:8001"
+    environment:
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - QDRANT_HOST=qdrant
+      - QDRANT_PORT=6333
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - qdrant
+      - redis
+    restart: unless-stopped

@@ -1,13 +1,15 @@
 import json
 from core.schemas import QueryContext, QueryUnderstanding, AnswerabilityType
 from core.interfaces import Generator
+from core.tracer import trace_step
 
 def execute(context: QueryContext, generator: Generator) -> QueryContext:
     """
     Step 1: Query Understanding
     Uses the LLM to normalize telecom acronyms and detect intent before retrieval.
     """
-    prompt = f"""
+    with trace_step(context, "Step 01: Understanding", input_count=1) as t:
+        prompt = f"""
 You are a 3GPP telecom standards query understanding agent.
 Analyze the following query: "{context.original_query}"
 
@@ -19,26 +21,33 @@ Return a JSON object with the following exact keys:
 
 Output strictly raw JSON. Do not use markdown formatting like ```json or add any other text.
 """
-    
-    # Empty context because we haven't retrieved anything yet
-    result = generator.generate(prompt=prompt, context=[])
-    
-    # Clean possible markdown from the LLM output
-    raw_content = result.content.strip()
-    if raw_content.startswith("```json"):
-        raw_content = raw_content[7:]
-    if raw_content.endswith("```"):
-        raw_content = raw_content[:-3]
-        
-    try:
-        data = json.loads(raw_content.strip())
-        context.understanding = QueryUnderstanding(**data)
-    except Exception as e:
-        # Fallback if LLM fails to output valid JSON or fails Pydantic validation
-        context.understanding = QueryUnderstanding(
-            normalized_query=context.original_query,
-            detected_intent="unknown",
-            answerability=AnswerabilityType.FACTUAL_LOOKUP
-        )
-        
+
+        # Empty context because we haven't retrieved anything yet
+        result = generator.generate(prompt=prompt, context=[])
+
+        # Clean possible markdown from the LLM output
+        raw_content = result.content.strip()
+        if raw_content.startswith("```json"):
+            raw_content = raw_content[7:]
+        if raw_content.endswith("```"):
+            raw_content = raw_content[:-3]
+
+        try:
+            data = json.loads(raw_content.strip())
+            context.understanding = QueryUnderstanding(**data)
+            t["extra"] = {
+                "answerability": data.get("answerability"),
+                "acronyms_expanded": len(data.get("expanded_acronyms", {})),
+            }
+        except Exception as e:
+            # Fallback if LLM fails to output valid JSON or fails Pydantic validation
+            context.understanding = QueryUnderstanding(
+                normalized_query=context.original_query,
+                detected_intent="unknown",
+                answerability=AnswerabilityType.FACTUAL_LOOKUP
+            )
+            t["extra"] = {"parse_error": str(e)}
+
+        t["output_count"] = 1
+
     return context

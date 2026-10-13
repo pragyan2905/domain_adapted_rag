@@ -1,6 +1,7 @@
 from enum import Enum
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from pydantic import BaseModel, Field
+import time
 
 # -------------------------------------------------------------------------
 # 1. Chunk and Metadata Models
@@ -59,22 +60,52 @@ class GuardrailFlags(BaseModel):
     web_fallback_used: bool = False
     answered_from_general_knowledge: bool = False
 
+# -------------------------------------------------------------------------
+# 3. Pipeline Observability (Tracing)
+# -------------------------------------------------------------------------
+class StepTrace(BaseModel):
+    """
+    Captures timing and throughput metrics for a single pipeline step.
+    """
+    step_name: str
+    duration_ms: float
+    input_count: int = 0   # Candidates entering this step
+    output_count: int = 0  # Candidates surviving this step
+    metadata: Dict[str, Any] = Field(default_factory=dict)
+
+class PipelineTrace(BaseModel):
+    """
+    Full trace of the entire pipeline execution, returned alongside the answer.
+    Enables the frontend to render a live funnel/step-by-step visualization.
+    """
+    total_duration_ms: float = 0.0
+    cache_hit: bool = False
+    steps: List[StepTrace] = Field(default_factory=list)
+
+# -------------------------------------------------------------------------
+# 4. Conversation Memory
+# -------------------------------------------------------------------------
+class ConversationTurn(BaseModel):
+    role: str  # "user" or "assistant"
+    content: str
+
 class QueryContext(BaseModel):
     """
     The central state object passed through the entire 12-step pipeline.
     It starts with just the 'original_query' and gets populated sequentially.
     """
     original_query: str
-    
+    session_id: Optional[str] = None
+
     # Step 1: Understanding
     understanding: Optional[QueryUnderstanding] = None
-    
+
     # Step 2: Representation (Vectors are tiny, safe to keep in context for the lifespan of the query)
     target_ts_numbers: List[str] = Field(default_factory=list)
     target_releases: List[str] = Field(default_factory=list)
     query_dense_vector: Optional[List[float]] = None
     query_sparse_vector: Optional[dict[str, float]] = None
-    
+
     # Step 3-7: Candidates
     dense_candidates: List[RetrievedChunk] = Field(default_factory=list)
     sparse_candidates: List[RetrievedChunk] = Field(default_factory=list)
@@ -82,15 +113,40 @@ class QueryContext(BaseModel):
     filtered_candidates: List[RetrievedChunk] = Field(default_factory=list)
     reranked_candidates: List[RetrievedChunk] = Field(default_factory=list)
     selected_evidence: List[RetrievedChunk] = Field(default_factory=list)
-    
+
     # Step 8-10: Validation & Abstention
     evidence_validation: Optional[EvidenceValidationResult] = None
     is_abstained: bool = False
     abstention_reason: Optional[str] = None
-    
+
     # Step 11-12: Output
     final_answer: Optional[str] = None
     citations: List[str] = Field(default_factory=list)  # List of chunk_ids
     guardrails: GuardrailFlags = Field(default_factory=GuardrailFlags)
     confidence_score: float = 0.0
     needs_web_search: bool = False
+
+    # Conversation history injected from Redis before pipeline runs
+    conversation_history: List[ConversationTurn] = Field(default_factory=list)
+
+    # Pipeline trace (populated by each step, returned to client)
+    pipeline_trace: PipelineTrace = Field(default_factory=PipelineTrace)
+
+
+# -------------------------------------------------------------------------
+# API Contract Schemas
+# -------------------------------------------------------------------------
+class QueryRequest(BaseModel):
+    query: str
+    session_id: Optional[str] = None  # For multi-turn conversation
+
+
+class QueryResponse(BaseModel):
+    answer: str
+    citations: List[str]
+    is_abstained: bool
+    abstention_reason: Optional[str] = None
+    guardrails: GuardrailFlags
+    confidence_score: float
+    session_id: str
+    pipeline_trace: PipelineTrace
