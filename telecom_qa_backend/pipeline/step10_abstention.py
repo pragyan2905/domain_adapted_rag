@@ -3,10 +3,9 @@ from core.tracer import trace_step
 
 def execute(context: QueryContext) -> QueryContext:
     """
-    Step 10: Abstention
-    If we reached this point and the evidence is STILL insufficient
-    (even after the Web Fallback branch), we pull the emergency brake.
-    We refuse to generate an answer to prevent hallucinations.
+    Step 10: Abstention Gate
+    Halts synthesis if evidence validation reports insufficient grounding
+    (even after web fallback), returning an abstention decision.
     """
     with trace_step(context, "Step 10: Abstention Gate", input_count=1) as t:
         if context.evidence_validation and not context.evidence_validation.is_sufficient:

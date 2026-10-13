@@ -1,52 +1,56 @@
-import json
 from core.schemas import QueryContext, QueryUnderstanding, AnswerabilityType
 from core.interfaces import Generator
 from core.tracer import trace_step
+from core.structured_llm import generate_structured
 
 def execute(context: QueryContext, generator: Generator) -> QueryContext:
     """
-    Step 1: Query Understanding
-    Uses the LLM to normalize telecom acronyms and detect intent before retrieval.
+    Step 1: Query Understanding & Decomposition
+    Expands acronyms, determines answerability, and decomposes multi-hop queries.
     """
     with trace_step(context, "Step 01: Understanding", input_count=1) as t:
         prompt = f"""
-You are a 3GPP telecom standards query understanding agent.
-Analyze the following query: "{context.original_query}"
+You are a 3GPP standards query understanding agent.
+Analyze the following user query: "{context.original_query}"
 
-Return a JSON object with the following exact keys:
-1. "normalized_query": The query with telecom acronyms expanded (e.g., UE to User Equipment, RRC to Radio Resource Control).
-2. "expanded_acronyms": A dictionary mapping the original acronym to the expansion.
-3. "detected_intent": A short string describing what the user wants.
-4. "answerability": Must be exactly one of: "factual_lookup", "multi_step_procedural", "out_of_domain".
+Task:
+1. Normalize the query by expanding technical acronyms (e.g., UE -> User Equipment, AMF -> Access and Mobility Management Function).
+2. Provide a dictionary of expanded acronyms.
+3. Detect intent (e.g., "compare handover procedures", "identify timer values", "describe architecture").
+4. Classify answerability as exactly one of: "factual_lookup", "multi_step_procedural", "out_of_domain".
+5. If the query is multi-step, comparative, or mentions multiple concepts/releases, decompose it into 2-3 focused atomic sub-queries for independent retrieval. If simple, keep sub_queries as a single element list containing the normalized query.
 
-Output strictly raw JSON. Do not use markdown formatting like ```json or add any other text.
+Return strictly a valid JSON object matching the schema:
+{{
+  "normalized_query": "string",
+  "expanded_acronyms": {{"ACRONYM": "Expansion"}},
+  "detected_intent": "string",
+  "answerability": "factual_lookup" | "multi_step_procedural" | "out_of_domain",
+  "sub_queries": ["sub query 1", "sub query 2"]
+}}
 """
-
-        # Empty context because we haven't retrieved anything yet
-        result = generator.generate(prompt=prompt, context=[])
-
-        # Clean possible markdown from the LLM output
-        raw_content = result.content.strip()
-        if raw_content.startswith("```json"):
-            raw_content = raw_content[7:]
-        if raw_content.endswith("```"):
-            raw_content = raw_content[:-3]
-
         try:
-            data = json.loads(raw_content.strip())
-            context.understanding = QueryUnderstanding(**data)
+            understanding = generate_structured(
+                generator=generator,
+                prompt=prompt,
+                response_model=QueryUnderstanding,
+                max_retries=1
+            )
+            context.understanding = understanding
             t["extra"] = {
-                "answerability": data.get("answerability"),
-                "acronyms_expanded": len(data.get("expanded_acronyms", {})),
+                "answerability": understanding.answerability.value,
+                "acronyms_expanded": len(understanding.expanded_acronyms),
+                "sub_queries_count": len(understanding.sub_queries),
             }
         except Exception as e:
-            # Fallback if LLM fails to output valid JSON or fails Pydantic validation
+            # Fallback on parse failure
             context.understanding = QueryUnderstanding(
                 normalized_query=context.original_query,
-                detected_intent="unknown",
-                answerability=AnswerabilityType.FACTUAL_LOOKUP
+                detected_intent="technical_lookup",
+                answerability=AnswerabilityType.FACTUAL_LOOKUP,
+                sub_queries=[context.original_query]
             )
-            t["extra"] = {"parse_error": str(e)}
+            t["extra"] = {"fallback": True, "error": str(e)}
 
         t["output_count"] = 1
 

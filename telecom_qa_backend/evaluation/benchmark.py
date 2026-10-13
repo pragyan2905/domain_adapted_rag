@@ -268,7 +268,7 @@ class BenchmarkRunner:
             print(f"[{i:02d}/{len(questions)}] {q.id:<12} {q.question[:55]}...", end=' ', flush=True)
             res = self.run_question(q)
             results.append(res)
-            status = "✓" if (res.abstention_correct is not False and res.keyword_pass and not res.error) else "✗"
+            status = "[PASS]" if (res.abstention_correct is not False and res.keyword_pass and not res.error) else "[FAIL]"
             print(f"{status} ({res.latency_ms:.0f}ms)")
             if res.error:
                 print(f"           ERROR: {res.error}")

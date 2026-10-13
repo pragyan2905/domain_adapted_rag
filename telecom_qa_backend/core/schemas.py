@@ -46,6 +46,7 @@ class QueryUnderstanding(BaseModel):
     expanded_acronyms: dict[str, str] = Field(default_factory=dict)
     detected_intent: str
     answerability: AnswerabilityType
+    sub_queries: List[str] = Field(default_factory=list)
 
 class EvidenceValidationResult(BaseModel):
     is_sufficient: bool
@@ -101,6 +102,7 @@ class QueryContext(BaseModel):
     understanding: Optional[QueryUnderstanding] = None
 
     # Step 2: Representation (Vectors are tiny, safe to keep in context for the lifespan of the query)
+    hypothetical_document: Optional[str] = None
     target_ts_numbers: List[str] = Field(default_factory=list)
     target_releases: List[str] = Field(default_factory=list)
     query_dense_vector: Optional[List[float]] = None
@@ -134,6 +136,32 @@ class QueryContext(BaseModel):
 
 
 # -------------------------------------------------------------------------
+# Generation & Evaluation Schemas
+# -------------------------------------------------------------------------
+class GenerationResponse(BaseModel):
+    content: str = ""
+    citations: List[str] = Field(default_factory=list)
+    needs_web_search: bool = False
+    answered_from_general_knowledge: bool = False
+
+
+class CompareConfigResult(BaseModel):
+    config_name: str
+    answer: str
+    confidence_score: float
+    citations_count: int
+    duration_ms: float
+    retrieval_count: int
+    guardrails_passed: bool
+
+
+class CompareResponse(BaseModel):
+    query: str
+    advanced_rag: CompareConfigResult
+    baseline_naive_rag: CompareConfigResult
+
+
+# -------------------------------------------------------------------------
 # API Contract Schemas
 # -------------------------------------------------------------------------
 class QueryRequest(BaseModel):
@@ -150,3 +178,4 @@ class QueryResponse(BaseModel):
     confidence_score: float
     session_id: str
     pipeline_trace: PipelineTrace
+

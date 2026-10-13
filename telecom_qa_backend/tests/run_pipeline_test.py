@@ -11,11 +11,7 @@ from services.rerank_bge import BGEReranker
 from services.llm_gemini import GeminiGenerator
 from services.search_duckduckgo import DuckDuckGoSearch
 
-from pipeline import (
-    step01_understanding, step02_representation, step03_retrieval, step04_fusion,
-    step05_filtering, step06_reranking, step07_selection, step08_validation,
-    step09_web_fallback, step10_abstention, step11_generation, step12_guardrails
-)
+from pipeline.orchestrator import PipelineOrchestrator
 
 def run_test():
     from dotenv import load_dotenv
@@ -44,25 +40,16 @@ def run_test():
     print(f"\n--- Running Pipeline for Query: '{test_query}' ---\n")
     
     ctx = QueryContext(original_query=test_query)
-    
-    steps = [
-        ("Step  1: Understanding", step01_understanding.execute, [generator]),
-        ("Step  2: Representation", step02_representation.execute, [embedder]),
-        ("Step  3: Retrieval", step03_retrieval.execute, [qdrant]),
-        ("Step  4: Fusion", step04_fusion.execute, []),
-        ("Step  5: Filtering", step05_filtering.execute, []),
-        ("Step  6: Reranking", step06_reranking.execute, [reranker]),
-        ("Step  7: Selection", step07_selection.execute, []),
-        ("Step  8: Validation", step08_validation.execute, [generator]),
-        ("Step  9: Web Fallback", step09_web_fallback.execute, [web_search, generator]),
-        ("Step 10: Abstention", step10_abstention.execute, []),
-        ("Step 11: Generation", step11_generation.execute, [generator]),
-        ("Step 12: Guardrails", step12_guardrails.execute, [])
-    ]
-    
-    for name, func, args in steps:
-        print(f"Executing {name}...")
-        ctx = func(ctx, *args)
+
+    orchestrator = PipelineOrchestrator(
+        embedder=embedder,
+        reranker=reranker,
+        qdrant=qdrant,
+        generator=generator,
+        web_search=web_search,
+    )
+
+    ctx = orchestrator.run(ctx)
         
     print("\n--- Pipeline Complete! ---\n")
     print("FINAL ANSWER:")

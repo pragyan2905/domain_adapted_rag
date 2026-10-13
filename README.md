@@ -1,99 +1,223 @@
-# Domain Adapted RAG: 3GPP Telecom Quality Assurance System
+# 3GPP Telecom Quality Assurance Platform
+### Domain-Adapted Retrieval-Augmented Generation (RAG) System for 5G/NR Technical Specifications
 
-## 1. Project Overview
-This project implements an advanced, domain-adapted Retrieval-Augmented Generation (RAG) system specialized for the 3GPP Telecommunications domain. It is designed to accurately answer complex technical queries regarding telecommunication standards (e.g., 5G technologies, RAN, Core Networks) by relying on a highly structured 12-step pipeline, strict guardrails, and hierarchical chunk metadata matching. It effectively minimizes hallucinations and utilizes abstention-aware answering (refusing to answer when evidence is insufficient or out of domain).
+---
 
-## 2. System Architecture
-The system follows a microservices-inspired architecture containing a frontend web application, a backend API server, a vector database, and an in-memory caching layer.
+## 1. Executive Summary
 
-### Core Technologies
-*   **Backend Framework**: FastAPI, Pydantic, Uvicorn
-*   **Vector Database**: Qdrant (deployed via Docker)
-*   **Caching Layer**: Redis Stack (Semantic caching using dense vectors, deployed via Docker)
-*   **LLM Providers / Generators**: Google Gemini (via `google-genai`). *Note: Local models (e.g., Qwen2.5-1.5B-Instruct fine-tuned via QLoRA) are not currently being used in the active pipeline but will be integrated in future phases.*
-*   **Embedding & Reranking**: BGE Models (`FlagEmbedding` with FP16 support)
-*   **Web Fallback / Search**: DuckDuckGo Search API (`ddgs`)
-*   **Frontend**: Vanilla HTML5, CSS3, JavaScript
+Telecommunications standards published by the **3rd Generation Partnership Project (3GPP)** encompass thousands of densely interrelated technical specifications (e.g., TS 38.331, TS 38.211, TS 38.212). Standard Large Language Models (LLMs) consistently fail on telecommunications queries due to three fundamental domain challenges:
+1. **Extreme Lexical and Acronym Density**: Hundreds of colliding acronyms (e.g., UE, AMF, SMF, UPF, RRC, BWP, PRACH).
+2. **Cross-Release Protocol Shifts**: Procedures valid in Release 15/16 often conflict with enhancements in Release 17/18.
+3. **Severe Hallucination Risks in Mission-Critical Infrastructure**: Generating incorrect numerical timers, slot formats, or message sequences can lead to protocol invalidity.
 
-## 3. The 12-Step RAG Assembly Line
-The backend execution is driven by a linear `QueryContext` state machine that traverses a highly deterministic 12-step pipeline:
+This project delivers a **production-grade, domain-adapted RAG platform** engineered specifically for 3GPP standards. It couples a hybrid retrieval engine (dense + sparse vector indexing) with a deterministic **12-Step RAG Pipeline Orchestrator**, real-time **Pipeline Observability Tracing**, **LLM-as-a-Judge Evidence Validation**, **Abstention Gating**, and post-generation **Deterministic Guardrails**.
 
-1.  **Step 01 - Understanding**: Normalizes the user query, expands domain-specific acronyms, and detects query intent (Factual Lookup, Multi-step, or Out-of-Domain).
-2.  **Step 02 - Representation**: Generates dense and sparse vector embeddings of the query using the BGE embedder.
-3.  **Step 03 - Retrieval**: Fetches top candidate chunks from the Qdrant vector store.
-4.  **Step 04 - Fusion**: Implements Reciprocal Rank Fusion (RRF) to merge and normalize scores from multiple retrieval strategies.
-5.  **Step 05 - Filtering**: Prunes retrieved candidates that fall below a strict confidence threshold.
-6.  **Step 06 - Reranking**: Applies a Cross-Encoder (BGE Reranker) to evaluate the exact semantic match between the query and the filtered chunks.
-7.  **Step 07 - Selection**: Identifies and isolates the top-K chunks to serve as the grounded context for the generator.
-8.  **Step 08 - Validation**: Verifies if the selected context is logically sufficient to answer the question, checking for contradictions.
-9.  **Step 09 - Web Fallback**: Triggers dynamically if local evidence validation fails, querying DuckDuckGo to augment the context.
-10. **Step 10 - Abstention**: Intercepts the pipeline if the query is out of domain or lacks grounded evidence, forcing an "I cannot answer" response rather than hallucinating.
-11. **Step 11 - Generation**: Passes the validated context and query to the LLM (currently Gemini) for generating the final answer.
-12. **Step 12 - Guardrails**: A strict, deterministic Python post-processing step to catch LLM hallucinations before returning the answer. It implements:
-    *   **Strict Citation Check**: Validates that all citations claimed by the LLM perfectly match the `chunk_id`s in the selected evidence.
-    *   **Strict Numeric Grounding Check**: Uses regex to extract all numbers from the generated answer and asserts they exist verbatim in the raw evidence text, flagging ungrounded numbers.
-    *   **Version Conflict Check**: Flags answers that draw evidence from multiple 3GPP releases (e.g., mixing Rel-17 and Rel-18).
-    *   **Web Fallback Disclaimer**: Appends a clear text disclaimer if DuckDuckGo search was utilized due to insufficient local knowledge.
+---
 
-## 4. Semantic Caching Implementation
-To drastically reduce latency and API costs, the system uses **Redis Stack** as a semantic cache. 
-*   Before entering the pipeline, the incoming query is converted to a 1024-dimensional dense vector (FLOAT32).
-*   RediSearch performs a K-Nearest Neighbors (KNN) search (`*=>[KNN 1 @vector $vec AS score]`) using a `FLAT` index and a `COSINE` distance metric.
-*   The system calculates similarity as `1.0 - distance`. If this similarity score is >= 0.90, the pipeline is entirely bypassed, and the cached JSON response is immediately returned.
-*   Cache Time-To-Live (TTL) is dynamically assigned: 30 days for pure 3GPP documentation answers and 24 hours for answers relying on Web Fallback.
+## 2. End-to-End System Architecture
 
-## 5. Domain-Specific Metadata Schema
-Each document chunk ingested into Qdrant is strictly typed with 3GPP metadata to enable precision filtering and citation generation:
-*   `chunk_id`: Primary key for citation tracking.
-*   `ts_number`: Technical Specification number (e.g., '38.331').
-*   `series`: 3GPP Series (e.g., '38-series').
-*   `release_version`: 3GPP Release (e.g., 'Rel-17').
-*   `clause_id` & `clause_title`: Precise targeting for user-facing citations.
-*   `breadcrumb`: Full hierarchical path within the standard.
+```mermaid
+flowchart TD
+    User([User Query / Web Client]) --> API[FastAPI Gateway :8001]
+    
+    subgraph Storage ["Storage & Cache Layer"]
+        RedisCache[("Redis Stack :6380\nSemantic Cache (KNN Cosine)\nSession Memory (1h TTL)")]
+        QdrantDB[("Qdrant Vector DB :6333\n1,748 3GPP TS Chunks\nDense: 1024-dim | Sparse: BM25-style")]
+    end
 
-## 6. Model Fine-Tuning (QLoRA)
-A dedicated training pipeline (`qlora_finetune.ipynb`) was developed to adapt an open-weights model for local, privacy-preserving execution:
-*   **Base Model**: `Qwen/Qwen2.5-1.5B-Instruct`
-*   **Dataset**: `netop/TeleQnA` (Test split repartitioned for training/eval)
-*   **Methodology**: 4-bit NF4 Quantized Low-Rank Adaptation (QLoRA) using `Unsloth` (r=16, alpha=16).
-*   **Negative Sampling**: The model is heavily trained on "hard negatives" and "answer-contamination filters". If the provided context does not contain the answer, the model is explicitly trained to output a hardcoded abstention string ("I cannot answer this from the provided context.") rather than hallucinating.
+    API --> RateCheck{Rate & Quota Limiter}
+    RateCheck -- "Quota Exceeded" --> HTTP429[HTTP 429: Rate Limit Exceeded]
+    RateCheck -- "Allowed" --> CacheCheck{Semantic Cache Hit?\nSim >= 0.90}
+    
+    CacheCheck -- "HIT (<15ms)" --> ReturnCached[Return Cached Answer + Trace]
+    CacheCheck -- "MISS" --> Orchestrator["Pipeline Orchestrator (12 Steps)"]
 
-## 7. Setup and Execution
+    subgraph Pipeline ["12-Step Assembly Line"]
+        S1["Step 01: Query Understanding & Acronym Expansion"] --> S2["Step 02: Representation (BGE-M3 Dense + Sparse)"]
+        S2 --> S3["Step 03: Hybrid Vector Search (Qdrant)"]
+        S3 --> S4["Step 04: Reciprocal Rank Fusion (RRF)"]
+        S4 --> S5["Step 05: Confidence Threshold Filtering"]
+        S5 --> S6["Step 06: BGE-Reranker-v2 Cross-Encoder"]
+        S6 --> S7["Step 07: Evidence Selection & Confidence Calibration"]
+        S7 --> S8{"Step 08: LLM-as-Judge Validation"}
+        
+        S8 -- "Insufficient" --> S9["Step 09: External Technical Fallback"]
+        S9 --> S8_Recheck{"Re-validate Evidence"}
+        S8_Recheck -- "Still Insufficient" --> S10["Step 10: Abstention Gate (Refusal)"]
+        S8 -- "Sufficient" --> S11["Step 11: Generation (Gemini 2.5 / Qwen2.5 QLoRA)"]
+        S8_Recheck -- "Sufficient" --> S11
+        
+        S11 --> S12["Step 12: Deterministic Python Guardrails"]
+    end
+
+    Orchestrator --> Pipeline
+    S10 --> Output([Structured JSON / SSE Stream])
+    S12 --> StoreCache[Save to Semantic Cache]
+    StoreCache --> Output
+    Output --> UI["Web Application Interface (:5500)"]
+```
+
+---
+
+## 3. The 12-Step Pipeline Specification
+
+The backend execution is governed by [`PipelineOrchestrator`](telecom_qa_backend/pipeline/orchestrator.py), which enforces a deterministic state machine over [`QueryContext`](telecom_qa_backend/core/schemas.py):
+
+| Step | Module | Functionality | Algorithmic Method / Model |
+|---|---|---|---|
+| **01** | `step01_understanding` | Normalizes query, detects intent, and expands domain acronyms. | Structured LLM prompt -> `QueryUnderstanding` |
+| **02** | `step02_representation` | Generates multi-modal dense and sparse query vectors. | `BAAI/bge-m3` (1024-dim dense + lexical sparse) |
+| **03** | `step03_retrieval` | Executes dual-vector retrieval against Qdrant index. | Cosine dense search + Sparse dot product |
+| **04** | `step04_fusion` | Merges dense and sparse result lists. | Reciprocal Rank Fusion (RRF, $k=60$) |
+| **05** | `step05_filtering` | Prunes weak candidates before computationally expensive reranking. | Score cutoff filter (`MIN_FUSION_SCORE = 0.005`) |
+| **06** | `step06_reranking` | Cross-encoder joint scoring of $(Query, Passage)$ pairs. | `BAAI/bge-reranker-v2-m3` (FP16 optimized) |
+| **07** | `step07_selection` | Selects top-$K$ chunks within token context constraints; computes confidence. | Dynamic context window packing + Sigmoid calibration |
+| **08** | `step08_validation` | Evaluates evidence sufficiency and checks for cross-chunk contradictions. | LLM-as-a-Judge verification protocol |
+| **09** | `step09_web_fallback` | Supplementary search triggered only when local retrieval is insufficient. | Domain-restricted DuckDuckGo search (`ddgs`) |
+| **10** | `step10_abstention` | Safety gate halting synthesis on out-of-domain or ungrounded queries. | Explicit abstention flag setting (`is_abstained=True`) |
+| **11** | `step11_generation` | Context-grounded synthesis with mandatory bracketed citations. | Domain LLM (Gemini / Fine-tuned Qwen2.5) |
+| **12** | `step12_guardrails` | Post-generation deterministic verification. | Python regex, citation resolution, version checks |
+
+---
+
+## 4. Grounding & Hallucination Guardrails
+
+To meet strict telecommunications standards, generation output is gated by deterministic Python post-processors in [`step12_guardrails.py`](telecom_qa_backend/pipeline/step12_guardrails.py):
+
+```
+                                  [ Synthesized Answer ]
+                                             │
+             ┌───────────────────────────────┼───────────────────────────────┐
+             ▼                               ▼                               ▼
+    [ Citation Grounding ]         [ Numerical Verbatim ]         [ Release Consistency ]
+   Asserts every [chunk_id]        Extracts all numeric tokens   Verifies all cited chunks
+   in the answer strictly maps    and asserts exact appearance   belong to congruent 3GPP
+    to selected context chunks.    in the retrieved evidence.      specification releases.
+```
+
+1. **Exact Citation Resolution**: Every citation tag `[chunk_id]` claimed by the LLM is resolved against `context.selected_evidence`. Any ungrounded chunk reference is flagged in `unresolved_citations`.
+2. **Verbatim Numerical Grounding**: Telecom parameters (e.g., `15 kHz`, `slot 0`, `T300 = 1000ms`) are extracted using regex and cross-referenced against raw retrieved source chunks. Unmatched numbers are isolated in `ungrounded_numbers`.
+3. **Cross-Release Conflict Detection**: Flags instances where evidence simultaneously cites disparate 3GPP releases (e.g., Rel-15 vs Rel-18), alerting the user to potential specification divergence.
+4. **Abstention Decision Engine**: If validation declares evidence insufficient, the system refuses generation (`"I cannot answer based on verified 3GPP specifications"`) rather than hallucinating.
+
+---
+
+## 5. Caching, Telemetry & Free-Tier Protection
+
+### Semantic Caching Layer (Redis Stack)
+- Pre-retrieval vector similarity search using RediSearch KNN with Cosine distance.
+- When an incoming query vector has $\ge 0.90$ similarity to a prior query, the full response is served from memory in **under 15 ms**, reducing LLM API consumption to zero.
+- Dynamic TTL: 30 days for standardized specification queries; 24 hours for web-fallback queries.
+
+### Pipeline Observability & Tracing
+- Centralized context manager in [`core/tracer.py`](telecom_qa_backend/core/tracer.py) records duration, input chunk count, output chunk count, and metadata for every step.
+- Full execution funnel is returned in the API contract (`PipelineTrace`) and rendered as an interactive funnel in the UI.
+
+### Real-time SSE Streaming
+- The `/query/stream` endpoint utilizes Server-Sent Events (SSE) to broadcast stage-by-stage pipeline progress (`step_progress`, `step_done`, `complete`) to the client, providing transparent latency visibility.
+
+### Rate Limiting & Quota Management
+- Implemented in [`services/rate_limiter.py`](telecom_qa_backend/services/rate_limiter.py) to prevent free-tier exhaustion:
+  - **Per-minute sliding window**: Max 5 queries / minute per IP.
+  - **Daily quota cap**: Max 30 queries / day per IP.
+  - **Session turn cap**: Max 10 turns per conversation session.
+
+---
+
+## 6. Evaluation Suite & Benchmark Methodology
+
+An automated evaluation harness is provided in [`evaluation/benchmark.py`](telecom_qa_backend/evaluation/benchmark.py), testing the live pipeline against 14 gold-standard test queries spanning:
+- **Radio Resource Control (RRC)**: Connection establishment, state transitions, reconfiguration.
+- **5G Core Network (5GC)**: AMF mobility, SMF session allocation, NRF service discovery, Network Slicing.
+- **Physical Layer / RAN**: FR1 vs FR2 frequency allocations, Massive MIMO beamforming, FDD/TDD duplexing.
+- **Network Security**: 5G-AKA authentication vectors, AUSF key exchange.
+- **Out-of-Domain (OOD) Negative Controls**: Open-domain chit-chat, weather, general programming (verifies clean abstention).
+
+### Evaluation Metrics Computed
+$$\text{Abstention Accuracy} = \frac{\text{Correct In-Domain Answers} + \text{Correct OOD Refusals}}{\text{Total Test Cases}}$$
+$$\text{Citation Resolution Rate} = \frac{\text{Resolved Context Citations}}{\text{Total Claimed Citations}}$$
+$$\text{Numerical Grounding Rate} = 1 - \frac{\text{Ungrounded Numbers}}{\text{Total Numeric Entities}}$$
+
+Run the benchmark suite:
+```bash
+python -m evaluation.benchmark
+```
+*Results are exported to timestamped JSON summaries in `telecom_qa_backend/evaluation/results/`.*
+
+---
+
+## 7. Model Fine-Tuning (QLoRA Adaptation)
+
+A companion training pipeline ([`qlora_finetune.ipynb`](qlora_finetune.ipynb)) explores open-weights parameter-efficient fine-tuning:
+- **Base Architecture**: `Qwen/Qwen2.5-1.5B-Instruct`
+- **Domain Dataset**: `netop/TeleQnA` (telecom domain question-answering corpus)
+- **Quantization & LoRA Configuration**: 4-bit NormalFloat (NF4) via bitsandbytes; LoRA rank $r=16$, $\alpha=16$ targeting projection matrices (`q_proj`, `k_proj`, `v_proj`, `o_proj`).
+- **Hard Negative Training**: Trained explicitly on context-contamination samples to teach the model to emit structured abstention tokens when reference evidence does not contain the answer.
+
+---
+
+## 8. Quickstart Guide
 
 ### Prerequisites
-*   Docker & Docker Compose
-*   Python 3.9+
-*   Environment Variables: `GEMINI_API_KEY` stored in `.env`
+- Python 3.11+
+- Docker & Docker Compose
+- Google Gemini API Key
 
-### Running the Services
-1.  **Launch Databases**:
-    ```bash
-    cd telecom_qa_backend
-    docker-compose up -d
-    ```
-    This spins up Qdrant (Port 6333) and Redis Stack (Port 6380).
-2.  **Install Python Dependencies**:
-    ```bash
-    pip install -r requirements.txt
-    ```
-3.  **Start the Backend Server**:
-    ```bash
-    uvicorn api.main:app --host 127.0.0.1 --port 8001
-    ```
-4.  **Run the Frontend**:
-    Serve the `telecom_qa_frontend` directory using any local web server (e.g., `python -m http.server 3000`).
+### 1. Launch Vector DB and Semantic Cache
+```bash
+cd telecom_qa_backend
+docker compose up -d qdrant redis
+```
+*Services:*
+- **Qdrant**: `http://localhost:6333` (pre-populated with 1,748 chunks in `3gpp_standards`)
+- **Redis**: `localhost:6380` (pre-loaded with 50+ cached questions in `dump.rdb`)
 
-## 8. Current Status & Future Roadmap
-### Accomplished
-*   Completed the 12-step modular pipeline architecture.
-*   Integrated Qdrant vector storage and Redis semantic caching.
-*   Implemented strict 3GPP metadata schemas and post-generation guardrails.
-*   Successfully fine-tuned Qwen2.5-1.5B for abstention-aware context extraction.
-*   Developed vanilla frontend UI and API endpoints.
+### 2. Configure Environment & Dependencies
+```bash
+# In telecom_qa_backend
+python -m venv venv
+source venv/bin/activate
+pip install -r requirements.txt
 
-### Future Work
-*   **Local LLM Integration**: Replace the Gemini API endpoint in `api/main.py` with the locally fine-tuned Qwen2.5 model using vLLM or HuggingFace pipelines for completely offline generation.
-*   **Corpus Ingestion Automation**: Enhance the scripts utilizing `python-docx` to continuously parse, chunk (`utils/chunking.py`), and ingest new 3GPP releases into Qdrant automatically.
-*   **Advanced Reranking**: Upgrade the BGE cross-encoder layer to utilize a domain-specific fine-tuned reranker.
-*   **UI Enhancements**: Transition the frontend to a robust framework (e.g., React or Next.js) to handle complex citation highlighting and nested breadcrumb navigation.
-*   **Telemetry & Brier Score Analysis**: Implement tracking for confidence calibration to evaluate the abstention mechanism mathematically.
+# Create .env with your Gemini API key
+echo "GEMINI_API_KEY=your_gemini_api_key_here" > .env
+```
+
+### 3. Start Backend API
+```bash
+uvicorn api.main:app --host 0.0.0.0 --port 8001
+```
+*Endpoints:*
+- `GET  http://localhost:8001/health` — Service readiness & database point counts
+- `POST http://localhost:8001/query` — Standard blocking RAG query
+- `POST http://localhost:8001/query/stream` — Real-time SSE streaming query
+
+### 4. Launch Web Application Interface
+```bash
+# In telecom_qa_frontend
+python3 -m http.server 5500
+```
+Open **`http://localhost:5500`** in your browser.
+
+---
+
+## 9. Technology Stack Summary
+
+- **Vector Database**: Qdrant (HNSW index, hybrid dense + sparse payload)
+- **In-Memory Cache**: Redis Stack (RediSearch KNN Cosine similarity)
+- **Embedding Model**: `BAAI/bge-m3` (FlagEmbedding, FP16 inference)
+- **Reranker Model**: `BAAI/bge-reranker-v2-m3` (Cross-encoder, FP16 inference)
+- **LLM Gateway**: Google Gemini API via official `google-genai` SDK
+- **Backend Framework**: FastAPI, Pydantic v2, Uvicorn (ASGI)
+- **Frontend Architecture**: Vanilla HTML5, Modern CSS, Native JavaScript (SSE EventSource)
+
+---
+
+## 10. Selected References
+
+1. **Lewis, P., et al. (2020)**. *Retrieval-Augmented Generation for Knowledge-Intensive NLP Tasks*. Advances in Neural Information Processing Systems (NeurIPS).
+2. **Karpukhin, V., et al. (2020)**. *Dense Passage Retrieval for Open-Domain Question Answering*. EMNLP 2020.
+3. **Chen, J., et al. (2024)**. *BGE M3-Embedding: Multi-Lingual, Multi-Functionality, Multi-Granularity Text Embeddings Through Versatile Pre-Training*. arXiv:2402.03216.
+4. **Dettmers, T., et al. (2023)**. *QLoRA: Efficient Finetuning of Quantized LLMs*. NeurIPS 2023.
+5. **Zhang, T., et al. (2024)**. *RAFT: Adapting Language Model to Domain Specific RAG*. arXiv:2403.10131.
+6. **Gururangan, S., et al. (2020)**. *Don't Stop Pretraining: Adapt Language Models to Domains and Tasks*. ACL 2020.

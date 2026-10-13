@@ -1,7 +1,7 @@
-import json
-from core.schemas import QueryContext
+from core.schemas import QueryContext, GenerationResponse
 from core.interfaces import Generator
 from core.tracer import trace_step
+from core.structured_llm import generate_structured
 
 def execute(context: QueryContext, generator: Generator) -> QueryContext:
     """
@@ -9,6 +9,7 @@ def execute(context: QueryContext, generator: Generator) -> QueryContext:
     If not abstained, prompts the LLM to write the final answer based strictly
     on the validated evidence, and enforces strict citation formatting.
     Injects conversation history for multi-turn context awareness.
+    Validates output structure with Pydantic and auto-retries on schema issues.
     """
     if context.is_abstained:
         return context
@@ -31,8 +32,7 @@ def execute(context: QueryContext, generator: Generator) -> QueryContext:
             for turn in context.conversation_history[-4:]:  # last 4 turns max
                 history_text += f"{turn.role.upper()}: {turn.content}\n"
 
-        prompt = f"""
-You are an expert telecom 3GPP standards assistant.
+        prompt = f"""You are an expert telecom 3GPP standards assistant.
 {history_text}
 A user asked: "{query}"
 
@@ -44,29 +44,29 @@ Task:
 2. If the provided evidence is NOT sufficient to fully answer the question, try to answer using your own broad general knowledge of telecommunications. If you do this, DO NOT use any citations.
 3. If the evidence is insufficient AND you are not completely confident in your general knowledge, set "needs_web_search" to true and leave content blank.
 
-Return a JSON object with the following exact keys:
-1. "content": The text of your final answer (if applicable).
-2. "citations": A list of strings containing all the Evidence IDs you cited.
-3. "needs_web_search": boolean. true ONLY if you cannot answer using evidence AND you are not confident in your general knowledge.
-4. "answered_from_general_knowledge": boolean. true ONLY if you ignored the evidence and answered from memory.
+Return a JSON object matching this schema:
+{{
+  "content": "The text of your final answer (or blank if needs web search)",
+  "citations": ["Evidence-UUID-1", "Evidence-UUID-2"],
+  "needs_web_search": false,
+  "answered_from_general_knowledge": false
+}}
 
-Output strictly raw JSON.
+Output strictly valid JSON.
 """
 
-        result = generator.generate(prompt=prompt, context=context.selected_evidence)
-
-        raw_content = result.content.strip()
-        if raw_content.startswith("```json"):
-            raw_content = raw_content[7:]
-        if raw_content.endswith("```"):
-            raw_content = raw_content[:-3]
-
         try:
-            data = json.loads(raw_content.strip())
-            context.final_answer = data.get("content", "Error generating response.")
-            context.citations = data.get("citations", [])
-            context.needs_web_search = data.get("needs_web_search", False)
-            context.guardrails.answered_from_general_knowledge = data.get("answered_from_general_knowledge", False)
+            gen_res = generate_structured(
+                generator=generator,
+                prompt=prompt,
+                response_model=GenerationResponse,
+                max_retries=2,
+                context=context.selected_evidence,
+            )
+            context.final_answer = gen_res.content or "No answer could be formulated."
+            context.citations = gen_res.citations
+            context.needs_web_search = gen_res.needs_web_search
+            context.guardrails.answered_from_general_knowledge = gen_res.answered_from_general_knowledge
             t["extra"] = {
                 "needs_web_search": context.needs_web_search,
                 "from_general_knowledge": context.guardrails.answered_from_general_knowledge,
@@ -74,7 +74,8 @@ Output strictly raw JSON.
                 "answer_length": len(context.final_answer),
             }
         except Exception as e:
-            context.final_answer = "Error parsing LLM generation output."
+            print(f"[Step 11] Structured generation error: {e}")
+            context.final_answer = "Error generating or parsing response from model."
             context.citations = []
             context.needs_web_search = False
             t["extra"] = {"parse_error": str(e)}
@@ -82,3 +83,4 @@ Output strictly raw JSON.
         t["output_count"] = 1 if context.final_answer else 0
 
     return context
+

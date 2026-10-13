@@ -278,8 +278,9 @@ function updateStepState(stepStates, stepKey, state) {
 function appendMessage(role, text) {
     const el = document.createElement('div');
     el.className = `message ${role}`;
+    const avatar = role === 'user' ? 'USER' : '3GPP';
     el.innerHTML = `
-        <div class="msg-avatar">${role === 'user' ? 'U' : '🛰️'}</div>
+        <div class="msg-avatar">${avatar}</div>
         <div class="msg-bubble">
             <div class="msg-text">${role === 'user' ? escapeHtml(text) : marked.parse(text)}</div>
         </div>`;
@@ -292,7 +293,7 @@ function appendThinkingBubble() {
     const el = document.createElement('div');
     el.className = 'message assistant';
     el.innerHTML = `
-        <div class="msg-avatar">🛰️</div>
+        <div class="msg-avatar">3GPP</div>
         <div class="msg-bubble">
             <div class="typing-indicator">
                 <div class="typing-dot"></div>
@@ -314,22 +315,22 @@ function appendAssistantMessage(result) {
     // Cache hit badge
     if (result.pipeline_trace?.cache_hit) {
         contentHtml += `<div class="cache-hit-banner">
-            ⚡ <strong>Semantic cache hit</strong> — response served instantly
+            <strong>Semantic Cache Hit</strong> — verified answer served from local cache
         </div>`;
     }
 
     // Abstention
     if (result.is_abstained) {
         contentHtml += `<div class="abstention-banner">
-            🚫 <div><strong>System Abstained</strong><br>${escapeHtml(result.abstention_reason || 'Insufficient evidence to answer safely.')}</div>
+            <div><strong>System Abstained</strong><br>${escapeHtml(result.abstention_reason || 'Insufficient grounded technical evidence.')}</div>
         </div>`;
     } else {
         // Warning banners
         if (result.guardrails?.answered_from_general_knowledge) {
-            contentHtml += `<div class="warning-banner">⚠️ Answer generated from model's general knowledge — no 3GPP evidence retrieved.</div>`;
+            contentHtml += `<div class="warning-banner">Notice: Answer synthesized from parametric knowledge (no 3GPP specification chunks matched).</div>`;
         }
         if (result.guardrails?.web_fallback_used) {
-            contentHtml += `<div class="warning-banner">🌐 Evidence augmented via web search (local DB insufficient).</div>`;
+            contentHtml += `<div class="warning-banner">Notice: Evidence augmented via external technical documentation fallback.</div>`;
         }
 
         // Main answer
@@ -357,7 +358,7 @@ function appendAssistantMessage(result) {
         // Citations
         if (result.citations?.length > 0) {
             contentHtml += `<div class="citations-section">
-                <div class="citations-title">Citations</div>
+                <div class="citations-title">Verified Citations</div>
                 <div class="citation-pills">
                     ${result.citations.map((c, i) => `<span class="citation-pill" title="${c}">[${i+1}] ${c.length > 36 ? c.slice(0,36)+'…' : c}</span>`).join('')}
                 </div>
@@ -367,17 +368,17 @@ function appendAssistantMessage(result) {
         // Guardrails strip
         const gr = result.guardrails || {};
         const grBadges = [
-            { label: '✓ Citations', cls: gr.unresolved_citations?.length ? 'fail' : 'pass',
-              text: gr.unresolved_citations?.length ? `${gr.unresolved_citations.length} hallucinated` : 'All grounded' },
-            { label: '✓ Numbers', cls: gr.ungrounded_numbers?.length ? 'warn' : 'pass',
-              text: gr.ungrounded_numbers?.length ? `${gr.ungrounded_numbers.length} ungrounded` : 'Grounded' },
-            { label: '⚡ Version', cls: gr.version_conflict_detected ? 'warn' : 'pass',
-              text: gr.version_conflict_detected ? 'Cross-release conflict' : 'No conflict' },
-            { label: '🌐 Source', cls: gr.web_fallback_used ? 'warn' : 'pass',
-              text: gr.web_fallback_used ? 'Web + DB' : '3GPP DB only' },
+            { label: 'Citations', cls: gr.unresolved_citations?.length ? 'fail' : 'pass',
+              text: gr.unresolved_citations?.length ? `${gr.unresolved_citations.length} unresolved` : 'Grounded' },
+            { label: 'Numerical Grounding', cls: gr.ungrounded_numbers?.length ? 'warn' : 'pass',
+              text: gr.ungrounded_numbers?.length ? `${gr.ungrounded_numbers.length} unverified` : 'Verified' },
+            { label: 'Release Integrity', cls: gr.version_conflict_detected ? 'warn' : 'pass',
+              text: gr.version_conflict_detected ? 'Cross-release conflict' : 'Consistent' },
+            { label: 'Provenance', cls: gr.web_fallback_used ? 'warn' : 'pass',
+              text: gr.web_fallback_used ? 'Web + DB' : '3GPP Standard DB' },
         ];
         contentHtml += `<div class="guardrails-strip">
-            ${grBadges.map(b => `<span class="gr-badge ${b.cls}" title="${b.text}">${b.label} · ${b.text}</span>`).join('')}
+            ${grBadges.map(b => `<span class="gr-badge ${b.cls}" title="${b.text}">[${b.label}] ${b.text}</span>`).join('')}
         </div>`;
     }
 
@@ -396,7 +397,7 @@ function appendAssistantMessage(result) {
         }).join('');
 
         contentHtml += `<div class="pipeline-funnel">
-            <div class="funnel-title">Pipeline Trace</div>
+            <div class="funnel-title">Execution Trace</div>
             <div class="funnel-steps">${stepRows}</div>
             <div class="funnel-total">
                 <span>Total (${trace.steps.length} steps)</span>
@@ -406,7 +407,7 @@ function appendAssistantMessage(result) {
     }
 
     el.innerHTML = `
-        <div class="msg-avatar">🛰️</div>
+        <div class="msg-avatar">3GPP</div>
         <div class="msg-bubble">${contentHtml}</div>`;
 
     messagesContainer.appendChild(el);
@@ -423,10 +424,10 @@ function appendErrorMessage(msg) {
     const el = document.createElement('div');
     el.className = 'message assistant';
     el.innerHTML = `
-        <div class="msg-avatar">🛰️</div>
+        <div class="msg-avatar">3GPP</div>
         <div class="msg-bubble">
             <div class="abstention-banner">
-                ⚠️ <div><strong>Error</strong><br>${escapeHtml(msg)}<br><small>Ensure the backend is running on port 8001.</small></div>
+                <div><strong>Service Notice</strong><br>${escapeHtml(msg)}<br><small>Endpoint: http://localhost:8001</small></div>
             </div>
         </div>`;
     messagesContainer.appendChild(el);

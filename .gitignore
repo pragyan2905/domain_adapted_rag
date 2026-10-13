@@ -5,3 +5,8 @@ __pycache__/
 .DS_Store
 *.zip
 *.docx
+research papers/
+*.egg-info/
+scratch/
+*.db
+

@@ -8,6 +8,7 @@ so that api/main.py remains a clean, modular routing layer.
 """
 
 import time
+import asyncio
 from typing import AsyncGenerator, Dict, Any, Optional
 
 from core.schemas import QueryContext
@@ -73,8 +74,8 @@ class PipelineOrchestrator:
         # Step 01: Query Understanding
         context = step01_understanding.execute(context, self.generator)
 
-        # Step 02: Query Representation
-        context = step02_representation.execute(context, self.embedder)
+        # Step 02: Query Representation (with HyDE)
+        context = step02_representation.execute(context, self.embedder, generator=self.generator, enable_hyde=True)
 
         # Step 03: Hybrid Retrieval
         context = step03_retrieval.execute(context, self.qdrant)
@@ -118,7 +119,7 @@ class PipelineOrchestrator:
         """
         steps = [
             ("Step 01: Understanding",        lambda c: step01_understanding.execute(c, self.generator),  "Normalizing acronyms, detecting intent"),
-            ("Step 02: Representation",       lambda c: step02_representation.execute(c, self.embedder),  "Generating dense + sparse embeddings"),
+            ("Step 02: Representation",       lambda c: step02_representation.execute(c, self.embedder, generator=self.generator, enable_hyde=True),  "Generating dense + sparse embeddings with HyDE"),
             ("Step 03: Hybrid Retrieval",     lambda c: step03_retrieval.execute(c, self.qdrant),         "Querying vector database"),
             ("Step 04: RRF Fusion",           lambda c: step04_fusion.execute(c),                         "Fusing dense + sparse rankings"),
             ("Step 05: Filtering",            lambda c: step05_filtering.execute(c),                      "Pruning low-confidence candidates"),
@@ -136,16 +137,17 @@ class PipelineOrchestrator:
             if step_name == "Step 09: Web Fallback":
                 if context.evidence_validation and not context.evidence_validation.is_sufficient:
                     yield {"type": "step_progress", "step": step_name, "message": step_msg, "index": i}
-                    context = step09_web_fallback.execute(context, self.web_search)
-                    context = step08_validation.execute(context, self.generator)
+                    context = await asyncio.to_thread(step09_web_fallback.execute, context, self.web_search)
+                    context = await asyncio.to_thread(step08_validation.execute, context, self.generator)
                     trace = context.pipeline_trace.steps[-1].model_dump() if context.pipeline_trace.steps else {}
                     yield {"type": "step_done", "step": step_name, "trace": trace, "index": i}
                 else:
                     yield {"type": "step_skipped", "step": step_name, "message": "Evidence sufficient — skipping web fallback", "index": i}
                 continue
 
-            # Standard step execution
+            # Standard step execution offloaded to thread to keep event loop responsive
             yield {"type": "step_progress", "step": step_name, "message": step_msg, "index": i}
-            context = step_fn(context)
+            context = await asyncio.to_thread(step_fn, context)
             trace = context.pipeline_trace.steps[-1].model_dump() if context.pipeline_trace.steps else {}
             yield {"type": "step_done", "step": step_name, "trace": trace, "index": i}
+
