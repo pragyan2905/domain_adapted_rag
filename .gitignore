@@ -11,4 +11,4 @@ scratch/
 *.db
 *.rdb
 redis_storage/
-
+*.ipynb
