@@ -96,8 +96,15 @@ class QdrantStore:
         """Searches using only the sparse lexical vector (BM25 equivalent)."""
         query_filter = self._build_filter(ts_filters)
         
-        indices = [int(k) for k in sparse_vec.keys()]
-        values = list(sparse_vec.values())
+        indices = []
+        values = []
+        import zlib
+        for k, v in sparse_vec.items():
+            try:
+                indices.append(int(k))
+            except (ValueError, TypeError):
+                indices.append(zlib.crc32(str(k).encode('utf-8')) % 250000)
+            values.append(float(v))
         
         response = self.client.query_points(
             collection_name=self.collection_name,

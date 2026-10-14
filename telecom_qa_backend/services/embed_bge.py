@@ -84,12 +84,14 @@ class BGEEmbedder:
         if not dense_vecs or len(dense_vecs) != len(texts):
             dense_vecs = [[0.0] * 1024 for _ in texts]
 
-        # Lexical token frequency sparse vector representation
+        # Lexical token frequency sparse vector representation with stable integer indices
+        import zlib
         sparse_vecs = []
         for text in texts:
             tokens = re.findall(r'\b\w+\b', text.lower())
             counts = Counter(tokens)
-            sparse_vecs.append({k: float(v) for k, v in counts.items()})
+            sparse_dict = {str(zlib.crc32(tok.encode('utf-8')) % 250000): float(cnt) for tok, cnt in counts.items()}
+            sparse_vecs.append(sparse_dict)
 
         return dense_vecs, sparse_vecs
 
