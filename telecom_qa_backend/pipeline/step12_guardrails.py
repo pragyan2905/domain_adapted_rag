@@ -35,11 +35,17 @@ def execute(context: QueryContext) -> QueryContext:
         if len(releases_used) > 1:
             context.guardrails.version_conflict_detected = True
 
-        # 4. Web Fallback Disclaimer
+        # 4. Web Fallback & Domain Knowledge Disclaimers
         if context.guardrails.web_fallback_used:
             disclaimer = (
                 "\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web "
-                "(3gpp.org) via fallback search, as local database knowledge was insufficient.]"
+                "via fallback search, as local database specification chunks were insufficient.]"
+            )
+            context.final_answer += disclaimer
+        elif context.guardrails.answered_from_general_knowledge:
+            disclaimer = (
+                "\n\n[NOTICE: Synthesized using general telecommunications and wireless engineering "
+                "domain knowledge, as specific 3GPP specification clauses were not indexed in the local database.]"
             )
             context.final_answer += disclaimer
 

@@ -98,8 +98,6 @@ class PipelineOrchestrator:
         # Step 09: Conditional Web Fallback
         if context.evidence_validation and not context.evidence_validation.is_sufficient:
             context = step09_web_fallback.execute(context, self.web_search)
-            # Re-validate combined evidence
-            context = step08_validation.execute(context, self.generator)
 
         # Step 10: Abstention Gate
         context = step10_abstention.execute(context)
@@ -138,7 +136,6 @@ class PipelineOrchestrator:
                 if context.evidence_validation and not context.evidence_validation.is_sufficient:
                     yield {"type": "step_progress", "step": step_name, "message": step_msg, "index": i}
                     context = await asyncio.to_thread(step09_web_fallback.execute, context, self.web_search)
-                    context = await asyncio.to_thread(step08_validation.execute, context, self.generator)
                     trace = context.pipeline_trace.steps[-1].model_dump() if context.pipeline_trace.steps else {}
                     yield {"type": "step_done", "step": step_name, "trace": trace, "index": i}
                 else:

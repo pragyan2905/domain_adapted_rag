@@ -18,11 +18,13 @@ def execute(context: QueryContext, generator: Generator) -> QueryContext:
     input_count = len(context.selected_evidence)
 
     with trace_step(context, "Step 11: Generation (LLM)", input_count=input_count) as t:
-        # Format evidence for the generator
+        # Format evidence for the generator, distinguishing 3GPP specs from Web search
         evidence_text = ""
         for chunk in context.selected_evidence:
             meta = chunk.metadata
-            evidence_text += f"--- EVIDENCE ID: {meta.chunk_id} ---\n"
+            is_web = meta.source_type == "web" or meta.ts_number == "Web"
+            source_tag = "WEB SEARCH RESULT" if is_web else f"3GPP TS {meta.ts_number} | Rel-{meta.release_version}"
+            evidence_text += f"--- EVIDENCE ID: {meta.chunk_id} [{source_tag}] ---\n"
             evidence_text += f"{chunk.text}\n\n"
 
         # Inject conversation history for multi-turn awareness
@@ -32,21 +34,21 @@ def execute(context: QueryContext, generator: Generator) -> QueryContext:
             for turn in context.conversation_history[-4:]:  # last 4 turns max
                 history_text += f"{turn.role.upper()}: {turn.content}\n"
 
-        prompt = f"""You are an expert telecom 3GPP standards assistant.
+        prompt = f"""You are an expert telecom 3GPP standards and wireless communication systems engineer.
 {history_text}
 A user asked: "{query}"
 
-You have been provided with retrieved evidence from a local database:
-{evidence_text}
+Retrieved evidence (from local 3GPP specifications or web fallback search):
+{evidence_text if evidence_text.strip() else "[No direct specification chunks retrieved]"}
 
 Task:
-1. Attempt to answer the user's question using ONLY the provided evidence. If you do this, you MUST cite the Evidence ID in brackets, like this: [123e4567-e89b-12d3-a456-426614174000]. Do NOT combine brackets (e.g. do not do [UUID1, UUID2]), and never use simple numbers like [1].
-2. If the provided evidence is NOT sufficient to fully answer the question, try to answer using your own broad general knowledge of telecommunications. If you do this, DO NOT use any citations.
-3. If the evidence is insufficient AND you are not completely confident in your general knowledge, set "needs_web_search" to true and leave content blank.
+1. If the provided evidence contains relevant technical information, synthesize a comprehensive, rigorous answer. When citing specific evidence chunks, use the Evidence ID in brackets, like: [123e4567-e89b-12d3-a456-426614174000]. Do NOT combine brackets.
+2. If the provided evidence is partial, web-based, or does not fully cover all aspects of the user's question, synthesize a detailed, highly technical answer using your broad domain knowledge of telecommunications, wireless communication systems, and 3GPP architectures. If doing this, set "answered_from_general_knowledge" to true.
+3. If the query has absolutely NO relation to telecommunications, technology, networking, or science, or you have no technical basis to answer, leave "content" blank.
 
 Return a JSON object matching this schema:
 {{
-  "content": "The text of your final answer (or blank if needs web search)",
+  "content": "The text of your comprehensive technical answer (or blank if completely unanswerable)",
   "citations": ["Evidence-UUID-1", "Evidence-UUID-2"],
   "needs_web_search": false,
   "answered_from_general_knowledge": false
@@ -63,15 +65,32 @@ Output strictly valid JSON.
                 max_retries=2,
                 context=context.selected_evidence,
             )
-            context.final_answer = gen_res.content or "No answer could be formulated."
-            context.citations = gen_res.citations
-            context.needs_web_search = gen_res.needs_web_search
-            context.guardrails.answered_from_general_knowledge = gen_res.answered_from_general_knowledge
+            
+            if not gen_res.content or gen_res.content.strip() == "":
+                context.is_abstained = True
+                context.abstention_reason = "Unable to formulate a technically grounded answer."
+                context.final_answer = ""
+                context.citations = []
+            else:
+                context.final_answer = gen_res.content
+                context.citations = gen_res.citations
+                context.needs_web_search = gen_res.needs_web_search
+                context.guardrails.answered_from_general_knowledge = gen_res.answered_from_general_knowledge
+
+                # Calibrate confidence score if local vector selection yielded 0
+                if context.confidence_score <= 0.0:
+                    if context.guardrails.web_fallback_used:
+                        context.confidence_score = 0.75
+                    elif gen_res.answered_from_general_knowledge:
+                        context.confidence_score = 0.70
+                    else:
+                        context.confidence_score = 0.50
+
             t["extra"] = {
                 "needs_web_search": context.needs_web_search,
                 "from_general_knowledge": context.guardrails.answered_from_general_knowledge,
                 "citations_claimed": len(context.citations),
-                "answer_length": len(context.final_answer),
+                "answer_length": len(context.final_answer or ""),
             }
         except Exception as e:
             print(f"[Step 11] Structured generation error: {e}")
@@ -80,7 +99,7 @@ Output strictly valid JSON.
             context.needs_web_search = False
             t["extra"] = {"parse_error": str(e)}
 
-        t["output_count"] = 1 if context.final_answer else 0
+        t["output_count"] = 1 if (context.final_answer and not context.is_abstained) else 0
 
     return context
 

@@ -3,20 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TelecomRAG — 3GPP Standards Intelligence</title>
-    <meta name="description" content="Domain-adapted RAG system for 3GPP telecommunications standards. Grounded, verified answers to 5G/NR technical queries.">
+    <title>TelecomRAG — 3GPP Standards Intelligence Console</title>
+    <meta name="description" content="Domain-adapted retrieval pipeline for 3GPP Release 17 specifications. Grounded technical answers with cross-encoder reranking and hallucination guardrails.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
     <!-- Google Identity Services (GSI) SDK -->
     <script src="https://accounts.google.com/gsi/client" async defer></script>
-    <link rel="stylesheet" href="style.css?v=9">
+    <link rel="stylesheet" href="style.css?v=10">
 </head>
 <body>
-    <!-- Subtle Warm Ambient Canvas -->
+    <!-- Solid Technical Blueprint Grid Canvas (No glassmorphism) -->
     <div class="bg-canvas">
-        <div class="grain-overlay"></div>
+        <div class="grid-overlay"></div>
     </div>
 
     <!-- App Shell -->
@@ -35,11 +35,45 @@
             </div>
 
             <button class="new-chat-btn" id="newChatBtn">
-                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
                 New Session
             </button>
 
-            <div class="sidebar-section-label">Pipeline Architecture</div>
+            <!-- System Architecture Hardware Readout -->
+            <div class="sidebar-section-label">System Architecture</div>
+            <div class="system-specs-list">
+                <div class="spec-row">
+                    <span class="spec-key">Corpus</span>
+                    <span class="spec-val">3GPP Rel-17</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-key">Vectors</span>
+                    <span class="spec-val">1,748 chunks</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-key">Embedding</span>
+                    <span class="spec-val">BGE-M3 (1024d)</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-key">Sparse</span>
+                    <span class="spec-val">BM25 (RRF)</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-key">Reranker</span>
+                    <span class="spec-val">Cross-Encoder</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-key">Generator</span>
+                    <span class="spec-val">Gemini 2.5 Flash</span>
+                </div>
+                <div class="spec-row">
+                    <span class="spec-key">Cache</span>
+                    <span class="spec-val">Upstash (0.90)</span>
+                </div>
+            </div>
+
+            <!-- Real-time Pipeline Execution Stepper -->
+            <div class="sidebar-section-label">Pipeline Execution (12 Steps)</div>
             <div class="pipeline-steps-nav" id="pipelineNav">
                 <!-- Populated dynamically by JS -->
                 <div class="pipeline-step-nav idle" data-step="0">
@@ -53,26 +87,34 @@
                     <span class="health-dot"></span>
                     <span class="health-text">Checking services...</span>
                 </div>
-                <div class="sidebar-meta">Rel-17 Standard • BGE-M3 • Gemini</div>
+                <div class="sidebar-meta">3GPP Release 17 Standard DB</div>
             </div>
         </aside>
 
-        <!-- ===== MAIN PANEL ===== -->
+        <!-- ===== MAIN WORKBENCH PANEL ===== -->
         <main class="main-panel">
 
-            <!-- Top Bar -->
+            <!-- Top Telemetry Bar -->
             <header class="top-bar">
                 <div class="top-bar-left">
                     <button class="topbar-toggle-btn" id="topbarSidebarToggle" title="Toggle sidebar" aria-label="Toggle sidebar">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2"/>
                             <line x1="9" y1="3" x2="9" y2="21"/>
                         </svg>
                     </button>
                     <div class="session-badge" id="sessionBadge">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-                        <span id="sessionIdText">No active session</span>
+                        <span class="session-label">SESSION:</span>
+                        <span id="sessionIdText">Ready</span>
                     </div>
+                </div>
+
+                <!-- Technical Telemetry Strip -->
+                <div class="telemetry-strip">
+                    <span class="telemetry-pill"><span class="telemetry-dot"></span>REL-17</span>
+                    <span class="telemetry-pill">1,748 VECTORS</span>
+                    <span class="telemetry-pill">HYBRID RRF</span>
+                    <span class="telemetry-pill">GUARDRAILS ACTIVE</span>
                 </div>
 
                 <div class="top-bar-right">
@@ -85,7 +127,7 @@
                     <!-- Auth Section: Google Button or Logged-in User Profile -->
                     <div id="authContainer" class="auth-container">
                         <button id="googleSignInBtn" class="google-auth-btn" title="Sign in with Google">
-                            <svg class="google-icon" viewBox="0 0 24 24" width="15" height="15">
+                            <svg class="google-icon" viewBox="0 0 24 24" width="14" height="14">
                                 <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                                 <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                                 <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -96,26 +138,67 @@
                         <div id="userProfile" class="user-profile-menu hidden">
                             <img id="userAvatar" class="user-avatar" src="" alt="Avatar" />
                             <span id="userName" class="user-name">User</span>
-                            <button id="signOutBtn" class="sign-out-btn" title="Sign out of TelecomRAG">Sign out</button>
+                            <button id="signOutBtn" class="sign-out-btn" title="Sign out">Sign out</button>
                         </div>
                     </div>
                 </div>
             </header>
 
-            <!-- Chat Area -->
+            <!-- Chat / Workbench Area -->
             <div class="chat-area" id="chatArea">
-                <!-- Welcome screen shown when no messages -->
+                <!-- Welcome Technical Terminal State -->
                 <div class="welcome-screen" id="welcomeScreen">
-                    <div class="welcome-eyebrow">3GPP Technical Intelligence</div>
-                    <h1 class="welcome-title">Reliable, cited answers to 5G specifications.</h1>
-                    <p class="welcome-subtitle">A domain-adapted retrieval pipeline with cross-encoder reranking, LLM-as-judge evidence validation, and hallucination guardrails.</p>
-                    <div class="suggestion-grid">
-                        <button class="suggestion-chip" onclick="submitSuggestion(this)">What is the purpose of RRC Setup in 5G NR?</button>
-                        <button class="suggestion-chip" onclick="submitSuggestion(this)">Explain Network Slicing in 5G Core architecture</button>
-                        <button class="suggestion-chip" onclick="submitSuggestion(this)">What are FR1 and FR2 frequency ranges in 5G?</button>
-                        <button class="suggestion-chip" onclick="submitSuggestion(this)">How does the UPF function in 5GC session management?</button>
-                        <button class="suggestion-chip" onclick="submitSuggestion(this)">Describe Massive MIMO beamforming in 5G NR</button>
-                        <button class="suggestion-chip" onclick="submitSuggestion(this)">What is the difference between eMBB, URLLC, and mMTC?</button>
+                    <div class="terminal-banner">
+                        <span class="terminal-tag">3GPP TS STANDARDS INTELLIGENCE CONSOLE</span>
+                        <span class="terminal-rel">RELEASE 17 • HYBRID RAG WORKBENCH</span>
+                    </div>
+
+                    <h1 class="welcome-title">Technical Specification Retrieval & Grounding</h1>
+                    <p class="welcome-subtitle">Domain-adapted retrieval pipeline grounded in 3GPP Release 17 specifications. Incorporates dense and sparse indexing across Qdrant, cross-encoder reranking, and verification guardrails.</p>
+
+                    <!-- Interactive Protocol Scope Tabs -->
+                    <div class="domain-filter-group" id="domainFilterGroup">
+                        <span class="filter-label">PROTOCOL SCOPE:</span>
+                        <button class="domain-filter-btn active" data-domain="all">All Release 17</button>
+                        <button class="domain-filter-btn" data-domain="ran">Radio Access (TS 38)</button>
+                        <button class="domain-filter-btn" data-domain="core">5G Core (TS 23)</button>
+                        <button class="domain-filter-btn" data-domain="phy">Physical Layer (TS 38.211)</button>
+                    </div>
+
+                    <!-- Structured Technical Query Matrix (Categorized by 3GPP Specification series) -->
+                    <div class="technical-matrix" id="technicalMatrix">
+                        <div class="matrix-column" data-domain="ran">
+                            <div class="matrix-header">
+                                <span class="matrix-code">TS 38.331 / TS 38.300</span>
+                                <span class="matrix-name">Radio Resource Control (RRC) & RAN</span>
+                            </div>
+                            <div class="matrix-items">
+                                <button class="matrix-query-btn" onclick="submitSuggestion(this)">What is the purpose of RRC Setup in 5G NR?</button>
+                                <button class="matrix-query-btn" onclick="submitSuggestion(this)">Describe Massive MIMO beamforming in 5G NR</button>
+                            </div>
+                        </div>
+
+                        <div class="matrix-column" data-domain="core">
+                            <div class="matrix-header">
+                                <span class="matrix-code">TS 23.501 / TS 23.502</span>
+                                <span class="matrix-name">5G Core Architecture (5GC) & Slicing</span>
+                            </div>
+                            <div class="matrix-items">
+                                <button class="matrix-query-btn" onclick="submitSuggestion(this)">Explain Network Slicing in 5G Core architecture</button>
+                                <button class="matrix-query-btn" onclick="submitSuggestion(this)">How does the UPF function in 5GC session management?</button>
+                            </div>
+                        </div>
+
+                        <div class="matrix-column" data-domain="phy">
+                            <div class="matrix-header">
+                                <span class="matrix-code">TS 38.101 / TS 38.211</span>
+                                <span class="matrix-name">Spectrum & Performance Profiles</span>
+                            </div>
+                            <div class="matrix-items">
+                                <button class="matrix-query-btn" onclick="submitSuggestion(this)">What are FR1 and FR2 frequency ranges in 5G?</button>
+                                <button class="matrix-query-btn" onclick="submitSuggestion(this)">What is the difference between eMBB, URLLC, and mMTC?</button>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
@@ -123,25 +206,47 @@
                 <div class="messages-container" id="messagesContainer"></div>
             </div>
 
-            <!-- Input Bar -->
+            <!-- Technical Input Bar -->
             <div class="input-bar">
+                <div class="input-scope-indicator" id="inputScopeIndicator">
+                    <span class="scope-tag" id="currentScopeText">[SCOPE: ALL 3GPP REL-17]</span>
+                    <span class="scope-meta">BGE-M3 + BM25 RRF • CROSS-ENCODER RERANK • GUARDRAILS</span>
+                </div>
                 <div class="input-wrapper">
                     <textarea
                         id="queryInput"
                         class="query-input"
-                        placeholder="Ask a technical question about 5G / 3GPP specifications..."
+                        placeholder="Enter a technical query regarding 3GPP Release 17 specifications..."
                         rows="1"
                         autocomplete="off"
                     ></textarea>
-                    <button id="submitBtn" class="submit-btn" title="Send query" aria-label="Send query">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                    <button id="submitBtn" class="submit-btn" title="Execute query" aria-label="Execute query">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
                     </button>
                 </div>
                 <div class="input-footer">
-                    <span>Semantic Cache Protected • Multi-turn Sessions • <a href="#" id="clearSessionLink">Reset Session</a></span>
+                    <span>Semantic Cache (0.90 Cosine) • PostgreSQL Session History • <a href="#" id="clearSessionLink">Reset Session</a></span>
                 </div>
             </div>
         </main>
+
+        <!-- ===== INTERACTIVE EVIDENCE INSPECTOR DRAWER ===== -->
+        <aside class="evidence-drawer" id="evidenceDrawer" aria-hidden="true">
+            <div class="drawer-header">
+                <div class="drawer-title-block">
+                    <span class="drawer-kicker">EVIDENCE INSPECTOR</span>
+                    <h2 class="drawer-title">3GPP Specification Chunk</h2>
+                </div>
+                <button class="drawer-close-btn" id="closeDrawerBtn" title="Close inspector" aria-label="Close inspector">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+                </button>
+            </div>
+            <div class="drawer-body" id="drawerBody">
+                <div class="drawer-empty-state">
+                    Click on any verified citation pill in an answer to inspect its retrieved 3GPP clause excerpt, vector similarity, and cross-encoder ranking.
+                </div>
+            </div>
+        </aside>
 
     </div>
 
@@ -150,17 +255,17 @@
         <div class="auth-modal-card">
             <button class="modal-close-btn" id="closeAuthModalBtn" aria-label="Close dialog">&times;</button>
             <div class="modal-badge-icon">
-                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                 </svg>
             </div>
-            <h2 class="modal-title" id="modalTitle">Guest Limit Reached</h2>
-            <p class="modal-desc" id="modalDesc">You've reached the free guest limit of 3 queries. Sign in with your Google account to unlock full, unlimited access to 3GPP standards intelligence.</p>
+            <h2 class="modal-title" id="modalTitle">Sign In to TelecomRAG</h2>
+            <p class="modal-desc" id="modalDesc">Sign in with your Google account to unlock unlimited 3GPP Release 17 queries and persistent session history.</p>
 
             <div class="modal-google-action">
                 <div id="gsiModalButton"></div>
-                <button id="modalGoogleFallbackBtn" class="modal-google-btn">
-                    <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                <button id="modalGoogleFallbackBtn" class="modal-google-btn hidden">
+                    <svg class="google-icon" viewBox="0 0 24 24" width="16" height="16">
                         <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
                         <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
                         <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
@@ -172,21 +277,21 @@
 
             <div class="modal-perks">
                 <div class="perk-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2a7b4c" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Unlimited 5G & 3GPP Technical Queries</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0C6240" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Unlimited 3GPP Technical Queries</span>
                 </div>
                 <div class="perk-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2a7b4c" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Session Persistence & Conversation History</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0C6240" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>PostgreSQL Session & Turn Persistence</span>
                 </div>
                 <div class="perk-item">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2a7b4c" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
-                    <span>Grounded Clause Citations & Spec Verification</span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#0C6240" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Grounding Verification & Clause Citations</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <script src="app.js?v=7"></script>
+    <script src="app.js?v=12"></script>
 </body>
 </html>
