@@ -198,7 +198,7 @@ function initGoogleAuth() {
     if (window.google && window.google.accounts && window.google.accounts.id) {
         try {
             google.accounts.id.initialize({
-                client_id: '1029384756-mockclientid.apps.googleusercontent.com',
+                client_id: '706952575302-a55qrv49mcsuk9dq4dn2lmenkm64p2oj.apps.googleusercontent.com',
                 callback: handleGoogleCredentialResponse,
                 auto_select: false,
             });
