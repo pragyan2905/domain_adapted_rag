@@ -174,6 +174,13 @@ class DatabaseManager:
                     )
                 """)
 
+            # Migration safeguard: ensure user_id exists if query_logs was created in earlier schema
+            if not self.is_postgres:
+                try:
+                    cur.execute("ALTER TABLE query_logs ADD COLUMN user_id INTEGER REFERENCES users(id)")
+                except Exception:
+                    pass
+
             # Indexes for fast lookups
             cur.execute("CREATE INDEX IF NOT EXISTS idx_session ON query_logs(session_id)")
             cur.execute("CREATE INDEX IF NOT EXISTS idx_created_at ON query_logs(created_at)")
