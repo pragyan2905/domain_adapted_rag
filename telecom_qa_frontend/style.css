@@ -400,6 +400,30 @@ html, body {
     color: var(--txt-muted);
 }
 
+.sidebar-meta-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    margin-top: 0.15rem;
+}
+
+.sidebar-github-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    font-weight: 500;
+    color: var(--txt-secondary);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.sidebar-github-link:hover {
+    color: var(--c-dark);
+}
+
 /* ===== MAIN WORKBENCH PANEL ===== */
 .main-panel {
     flex: 1;
@@ -553,6 +577,33 @@ html, body {
 .google-auth-btn:hover {
     border-color: var(--c-dark);
     background: var(--bg-surface-alt);
+}
+
+.github-nav-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.32rem 0.75rem;
+    background: #FFFFFF;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    font-family: var(--font-sans);
+    font-size: 0.76rem;
+    font-weight: 600;
+    color: var(--txt-primary);
+    text-decoration: none;
+    cursor: pointer;
+    transition: all 0.15s ease;
+}
+
+.github-nav-btn:hover {
+    border-color: var(--c-dark);
+    background: var(--bg-surface-alt);
+    color: var(--txt-primary);
+}
+
+.github-nav-btn svg {
+    flex-shrink: 0;
 }
 
 .user-profile-menu {
