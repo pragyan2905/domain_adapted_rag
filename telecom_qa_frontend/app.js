@@ -12,10 +12,11 @@ const paramApi = urlParams.get('api');
 if (paramApi) {
     localStorage.setItem('telecomrag_api_base', paramApi.replace(/\/$/, ''));
 }
+const DEFAULT_PROD_BACKEND = 'https://domain-adapted-rag.onrender.com';
 const API_BASE = localStorage.getItem('telecomrag_api_base') || 
     (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
         ? 'http://localhost:8001'
-        : window.location.origin);
+        : DEFAULT_PROD_BACKEND);
 
 
 // ── State ────────────────────────────────────────────────────────────
