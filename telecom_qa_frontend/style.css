@@ -4,41 +4,54 @@
    =================================================================== */
 
 :root {
-    /* Core Warm Palette from Reference */
-    --bg-base:        #DDD0C8;  /* Exact Beige from image */
-    --bg-surface:     #E5DBD4;  /* Soft linen beige */
-    --bg-card:        #F4EDE7;  /* Warm ivory/cream for cards */
-    --bg-card-alt:    #FAF6F2;  /* Pure warm off-white for assistant bubbles */
-    --bg-glass:       rgba(221, 208, 200, 0.92);
+    /* Exact Palette: Silver, Slate Grey, Dark Obsidian & Electric Mint */
+    --c-silver:       #D9D9D9;  /* Light Silver Canvas & Surface */
+    --c-slate:        #898989;  /* Mid Slate Grey for borders & muted labels */
+    --c-dark:         #161719;  /* Deep Obsidian Charcoal Accent (matching button/bubble) */
+    --c-mint:         #4DFFBC;  /* Vibrant Electric Mint Green Accent */
 
-    /* Charcoal / Dark Grey from Reference */
-    --txt-primary:    #323232;  /* Exact Dark Grey from image */
-    --txt-secondary:  #5C554F;  /* Medium warm charcoal */
-    --txt-muted:      #8E857D;  /* Sand-grey for secondary metadata */
-    --txt-inverted:   #F9F6F2;  /* Light cream text on dark backgrounds */
+    /* Surface & Background System */
+    --bg-base:        #D9D9D9;  /* Exact #D9D9D9 from palette */
+    --bg-surface:     #E6E6E6;  /* Sidebar & elevated surface */
+    --bg-card:        #FFFFFF;  /* Crisp white cards for visual pop */
+    --bg-card-alt:    #F5F6F7;  /* High-legibility assistant bubble background */
+    --bg-glass:       rgba(217, 217, 217, 0.94);
+
+    /* Typography */
+    --txt-primary:    #161719;  /* Deep graphite charcoal for AAA readability */
+    --txt-secondary:  #4E5155;  /* Deep neutral text */
+    --txt-muted:      #898989;  /* Exact #898989 from palette */
+    --txt-inverted:   #FFFFFF;
 
     /* Brand / Action Elements */
-    --brand:          #323232;  /* Dark grey solid pill buttons */
-    --brand-hover:    #1F1E1D;
-    --brand-subtle:   rgba(50, 50, 50, 0.08);
+    --brand:          #161719;  /* Sleek Deep Obsidian */
+    --brand-hover:    #26282C;
+    --brand-subtle:   rgba(22, 23, 25, 0.08);
+
+    /* Mint Signal & Grounded Status */
+    --mint:           #4DFFBC;  /* Exact #4DFFBC Mint Green */
+    --mint-glow:      rgba(77, 255, 188, 0.5);
+    --mint-bg:        rgba(77, 255, 188, 0.18);
+    --mint-border:    rgba(20, 160, 100, 0.4);
+    --mint-text:      #0C6240;
 
     /* Borders */
-    --border:         rgba(50, 50, 50, 0.12);
-    --border-strong:  rgba(50, 50, 50, 0.24);
-    --border-active:  #323232;
+    --border:         rgba(137, 137, 137, 0.32);
+    --border-strong:  #898989;
+    --border-active:  #161719;
 
-    /* Status Accents (Warm & Organic) */
-    --green:          #2D6A4F;  /* Forest sage green */
-    --green-bg:       rgba(45, 106, 79, 0.09);
-    --green-border:   rgba(45, 106, 79, 0.25);
+    /* Status Accents */
+    --green:          #0C6240;
+    --green-bg:       rgba(77, 255, 188, 0.18);
+    --green-border:   rgba(20, 160, 100, 0.4);
 
-    --yellow:         #9E6714;  /* Warm ochre */
-    --yellow-bg:      rgba(158, 103, 20, 0.09);
-    --yellow-border:  rgba(158, 103, 20, 0.25);
+    --yellow:         #B87314;
+    --yellow-bg:      rgba(184, 115, 20, 0.12);
+    --yellow-border:  rgba(184, 115, 20, 0.3);
 
-    --red:            #A2382F;  /* Warm terracotta */
-    --red-bg:         rgba(162, 56, 47, 0.09);
-    --red-border:     rgba(162, 56, 47, 0.25);
+    --red:            #FF4D4D;
+    --red-bg:         rgba(255, 77, 77, 0.14);
+    --red-border:     rgba(255, 77, 77, 0.35);
 
     /* Geometry */
     --radius-sm:      6px;
@@ -65,21 +78,22 @@ html, body {
     -webkit-font-smoothing: antialiased;
 }
 
-/* Subtle organic grain overlay */
+/* Ambient canvas with palette aura */
 .bg-canvas {
     position: fixed;
     inset: 0;
     pointer-events: none;
     z-index: 0;
-    background: radial-gradient(circle at 15% 15%, rgba(255, 255, 255, 0.25), transparent 45%),
-                radial-gradient(circle at 85% 85%, rgba(50, 50, 50, 0.04), transparent 50%);
+    background: radial-gradient(circle at 10% 12%, rgba(77, 255, 188, 0.14), transparent 45%),
+                radial-gradient(circle at 88% 88%, rgba(22, 23, 25, 0.05), transparent 50%),
+                var(--c-silver);
 }
 
 .grain-overlay {
     position: absolute;
     inset: 0;
-    opacity: 0.03;
-    background-image: radial-gradient(#323232 1px, transparent 1px);
+    opacity: 0.04;
+    background-image: radial-gradient(var(--c-slate) 1px, transparent 1px);
     background-size: 16px 16px;
 }
 
@@ -129,13 +143,15 @@ html, body {
 }
 
 .logo-badge {
-    background: var(--txt-primary);
-    color: var(--txt-inverted);
+    background: var(--c-dark);
+    color: #FFFFFF;
     font-size: 0.68rem;
-    font-weight: 700;
-    padding: 0.25rem 0.5rem;
+    font-weight: 800;
+    padding: 0.25rem 0.55rem;
     border-radius: var(--radius-sm);
     letter-spacing: 0.08em;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    box-shadow: 0 2px 8px rgba(22, 23, 25, 0.22);
 }
 
 .logo-text {
@@ -167,13 +183,13 @@ html, body {
     border-color: var(--border-strong);
 }
 
-/* New Session Pill Button (like the SHOP NOW pill in the image) */
+/* New Session Pill Button */
 .new-chat-btn {
     margin: 1rem 1.25rem;
     padding: 0.7rem 1.2rem;
     background: var(--txt-primary);
     color: var(--txt-inverted);
-    border: none;
+    border: 1px solid transparent;
     border-radius: var(--radius-pill);
     font-family: inherit;
     font-size: 0.82rem;
@@ -186,13 +202,15 @@ html, body {
     gap: 0.5rem;
     white-space: nowrap;
     transition: all 0.2s ease;
-    box-shadow: 0 2px 8px rgba(50, 50, 50, 0.12);
+    box-shadow: 0 2px 8px rgba(22, 23, 25, 0.12);
 }
 
 .new-chat-btn:hover {
     background: var(--brand-hover);
+    border-color: var(--brand-hover);
+    color: #FFFFFF;
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(50, 50, 50, 0.18);
+    box-shadow: 0 4px 14px rgba(22, 23, 25, 0.25);
 }
 
 .sidebar-section-label {
@@ -233,28 +251,31 @@ html, body {
 }
 
 .pipeline-step-nav.running {
-    background: var(--txt-primary);
+    background: #161719;
     color: var(--txt-inverted);
-    border-color: var(--txt-primary);
+    border-color: var(--c-mint);
+    box-shadow: 0 2px 8px rgba(77, 255, 188, 0.25);
 }
 
 .pipeline-step-nav.running .step-label {
-    color: var(--txt-inverted);
+    color: #FFFFFF;
     font-weight: 600;
 }
 
 .pipeline-step-nav.running .step-dot {
-    background: var(--txt-inverted);
-    animation: pulseWarm 1.2s ease-in-out infinite;
+    background: var(--c-mint);
+    box-shadow: 0 0 8px rgba(77, 255, 188, 0.9);
+    animation: pulseMint 1.2s ease-in-out infinite;
 }
 
 .pipeline-step-nav.done {
-    background: var(--green-bg);
-    border-color: var(--green-border);
+    background: rgba(77, 255, 188, 0.12);
+    border-color: rgba(20, 160, 100, 0.35);
 }
 
 .pipeline-step-nav.done .step-dot {
-    background: var(--green);
+    background: var(--c-mint);
+    box-shadow: 0 0 6px rgba(77, 255, 188, 0.8);
 }
 
 .pipeline-step-nav.skipped {
@@ -274,20 +295,21 @@ html, body {
 
 .pipeline-step-nav.error .step-dot {
     background: var(--red);
+    box-shadow: 0 0 6px rgba(255, 77, 77, 0.7);
 }
 
 .step-dot {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: var(--txt-muted);
+    background: var(--c-slate);
     flex-shrink: 0;
     transition: all 0.2s;
 }
 
-@keyframes pulseWarm {
+@keyframes pulseMint {
     0%, 100% { transform: scale(1); opacity: 1; }
-    50% { transform: scale(1.35); opacity: 0.5; }
+    50% { transform: scale(1.35); opacity: 0.45; }
 }
 
 .step-label {
@@ -305,13 +327,13 @@ html, body {
 
 .step-meta {
     font-size: 0.68rem;
-    color: var(--txt-muted);
+    color: var(--c-slate);
     font-family: 'JetBrains Mono', monospace;
     flex-shrink: 0;
 }
 
 .pipeline-step-nav.running .step-meta {
-    color: rgba(255, 255, 255, 0.7);
+    color: rgba(255, 255, 255, 0.75);
 }
 
 .sidebar-footer {
@@ -332,13 +354,13 @@ html, body {
     width: 8px;
     height: 8px;
     border-radius: 50%;
-    background: var(--txt-muted);
+    background: var(--c-slate);
     flex-shrink: 0;
 }
 
 .health-dot.healthy {
-    background: var(--green);
-    box-shadow: 0 0 6px rgba(45, 106, 79, 0.4);
+    background: var(--c-mint);
+    box-shadow: 0 0 8px rgba(77, 255, 188, 0.85);
 }
 
 .health-dot.degraded {
@@ -507,10 +529,10 @@ html, body {
 }
 
 .suggestion-chip:hover {
-    border-color: var(--txt-primary);
-    background: var(--bg-card-alt);
+    border-color: var(--c-dark);
+    background: #FFFFFF;
     transform: translateY(-2px);
-    box-shadow: 0 4px 14px rgba(50, 50, 50, 0.08);
+    box-shadow: 0 6px 18px rgba(22, 23, 25, 0.08);
 }
 
 /* ===== MESSAGES ===== */
@@ -690,12 +712,14 @@ html, body {
 .citation-pill {
     background: var(--bg-card);
     border: 1px solid var(--border);
+    border-left: 3px solid var(--c-mint);
     color: var(--txt-primary);
     border-radius: var(--radius-pill);
-    padding: 0.22rem 0.7rem;
+    padding: 0.25rem 0.75rem;
     font-size: 0.72rem;
     font-family: 'JetBrains Mono', monospace;
     font-weight: 500;
+    box-shadow: 0 1px 3px rgba(22, 23, 25, 0.04);
 }
 
 /* ===== GUARDRAILS STRIP ===== */
@@ -757,7 +781,8 @@ html, body {
 .confidence-fill {
     height: 100%;
     border-radius: 999px;
-    background: var(--txt-primary);
+    background: linear-gradient(90deg, var(--c-mint) 0%, #10B981 100%);
+    box-shadow: 0 0 8px rgba(77, 255, 188, 0.45);
     transition: width 0.6s ease;
 }
 
@@ -832,8 +857,8 @@ html, body {
 }
 
 .submit-btn {
-    background: var(--txt-primary);
-    color: var(--txt-inverted);
+    background: var(--c-dark);
+    color: #FFFFFF;
     border: none;
     border-radius: 50%;
     width: 38px;
@@ -843,12 +868,15 @@ html, body {
     align-items: center;
     justify-content: center;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 2px 8px rgba(22, 23, 25, 0.25);
 }
 
 .submit-btn:hover {
     background: var(--brand-hover);
-    transform: scale(1.05);
+    color: var(--c-mint);
+    transform: scale(1.08);
+    box-shadow: 0 4px 14px rgba(22, 23, 25, 0.35);
 }
 
 .submit-btn:disabled {
@@ -1029,23 +1057,19 @@ html, body {
     width: 7px;
     height: 7px;
     border-radius: 50%;
-    background: #2a7b4c;
+    background: var(--c-mint);
+    box-shadow: 0 0 6px rgba(77, 255, 188, 0.85);
     transition: background 0.3s ease;
 }
 
 .quota-dot.warning {
-    background: #c98a2c;
+    background: var(--yellow);
+    box-shadow: none;
 }
 
 .quota-dot.danger {
-    background: #b84a39;
-    animation: pulse 1.5s infinite;
-}
-
-@keyframes pulse {
-    0% { transform: scale(0.95); opacity: 0.8; }
-    50% { transform: scale(1.2); opacity: 1; }
-    100% { transform: scale(0.95); opacity: 0.8; }
+    background: var(--c-dark);
+    box-shadow: 0 0 8px rgba(22, 23, 25, 0.6);
 }
 
 .auth-container {
@@ -1182,14 +1206,14 @@ html, body {
     width: 52px;
     height: 52px;
     border-radius: 50%;
-    background: var(--bg-canvas);
+    background: #FFFFFF;
     border: 1px solid var(--border);
-    color: #2a7b4c;
+    color: var(--c-dark);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     margin-bottom: 1.2rem;
-    box-shadow: 0 2px 8px rgba(50, 50, 50, 0.06);
+    box-shadow: 0 4px 14px rgba(22, 23, 25, 0.12);
 }
 
 .modal-title {
