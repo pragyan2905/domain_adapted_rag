@@ -62,10 +62,19 @@ logger.info("Initializing ML Models and Services. This may take a moment to load
 try:
     embedder = BGEEmbedder(use_fp16=True)
     reranker = BGEReranker(use_fp16=True)
-    qdrant = QdrantStore(host="localhost", port=6333)
+    qdrant = QdrantStore(
+        host=os.environ.get("QDRANT_HOST", "localhost"),
+        port=int(os.environ.get("QDRANT_PORT", "6333")),
+        url=os.environ.get("QDRANT_URL"),
+        api_key=os.environ.get("QDRANT_API_KEY")
+    )
     web_search = DuckDuckGoSearch()
     generator = GeminiGenerator(api_key=API_KEY)
-    redis_cache = SemanticCache(host="localhost", port=6380)
+    redis_cache = SemanticCache(
+        host=os.environ.get("REDIS_HOST", "localhost"),
+        port=int(os.environ.get("REDIS_PORT", "6380")),
+        redis_url=os.environ.get("REDIS_URL")
+    )
     orchestrator = PipelineOrchestrator(
         embedder=embedder,
         reranker=reranker,

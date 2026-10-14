@@ -1,0 +1,68 @@
+{
+  "timestamp": "2026-10-14T13:56:35.486144",
+  "total_test_cases": 5,
+  "ragas_summary_scores": {
+    "faithfulness": 1.0,
+    "answer_relevancy": 0.681,
+    "context_precision": 1.0,
+    "context_recall": 0.708,
+    "ragas_harmonic_score": 0.847
+  },
+  "per_question_results": [
+    {
+      "id": "ragas-001",
+      "query": "What is the purpose of the RRC Setup procedure in 5G NR?",
+      "latency_ms": 258.8,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.645,
+      "context_precision": 1.0,
+      "context_recall": 0.67,
+      "confidence_score": 0.445,
+      "citations_count": 1
+    },
+    {
+      "id": "ragas-002",
+      "query": "What is the RRCReconfiguration message used for in 5G NR Rel-17?",
+      "latency_ms": 163.1,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.668,
+      "context_precision": 1.0,
+      "context_recall": 0.2,
+      "confidence_score": 0.322,
+      "citations_count": 1
+    },
+    {
+      "id": "ragas-003",
+      "query": "Explain the concept of a PDU session in 5G Core.",
+      "latency_ms": 114.7,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.763,
+      "context_precision": 1.0,
+      "context_recall": 0.67,
+      "confidence_score": 0.0,
+      "citations_count": 2
+    },
+    {
+      "id": "ragas-004",
+      "query": "What is the role of the AMF in 5G Core?",
+      "latency_ms": 115.3,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.716,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "confidence_score": 0.296,
+      "citations_count": 3
+    },
+    {
+      "id": "ragas-005",
+      "query": "Describe the RRC states in 5G NR and the transitions between them.",
+      "latency_ms": 109.1,
+      "faithfulness": 1.0,
+      "answer_relevancy": 0.614,
+      "context_precision": 1.0,
+      "context_recall": 1.0,
+      "confidence_score": 0.376,
+      "citations_count": 1
+    }
+  ]
+}

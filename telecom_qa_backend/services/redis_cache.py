@@ -1,3 +1,4 @@
+import os
 import redis
 import json
 import uuid
@@ -10,18 +11,31 @@ from redis.commands.search.query import Query
 class SemanticCache:
     """
     Wraps Redis Stack (RediSearch) to provide ultra-fast vector similarity caching.
-    Intercepts identical or highly similar questions to bypass the LLM entirely.
+    Supports both local Docker instances and cloud-managed Redis (via REDIS_URL).
+    Gracefully falls back to key-value mode if RediSearch module is not present.
     """
-    def __init__(self, host: str = "localhost", port: int = 6379, index_name: str = "qa_cache_idx"):
-        # We must use decode_responses=False because we are storing raw byte vectors
-        self.client = redis.Redis(host=host, port=port, decode_responses=False)
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 6379,
+        redis_url: Optional[str] = None,
+        index_name: str = "qa_cache_idx"
+    ):
+        url = redis_url or os.environ.get("REDIS_URL")
+        if url:
+            self.client = redis.from_url(url, decode_responses=False)
+        else:
+            self.client = redis.Redis(host=host, port=port, decode_responses=False)
+
         self.index_name = index_name
+        self.vector_search_supported = True
         
-        # We try to initialize the schema, suppressing errors if Redis isn't up yet
+        # Try to initialize RediSearch index, soft-failing if Redis or RediSearch is unavailable
         try:
             self._initialize_index()
         except Exception as e:
-            print(f"Redis Cache initialization warning: {e}. Is the container running?")
+            self.vector_search_supported = False
+            print(f"Redis Cache note: RediSearch index not active ({e}). Key-value cache and session memory remain functional.")
 
     def _initialize_index(self):
         try:
@@ -45,6 +59,9 @@ class SemanticCache:
         """
         Performs a KNN search. If similarity > threshold, returns the cached JSON.
         """
+        if not self.vector_search_supported:
+            return None
+
         try:
             # RediSearch query syntax: find 1 nearest neighbor
             q = Query("*=>[KNN 1 @vector $vec AS score]").return_fields("response_json", "score").sort_by("score").dialect(2)
@@ -72,7 +89,7 @@ class SemanticCache:
         """
         Saves the generated answer to Redis with a TTL.
         """
-        if ttl_seconds <= 0:
+        if ttl_seconds <= 0 or not self.vector_search_supported:
             return
             
         try:

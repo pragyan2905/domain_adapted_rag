@@ -1,0 +1,61 @@
+{
+  "timestamp": "2026-10-14T13:51:52.714915",
+  "target_url": "http://127.0.0.1:8001",
+  "concurrency": 2,
+  "total_requests": 4,
+  "total_time_sec": 0.59,
+  "requests_per_sec": 6.78,
+  "success_count": 4,
+  "rate_limited_count": 0,
+  "error_count": 0,
+  "cache_hits": 4,
+  "latency_stats_ms": {
+    "min": 105.3,
+    "avg": 274.9,
+    "p50_median": 266.9,
+    "p95": 460.5,
+    "max": 460.5
+  },
+  "individual_results": [
+    {
+      "request_id": 1,
+      "query": "What is the purpose of the RRC Setup procedure in 5G NR?",
+      "status_code": 200,
+      "latency_ms": 420.7156249321997,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 1,
+      "error": null
+    },
+    {
+      "request_id": 2,
+      "query": "Explain the concept of a PDU session in 5G.",
+      "status_code": 200,
+      "latency_ms": 460.45554196462035,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 2,
+      "error": null
+    },
+    {
+      "request_id": 3,
+      "query": "What is the role of the AMF in 5G Core?",
+      "status_code": 200,
+      "latency_ms": 105.25520890951157,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 3,
+      "error": null
+    },
+    {
+      "request_id": 4,
+      "query": "Describe the RRC states in 5G NR and transitions between them.",
+      "status_code": 200,
+      "latency_ms": 113.13479207456112,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 1,
+      "error": null
+    }
+  ]
+}

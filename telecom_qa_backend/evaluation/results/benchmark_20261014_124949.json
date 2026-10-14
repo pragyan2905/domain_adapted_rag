@@ -1,0 +1,402 @@
+{
+  "timestamp": "20261014_124949",
+  "summary": {
+    "total": 14,
+    "errors": 0,
+    "avg_latency_ms": 22909.22,
+    "ood_total": 3,
+    "ood_correctly_abstained": 1,
+    "in_domain_total": 11,
+    "in_domain_incorrectly_abstained": 1,
+    "abstention_accuracy": 0.786,
+    "keyword_pass_rate": 1.0,
+    "forbidden_keyword_fail_rate": 0.143,
+    "avg_citation_resolution": 1.0,
+    "avg_confidence": 0.203,
+    "hallucinated_citation_rate": 0.0,
+    "ungrounded_number_rate": 0.357,
+    "version_conflict_rate": 0.214
+  },
+  "results": [
+    {
+      "id": "rrc-001",
+      "question": "What is the purpose of the RRC Setup procedure in 5G NR?",
+      "category": "rrc",
+      "is_out_of_domain": false,
+      "answer": "The Radio Resource Control (RRC) Setup procedure in 5G New Radio is used during connection establishment (such as in response to an RRCSetupRequest, RRCResumeRequest, or RRCReestablishmentRequest) to transition the UE into the RRC_CONNECTED state [14f8f17c-54b0-4583-8430-5ad1e63b2614]. When the UE receives the RRCSetup message, it performs actions including stopping specific connection timers (such as T300, T301, T319), applying master cell group and radio bearer configurations, releasing prior radio resources (except for default ones and SRB0), considering the current cell as the Primary Cell (PCell), and compiling the RRCSetupComplete message containing necessary NAS and security/measurement information to finalize the connection setup [14f8f17c-54b0-4583-8430-5ad1e63b2614].",
+      "is_abstained": false,
+      "citations": [
+        "14f8f17c-54b0-4583-8430-5ad1e63b2614"
+      ],
+      "confidence_score": 0.445,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [
+          "8430",
+          "4583"
+        ],
+        "version_conflict_detected": false,
+        "web_fallback_used": false,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 242.33,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "rrc-002",
+      "question": "What is the RRCReconfiguration message used for in 5G NR Rel-17?",
+      "category": "rrc",
+      "is_out_of_domain": false,
+      "answer": "In 5G New Radio, the network controls the mobility of the UE in RRC_CONNECTED by issuing RRCReconfiguration messages that include the reconfigurationWithSync [981bd37f-22c3-4a50-871b-ca941141cb9c].",
+      "is_abstained": false,
+      "citations": [
+        "981bd37f-22c3-4a50-871b-ca941141cb9c"
+      ],
+      "confidence_score": 0.322,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": false,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 15017.84,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "rrc-003",
+      "question": "Describe the RRC states in 5G NR and the transitions between them.",
+      "category": "rrc",
+      "is_out_of_domain": false,
+      "answer": "In 5G New Radio (NR), a User Equipment (UE) can be in one of three main Radio Resource Control (RRC) states:\n\n1. **RRC_IDLE**:\n   - No RRC connection has been established [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - The UE uses UE-controlled mobility based on network configuration [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - Performs cell re-selection, monitors paging channels for CN paging, acquires system information, and can have a UE-specific DRX configured by upper layers [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n\n2. **RRC_INACTIVE**:\n   - An RRC connection has been established, but the UE is in an inactive state [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - The UE stores the UE Inactive AS context [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - Mobility is UE-controlled based on a RAN-based notification area configured by the RRC layer [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - The UE monitors for both CN paging and RAN paging, performs RAN-based notification area updates periodically or when moving outside the configured area, and supports small data transmissions (SDT) [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n\n3. **RRC_CONNECTED**:\n   - An RRC connection is active, and the UE stores the AS context [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - Enables the transfer of unicast data to and from the UE [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - Mobility is network-controlled (within NR, to/from E-UTRA, and to UTRA-FDD) [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n   - The UE monitors control channels for scheduled data, provides channel quality/feedback information, and performs neighboring cell measurements and reporting [b6dd2204-853a-44a2-9cb9-8947eadadd38].\n\nA UE has only one RRC state at any given time, transitioning between RRC_IDLE, RRC_INACTIVE, and RRC_CONNECTED as managed by the network and protocol states [b6dd2204-853a-44a2-9cb9-8947eadadd38].",
+      "is_abstained": false,
+      "citations": [
+        "b6dd2204-853a-44a2-9cb9-8947eadadd38"
+      ],
+      "confidence_score": 0.376,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": false,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 24618.66,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "core-001",
+      "question": "What is the role of the AMF in 5G Core?",
+      "category": "core",
+      "is_out_of_domain": false,
+      "answer": "The Access and Mobility Management Function (AMF) is a key component and the core mobility management network function in the 5G Core (5GC) network architecture [ca25a1bd-b86c-409a-9ebe-ee63a4f06700, ea0b4eef-d7d0-405b-ab7e-2c0ace8cd80b]. Its role includes managing access to the 5G network, handling the mobility of user equipment (UE) within the network [ca25a1bd-b86c-409a-9ebe-ee63a4f06700], registration, NAS signaling, managing N1 and N2 interfaces, UE reachability, and AMF selection [804ca88f-cc64-4d73-b0f0-d1b73d873236].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "804ca88f-cc64-4d73-b0f0-d1b73d873236",
+        "ca25a1bd-b86c-409a-9ebe-ee63a4f06700",
+        "ea0b4eef-d7d0-405b-ab7e-2c0ace8cd80b"
+      ],
+      "confidence_score": 0.296,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": true,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 24306.61,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "core-002",
+      "question": "Explain the concept of a PDU session in 5G.",
+      "category": "core",
+      "is_out_of_domain": false,
+      "answer": "A Protocol Data Unit (PDU) session in 5G refers to the packet-switched connection between the User Equipment (UE) and the 5G Core network (5GC) [5b12b0a5-b74e-49cc-b9dd-44f112b02ddd]. It acts as a logical tunnel between the UE and the Data Network (DN) anchored at the User Plane Function (UPF) [5f082c5a-2b49-4487-b48d-2bada216fcee]. Every byte of user-plane data in 5G traverses a PDU session, making it responsible for transmitting user data, ensuring end-to-end connectivity, and managing Quality of Service (QoS) [5f082c5a-2b49-4487-b48d-2bada216fcee, 5b12b0a5-b74e-49cc-b9dd-44f112b02ddd]. Without a successfully established PDU session, user-plane activities such as internet browsing, video streaming, or IoT telemetry cannot occur, even if the UE is fully registered with the Access and Mobility Management Function (AMF) [5f082c5a-2b49-4487-b48d-2bada216fcee].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "5f082c5a-2b49-4487-b48d-2bada216fcee",
+        "5b12b0a5-b74e-49cc-b9dd-44f112b02ddd"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [
+          "4487"
+        ],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 22971.81,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "core-003",
+      "question": "What is the NRF and how does service discovery work in 5GC?",
+      "category": "core",
+      "is_out_of_domain": false,
+      "answer": "The Network Repository Function (NRF) is a core function in the 5G Core (5GC) and serves as the directory of the 5G Core, playing a crucial role as an architectural foundation for the Service-Based Architecture (SBA) [2bc2a6bf-8a86-4acc-b251-dbc7894403ab, 15e4a442-238f-4eaa-ab17-e6d4dbee063d]. Its primary responsibilities include service registration, service discovery, and enabling the dynamic selection of network functions (such as AMF, SMF, PCF, UDM, AUSF, and NSSF) [2bc2a6bf-8a86-4acc-b251-dbc7894403ab, 15e4a442-238f-4eaa-ab17-e6d4dbee063d].\n\nService discovery works through the integration of 5GC Network Functions acting as both data providers\u2014which register their available services and functions\u2014and data consumers that discover other required services through the NRF [e548f541-9d3b-4fb6-b7c7-c9d42630e1a3]. This communication typically occurs over the service-based Nnrf interface [e548f541-9d3b-4fb6-b7c7-c9d42630e1a3].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "2bc2a6bf-8a86-4acc-b251-dbc7894403ab",
+        "15e4a442-238f-4eaa-ab17-e6d4dbee063d",
+        "e548f541-9d3b-4fb6-b7c7-c9d42630e1a3"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 28039.11,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "core-004",
+      "question": "How does network slicing work at the core network level in 5G?",
+      "category": "core",
+      "is_out_of_domain": false,
+      "answer": "Network slicing at the core network level in 5G systems enables the multiplexing of virtualized and independent logical networks on the same physical network infrastructure [b8eac8c1-01df-435f-96d4-8db54780d2bf]. A single physical network is divided into multiple virtual slices, each optimized for specific performance requirements such as bandwidth, latency, and reliability to efficiently support different applications [b6bc6795-47da-4d5d-82d2-da092f39156c]. Each network slice is an isolated end-to-end network tailored to fulfill diverse requirements requested by a particular application [b8eac8c1-01df-435f-96d4-8db54780d2bf], and it provides network resources by interacting with a set of network functions [0f672cf1-ca06-4caa-a2ad-d1d905c8b202].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "b8eac8c1-01df-435f-96d4-8db54780d2bf",
+        "b6bc6795-47da-4d5d-82d2-da092f39156c",
+        "0f672cf1-ca06-4caa-a2ad-d1d905c8b202"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 24558.04,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "ran-001",
+      "question": "What are the frequency ranges FR1 and FR2 in 5G NR?",
+      "category": "ran",
+      "is_out_of_domain": false,
+      "answer": "In 5G New Radio (5G NR), frequency bands are divided into two main ranges: Frequency Range 1 (FR1) and Frequency Range 2 (FR2). Frequency Range 1 (FR1) covers the frequency spectrum from 410 MHz to 7125 MHz [ff844906-3713-4ab4-a7e1-dcb738232210]. Frequency Range 2 (FR2) encompasses the millimeter wave (mmWave) spectrum, ranging from 24 GHz to 52 GHz [56e042e9-c962-4fbe-9843-b38c760e6b1c].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "ff844906-3713-4ab4-a7e1-dcb738232210",
+        "56e042e9-c962-4fbe-9843-b38c760e6b1c"
+      ],
+      "confidence_score": 0.501,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [
+          "9843",
+          "3713"
+        ],
+        "version_conflict_detected": true,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 44406.71,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "ran-002",
+      "question": "Explain Massive MIMO and how it improves 5G NR capacity.",
+      "category": "ran",
+      "is_out_of_domain": false,
+      "answer": "Massive Multiple-Input Multiple-Output (MIMO) is an antenna technology where multiple antennas are used at both the transmitter and receiver to multiply the capacity of a wireless radio link, minimize errors, and optimize data speeds by enabling data to travel over many signal paths [a10261fb-d9f3-4e5e-ba77-fc373abb277a, 4beedf37-c821-4997-81e6-bc85474f14af]. In 5G New Radio (NR), modern base stations deploy Massive MIMO by utilizing tens or hundreds of antennas simultaneously [63fe1708-d611-4ab6-adf2-f5047012f2d9]. This technology improves 5G capacity and performance in dense deployments by supporting beamforming and serving multiple users at the same time [63fe1708-d611-4ab6-adf2-f5047012f2d9].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "a10261fb-d9f3-4e5e-ba77-fc373abb277a",
+        "63fe1708-d611-4ab6-adf2-f5047012f2d9",
+        "4beedf37-c821-4997-81e6-bc85474f14af"
+      ],
+      "confidence_score": 0.291,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [
+          "4997"
+        ],
+        "version_conflict_detected": true,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 33623.46,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "ran-003",
+      "question": "What is the difference between FDD and TDD in 5G NR?",
+      "category": "ran",
+      "is_out_of_domain": false,
+      "answer": "In 5G New Radio, the fundamental difference between Frequency Division Duplex (FDD) and Time Division Duplex (TDD) lies in how they handle uplink (UL) and downlink (DL) communications [22123b80-93b5-4d7e-842b-aa28031e6d16].\n\n- **Frequency Division Duplex (FDD):** FDD uses separate frequency bands for the uplink and downlink, which allows for simultaneous bidirectional communication [22123b80-93b5-4d7e-842b-aa28031e6d16]. Due to the frequency offset between the uplink and downlink, FDD can support an extended coverage range [22123b80-93b5-4d7e-842b-aa28031e6d16].\n- **Time Division Duplex (TDD):** TDD uses a single frequency band and alternates between uplink and downlink transmission by splitting time into distinct time slots for each direction [22123b80-93b5-4d7e-842b-aa28031e6d16]. This makes TDD more efficient in terms of spectrum utilization, though it can have a more limited range compared to FDD [22123b80-93b5-4d7e-842b-aa28031e6d16].\n\nBoth modes are utilized across 5G frequency bands\u2014ranging from sub-6 GHz to millimeter-wave\u2014and significantly impact network performance, latency, coverage, and scheduling strategies [22123b80-93b5-4d7e-842b-aa28031e6d16].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "22123b80-93b5-4d7e-842b-aa28031e6d16"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 23822.72,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "sec-001",
+      "question": "How does 5G AKA authentication work between UE and AMF?",
+      "category": "security",
+      "is_out_of_domain": false,
+      "answer": "No answer generated.",
+      "is_abstained": true,
+      "citations": [
+        "https://www.telecomtrainer.com/5g-nas-authentication-and-security-procedure-explained-step-by-step-call-flow/",
+        "https://www.5g6gacademy.com/learn/5g-authentication-flow",
+        "https://www.p1sec.com/blog/breaking-down-aka-authentication-key-agreement-protocols-in-mobile-networks"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 20038.19,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": false,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "ood-001",
+      "question": "What is the weather in New York today?",
+      "category": "ood",
+      "is_out_of_domain": true,
+      "answer": "No answer generated.",
+      "is_abstained": true,
+      "citations": [
+        "https://www.easeweather.com/north-america/united-states/new-york/today",
+        "https://www.accuweather.com/en/us/new-york/10021/hourly-weather-forecast/349727",
+        "https://weather.com/us/new-york/city/new-york-city/today"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 22664.13,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": false,
+      "abstention_correct": true,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "ood-002",
+      "question": "Who won the FIFA World Cup in 2022?",
+      "category": "ood",
+      "is_out_of_domain": true,
+      "answer": "Based on the provided evidence, the final match of the 2022 FIFA World Cup was contested by Argentina and France [4789fa7c-f047-4a8e-be9a-e0741036aa4a], and ended in a 3-3 draw at full time [4d5c0b35-ddf2-41e4-a981-b782e301d556]. However, the provided text does not explicitly state the final winner of the match.\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "4789fa7c-f047-4a8e-be9a-e0741036aa4a",
+        "4d5c0b35-ddf2-41e4-a981-b782e301d556"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 18303.17,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": true,
+      "abstention_correct": false,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    },
+    {
+      "id": "ood-003",
+      "question": "Write a Python function to sort a list.",
+      "category": "ood",
+      "is_out_of_domain": true,
+      "answer": "To sort a list in Python, you can use the built-in `sort()` method, which arranges the elements of a list in a specific order such as ascending or descending [32f6ed68-7792-4550-ab56-b7c836ac1c4c, 10e3f8a4-1379-4efa-a4c6-267184b0a676]. Here is an example of a function to sort a list:\n\n```python\ndef sort_list(input_list):\n    input_list.sort()\n    return input_list\n```\n\nThe `sort()` method sorts the list in ascending order by default and changes the original list directly without creating a new one [32f6ed68-7792-4550-ab56-b7c836ac1c4c, 10e3f8a4-1379-4efa-a4c6-267184b0a676].\n\n[DISCLAIMER: This answer incorporates evidence retrieved from the live web (3gpp.org) via fallback search, as local database knowledge was insufficient.]",
+      "is_abstained": false,
+      "citations": [
+        "32f6ed68-7792-4550-ab56-b7c836ac1c4c",
+        "10e3f8a4-1379-4efa-a4c6-267184b0a676"
+      ],
+      "confidence_score": 0.0,
+      "guardrails": {
+        "unresolved_citations": [],
+        "ungrounded_numbers": [
+          "4550",
+          "7792",
+          "1379"
+        ],
+        "version_conflict_detected": false,
+        "web_fallback_used": true,
+        "answered_from_general_knowledge": false
+      },
+      "latency_ms": 18116.35,
+      "keyword_pass": true,
+      "forbidden_keyword_fail": true,
+      "abstention_correct": false,
+      "citation_resolution_rate": 1.0,
+      "error": null
+    }
+  ]
+}

@@ -9,4 +9,6 @@ research papers/
 *.egg-info/
 scratch/
 *.db
+*.rdb
+redis_storage/
 

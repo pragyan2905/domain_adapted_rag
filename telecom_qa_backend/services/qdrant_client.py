@@ -1,5 +1,6 @@
+import os
 import uuid
-from typing import List, Dict, Any, Tuple
+from typing import List, Dict, Any, Tuple, Optional
 try:
     from qdrant_client import QdrantClient
     from qdrant_client.models import (
@@ -17,8 +18,20 @@ class QdrantStore:
     Interface to the self-hosted Qdrant Docker container.
     Handles storage and retrieval of Dense and Sparse vectors.
     """
-    def __init__(self, host: str = "localhost", port: int = 6333, collection_name: str = "3gpp_standards"):
-        self.client = QdrantClient(host=host, port=port)
+    def __init__(
+        self,
+        host: str = "localhost",
+        port: int = 6333,
+        url: Optional[str] = None,
+        api_key: Optional[str] = None,
+        collection_name: str = "3gpp_standards"
+    ):
+        target_url = url or os.environ.get("QDRANT_URL")
+        target_api_key = api_key or os.environ.get("QDRANT_API_KEY")
+        if target_url:
+            self.client = QdrantClient(url=target_url, api_key=target_api_key)
+        else:
+            self.client = QdrantClient(host=host, port=port)
         self.collection_name = collection_name
         self._ensure_collection_exists()
 
