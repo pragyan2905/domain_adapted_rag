@@ -8,3 +8,6 @@ ddgs
 python-dotenv
 python-docx
 redis
+httpx
+numpy
+

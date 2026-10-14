@@ -3,7 +3,18 @@
    Uses SSE streaming endpoint for real-time pipeline visualization.
    =================================================================== */
 
-const API_BASE = 'http://localhost:8001';
+// ── Dynamic API Endpoint Resolution ──────────────────────────────────
+// Supports local dev, URL query parameter (?api=https://...), and localStorage
+const urlParams = new URLSearchParams(window.location.search);
+const paramApi = urlParams.get('api');
+if (paramApi) {
+    localStorage.setItem('telecomrag_api_base', paramApi.replace(/\/$/, ''));
+}
+const API_BASE = localStorage.getItem('telecomrag_api_base') || 
+    (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+        ? 'http://localhost:8001'
+        : window.location.origin);
+
 
 // ── State ────────────────────────────────────────────────────────────
 let sessionId = localStorage.getItem('telecomrag_session') || null;

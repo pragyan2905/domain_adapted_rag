@@ -1,0 +1,121 @@
+{
+  "timestamp": "2026-10-14T14:47:39.560076",
+  "target_url": "http://127.0.0.1:8001",
+  "concurrency": 5,
+  "total_requests": 10,
+  "total_time_sec": 0.49,
+  "requests_per_sec": 20.56,
+  "success_count": 5,
+  "rate_limited_count": 5,
+  "error_count": 0,
+  "cache_hits": 5,
+  "latency_stats_ms": {
+    "min": 252.9,
+    "avg": 346.1,
+    "p50_median": 336.5,
+    "p95": 459.9,
+    "max": 459.9
+  },
+  "individual_results": [
+    {
+      "request_id": 1,
+      "query": "What is the purpose of the RRC Setup procedure in 5G NR?",
+      "status_code": 200,
+      "latency_ms": 252.9430000577122,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 1,
+      "error": null
+    },
+    {
+      "request_id": 2,
+      "query": "Explain the concept of a PDU session in 5G.",
+      "status_code": 200,
+      "latency_ms": 285.0397499278188,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 2,
+      "error": null
+    },
+    {
+      "request_id": 3,
+      "query": "What is the role of the AMF in 5G Core?",
+      "status_code": 200,
+      "latency_ms": 336.51258307509124,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 3,
+      "error": null
+    },
+    {
+      "request_id": 4,
+      "query": "Describe the RRC states in 5G NR and transitions between them.",
+      "status_code": 200,
+      "latency_ms": 396.0829998832196,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 1,
+      "error": null
+    },
+    {
+      "request_id": 5,
+      "query": "What is the NRF and how does service discovery work in 5GC?",
+      "status_code": 200,
+      "latency_ms": 459.86599987372756,
+      "cache_hit": true,
+      "is_abstained": false,
+      "citations_count": 3,
+      "error": null
+    },
+    {
+      "request_id": 6,
+      "query": "What are the frequency ranges FR1 and FR2 in 5G NR?",
+      "status_code": 429,
+      "latency_ms": 227.20275004394352,
+      "cache_hit": false,
+      "is_abstained": false,
+      "citations_count": 0,
+      "error": "{\"detail\":\"Rate limit exceeded (max 5/min). Please retry in 60s.\"}"
+    },
+    {
+      "request_id": 7,
+      "query": "What is the RRCReconfiguration message used for in 5G NR Rel-17?",
+      "status_code": 429,
+      "latency_ms": 181.61004199646413,
+      "cache_hit": false,
+      "is_abstained": false,
+      "citations_count": 0,
+      "error": "{\"detail\":\"Rate limit exceeded (max 5/min). Please retry in 60s.\"}"
+    },
+    {
+      "request_id": 8,
+      "query": "How does network slicing work at the core network level in 5G?",
+      "status_code": 429,
+      "latency_ms": 130.9207498561591,
+      "cache_hit": false,
+      "is_abstained": false,
+      "citations_count": 0,
+      "error": "{\"detail\":\"Rate limit exceeded (max 5/min). Please retry in 60s.\"}"
+    },
+    {
+      "request_id": 9,
+      "query": "What is the purpose of the RRC Setup procedure in 5G NR?",
+      "status_code": 429,
+      "latency_ms": 72.48595799319446,
+      "cache_hit": false,
+      "is_abstained": false,
+      "citations_count": 0,
+      "error": "{\"detail\":\"Rate limit exceeded (max 5/min). Please retry in 60s.\"}"
+    },
+    {
+      "request_id": 10,
+      "query": "Explain the concept of a PDU session in 5G.",
+      "status_code": 429,
+      "latency_ms": 10.732667054980993,
+      "cache_hit": false,
+      "is_abstained": false,
+      "citations_count": 0,
+      "error": "{\"detail\":\"Rate limit exceeded (max 5/min). Please retry in 60s.\"}"
+    }
+  ]
+}
