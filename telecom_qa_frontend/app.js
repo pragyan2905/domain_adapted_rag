@@ -1,10 +1,12 @@
 /* ===================================================================
-   TelecomRAG — app.js  (v5)
-   Uses SSE streaming endpoint for real-time pipeline visualization.
+   TelecomRAG — app.js  (v7)
+   Includes:
+   - Google OAuth (Google Identity Services) authentication
+   - Free Guest Mode with 3-query maximum limit enforcement
+   - SSE streaming endpoint for real-time pipeline visualization
    =================================================================== */
 
 // ── Dynamic API Endpoint Resolution ──────────────────────────────────
-// Supports local dev, URL query parameter (?api=https://...), and localStorage
 const urlParams = new URLSearchParams(window.location.search);
 const paramApi = urlParams.get('api');
 if (paramApi) {
@@ -19,21 +21,36 @@ const API_BASE = localStorage.getItem('telecomrag_api_base') ||
 // ── State ────────────────────────────────────────────────────────────
 let sessionId = localStorage.getItem('telecomrag_session') || null;
 let isProcessing = false;
+let guestRemainingQueries = 3;
 
 // ── DOM refs ─────────────────────────────────────────────────────────
-const queryInput      = document.getElementById('queryInput');
-const submitBtn       = document.getElementById('submitBtn');
-const chatArea        = document.getElementById('chatArea');
-const welcomeScreen   = document.getElementById('welcomeScreen');
+const queryInput        = document.getElementById('queryInput');
+const submitBtn         = document.getElementById('submitBtn');
+const chatArea          = document.getElementById('chatArea');
+const welcomeScreen     = document.getElementById('welcomeScreen');
 const messagesContainer = document.getElementById('messagesContainer');
-const pipelineNav     = document.getElementById('pipelineNav');
-const healthIndicator = document.getElementById('healthIndicator');
-const sessionBadge    = document.getElementById('sessionIdText');
-const newChatBtn      = document.getElementById('newChatBtn');
-const clearSessionLink = document.getElementById('clearSessionLink');
-const sidebarToggle       = document.getElementById('sidebarToggle');
+const pipelineNav       = document.getElementById('pipelineNav');
+const healthIndicator   = document.getElementById('healthIndicator');
+const sessionBadge      = document.getElementById('sessionIdText');
+const newChatBtn        = document.getElementById('newChatBtn');
+const clearSessionLink  = document.getElementById('clearSessionLink');
+const sidebarToggle     = document.getElementById('sidebarToggle');
 const topbarSidebarToggle = document.getElementById('topbarSidebarToggle');
-const sidebar             = document.querySelector('.sidebar');
+const sidebar           = document.querySelector('.sidebar');
+
+// Auth DOM refs
+const guestQuotaBadge   = document.getElementById('guestQuotaBadge');
+const quotaDot          = document.getElementById('quotaDot');
+const guestQuotaText    = document.getElementById('guestQuotaText');
+const googleSignInBtn   = document.getElementById('googleSignInBtn');
+const userProfile       = document.getElementById('userProfile');
+const userAvatar        = document.getElementById('userAvatar');
+const userName          = document.getElementById('userName');
+const signOutBtn        = document.getElementById('signOutBtn');
+const authModal         = document.getElementById('authModal');
+const closeAuthModalBtn = document.getElementById('closeAuthModalBtn');
+const modalGoogleFallbackBtn = document.getElementById('modalGoogleFallbackBtn');
+const modalDesc         = document.getElementById('modalDesc');
 
 // ── Pipeline step definitions (for the sidebar nav) ──────────────────
 const PIPELINE_STEPS = [
@@ -51,11 +68,167 @@ const PIPELINE_STEPS = [
     { key: 'Step 12: Guardrails',           label: 'Guardrails' },
 ];
 
+// ── Guest & Auth Helpers ──────────────────────────────────────────────
+function getOrCreateGuestId() {
+    let gid = localStorage.getItem('telecomrag_guest_id');
+    if (!gid) {
+        gid = 'guest_' + Math.random().toString(36).substring(2, 11) + '_' + Date.now();
+        localStorage.setItem('telecomrag_guest_id', gid);
+    }
+    return gid;
+}
+
+function getAuthToken() {
+    return localStorage.getItem('telecomrag_auth_token');
+}
+
+function getCurrentUser() {
+    const raw = localStorage.getItem('telecomrag_user');
+    try {
+        return raw ? JSON.parse(raw) : null;
+    } catch {
+        return null;
+    }
+}
+
+function updateAuthUI() {
+    const token = getAuthToken();
+    const user = getCurrentUser();
+
+    if (token && user) {
+        // Authenticated user
+        if (guestQuotaBadge) guestQuotaBadge.classList.add('hidden');
+        if (googleSignInBtn) googleSignInBtn.classList.add('hidden');
+        if (userProfile) {
+            userProfile.classList.remove('hidden');
+            userName.textContent = user.name || 'Engineer';
+            userAvatar.src = user.picture_url || 'https://lh3.googleusercontent.com/a/default-user';
+        }
+    } else {
+        // Guest mode
+        if (userProfile) userProfile.classList.add('hidden');
+        if (googleSignInBtn) googleSignInBtn.classList.remove('hidden');
+        if (guestQuotaBadge) guestQuotaBadge.classList.remove('hidden');
+        fetchGuestQuota();
+    }
+}
+
+async function fetchGuestQuota() {
+    if (getAuthToken()) return;
+    const gid = getOrCreateGuestId();
+    try {
+        const res = await fetch(`${API_BASE}/auth/guest-status`, {
+            headers: { 'X-Guest-ID': gid }
+        });
+        if (res.ok) {
+            const data = await res.json();
+            guestRemainingQueries = typeof data.remaining_queries === 'number' ? data.remaining_queries : 3;
+            renderQuotaBadge(guestRemainingQueries);
+        }
+    } catch {
+        renderQuotaBadge(guestRemainingQueries);
+    }
+}
+
+function renderQuotaBadge(remaining) {
+    if (!guestQuotaText || !quotaDot) return;
+    guestQuotaText.textContent = `Guest: ${remaining} / 3 left`;
+    quotaDot.className = 'quota-dot';
+
+    if (remaining <= 0) {
+        quotaDot.classList.add('danger');
+        guestQuotaText.textContent = `Guest: 0 / 3 left (Sign in)`;
+    } else if (remaining === 1) {
+        quotaDot.classList.add('warning');
+    }
+}
+
+function openAuthModal(customDesc = null) {
+    if (customDesc && modalDesc) {
+        modalDesc.textContent = customDesc;
+    }
+    if (authModal) authModal.classList.remove('hidden');
+}
+
+function closeAuthModal() {
+    if (authModal) authModal.classList.add('hidden');
+}
+
+async function handleGoogleCredentialResponse(response) {
+    const credential = response.credential || response;
+    try {
+        const res = await fetch(`${API_BASE}/auth/google`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ credential })
+        });
+        if (!res.ok) {
+            const err = await res.json().catch(() => ({}));
+            throw new Error(err.detail || 'Authentication failed');
+        }
+        const data = await res.json();
+        localStorage.setItem('telecomrag_auth_token', data.token);
+        localStorage.setItem('telecomrag_user', JSON.stringify(data.user));
+        closeAuthModal();
+        updateAuthUI();
+    } catch (err) {
+        alert('Sign-in Notice: ' + err.message);
+    }
+}
+
+function initGoogleAuth() {
+    if (window.google && window.google.accounts && window.google.accounts.id) {
+        // Initializes Google One Tap / Button with client ID
+        google.accounts.id.initialize({
+            client_id: '1029384756-mockclientid.apps.googleusercontent.com',
+            callback: handleGoogleCredentialResponse,
+            auto_select: false,
+        });
+
+        const gsiBtn = document.getElementById('gsiModalButton');
+        if (gsiBtn) {
+            google.accounts.id.renderButton(gsiBtn, {
+                theme: 'outline',
+                size: 'large',
+                width: 280,
+                text: 'continue_with'
+            });
+        }
+    }
+}
+
 // ── Init ─────────────────────────────────────────────────────────────
 document.addEventListener('DOMContentLoaded', () => {
     updateSessionBadge();
+    updateAuthUI();
     checkHealth();
     renderPipelineNav('idle');
+
+    // Setup Auth Event Listeners
+    if (googleSignInBtn) googleSignInBtn.addEventListener('click', () => openAuthModal());
+    if (closeAuthModalBtn) closeAuthModalBtn.addEventListener('click', closeAuthModal);
+    if (modalGoogleFallbackBtn) {
+        modalGoogleFallbackBtn.addEventListener('click', () => {
+            // Demo/Google sign in
+            handleGoogleCredentialResponse({ credential: 'demo_token_' + Date.now() });
+        });
+    }
+    if (signOutBtn) {
+        signOutBtn.addEventListener('click', () => {
+            localStorage.removeItem('telecomrag_auth_token');
+            localStorage.removeItem('telecomrag_user');
+            updateAuthUI();
+        });
+    }
+
+    if (authModal) {
+        authModal.addEventListener('click', (e) => {
+            if (e.target === authModal) closeAuthModal();
+        });
+    }
+
+    // Attempt GSI init
+    setTimeout(initGoogleAuth, 1000);
 
     // Auto-resize textarea
     queryInput.addEventListener('input', () => {
@@ -98,7 +271,14 @@ function startNewSession() {
 }
 
 function updateSessionBadge() {
-    sessionBadge.textContent = sessionId ? `Session: ${sessionId.slice(0, 8)}…` : 'No active session';
+    if (!sessionBadge) return;
+    if (sessionId) {
+        sessionBadge.textContent = 'Session: ' + sessionId.slice(0, 8) + '…';
+        sessionBadge.title = sessionId;
+    } else {
+        sessionBadge.textContent = 'New Session';
+        sessionBadge.title = '';
+    }
 }
 
 // ── Health check ──────────────────────────────────────────────────────
@@ -106,17 +286,20 @@ async function checkHealth() {
     const dot  = healthIndicator.querySelector('.health-dot');
     const text = healthIndicator.querySelector('.health-text');
     try {
-        const r = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(5000) });
-        const data = await r.json();
-        if (data.status === 'healthy') {
-            dot.className = 'health-dot healthy';
-            text.textContent = `Healthy · ${data.qdrant_chunks ?? '?'} chunks`;
+        const res = await fetch(`${API_BASE}/health`, { signal: AbortSignal.timeout(4000) });
+        if (res.ok) {
+            const data = await res.json();
+            const healthy = data.status === 'healthy';
+            dot.className  = 'health-dot ' + (healthy ? 'healthy' : 'degraded');
+            text.textContent = healthy 
+                ? `System Ready (${data.qdrant_chunks || 0} chunks)` 
+                : 'Services Degraded';
         } else {
-            dot.className = 'health-dot degraded';
-            text.textContent = 'Services degraded';
+            dot.className  = 'health-dot down';
+            text.textContent = 'Backend Error';
         }
     } catch {
-        dot.className = 'health-dot error';
+        dot.className  = 'health-dot down';
         text.textContent = 'Backend unreachable';
     }
 }
@@ -149,6 +332,12 @@ async function handleSubmit() {
     const query = queryInput.value.trim();
     if (!query || isProcessing) return;
 
+    // Fast client-side guest check
+    if (!getAuthToken() && guestRemainingQueries <= 0) {
+        openAuthModal("You've reached the free guest limit of 3 queries. Please sign in with Google to continue.");
+        return;
+    }
+
     isProcessing = true;
     submitBtn.disabled = true;
     queryInput.value = '';
@@ -177,18 +366,36 @@ async function handleSubmit() {
         isProcessing = false;
         submitBtn.disabled = false;
         checkHealth();
+        fetchGuestQuota();
     }
 }
 
 // ── Streaming query ───────────────────────────────────────────────────
 async function streamQuery(query, stepStates, thinkingBubble) {
+    const headers = { 'Content-Type': 'application/json' };
+    const authToken = getAuthToken();
+    if (authToken) {
+        headers['Authorization'] = `Bearer ${authToken}`;
+    }
+    const guestId = getOrCreateGuestId();
+    headers['X-Guest-ID'] = guestId;
+
     const response = await fetch(`${API_BASE}/query/stream`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers,
         body: JSON.stringify({ query, session_id: sessionId }),
     });
 
     if (!response.ok) {
+        if (response.status === 403) {
+            const errData = await response.json().catch(() => ({}));
+            if (errData.detail && errData.detail.require_auth) {
+                guestRemainingQueries = 0;
+                renderQuotaBadge(0);
+                openAuthModal(errData.detail.message || "Guest query limit reached (3/3). Please sign in with Google.");
+                throw new Error("Guest query limit reached. Please sign in with Google to continue.");
+            }
+        }
         throw new Error(`HTTP ${response.status}: ${response.statusText}`);
     }
 
@@ -219,98 +426,78 @@ async function streamQuery(query, stepStates, thinkingBubble) {
 
 // ── Stream event handler ──────────────────────────────────────────────
 function handleStreamEvent(event, stepStates, thinkingBubble) {
-    switch (event.type) {
-        case 'start':
-            break;
-
-        case 'cache_hit':
-            updateStepState(stepStates, 'cache', 'done');
-            break;
-
-        case 'step_progress':
-            updateStepStateByName(stepStates, event.step, 'running');
-            break;
-
-        case 'step_done': {
-            const trace = event.trace || {};
-            const metaText = trace.duration_ms != null ? `${trace.duration_ms}ms` : '';
-            updateStepStateByName(stepStates, event.step, 'done', metaText);
-            break;
+    if (event.type === 'start') {
+        if (!sessionId && event.session_id) {
+            sessionId = event.session_id;
+            localStorage.setItem('telecomrag_session', sessionId);
+            updateSessionBadge();
         }
+        return;
+    }
 
-        case 'step_skipped':
-            updateStepStateByName(stepStates, event.step, 'skipped');
-            break;
+    if (event.type === 'step') {
+        const step = event.step;
+        const key  = step.step_name;
+        stepStates[key] = step.status; // 'running', 'complete', 'abstained', etc.
 
-        case 'error':
-            thinkingBubble.remove();
-            appendErrorMessage(event.message);
-            renderPipelineNav('idle');
-            break;
-
-        case 'complete': {
-            const result = event.result;
-            // Save session
-            if (result.session_id) {
-                sessionId = result.session_id;
-                localStorage.setItem('telecomrag_session', sessionId);
-                updateSessionBadge();
-            }
-            // Replace thinking bubble with real answer
-            thinkingBubble.remove();
-            appendAssistantMessage(result);
-            // Mark all done steps
-            PIPELINE_STEPS.forEach(s => {
-                if (stepStates[s.key] === 'running') stepStates[s.key] = 'done';
-            });
-            renderPipelineNav('active', stepStates);
-            scrollToBottom();
-            break;
+        // Build meta badge text
+        let meta = `${step.duration_ms}ms`;
+        if (step.output_count > 0 && step.input_count !== step.output_count) {
+            meta = `${step.output_count} items • ${meta}`;
         }
+        stepStates[key + '_meta'] = meta;
+
+        renderPipelineNav('active', stepStates);
+
+        // Update thinking bubble label with current active step
+        const labelEl = thinkingBubble.querySelector('.thinking-step-label');
+        if (labelEl) {
+            labelEl.textContent = `Processing: ${key}…`;
+        }
+        return;
+    }
+
+    if (event.type === 'cache_hit') {
+        renderPipelineNav('idle');
+        return;
+    }
+
+    if (event.type === 'complete') {
+        thinkingBubble.remove();
+        renderPipelineNav('idle');
+        appendAssistantMessage(event.result);
+        return;
+    }
+
+    if (event.type === 'error') {
+        thinkingBubble.remove();
+        renderPipelineNav('idle');
+        appendErrorMessage(event.message || 'Stream error');
+        return;
     }
 }
 
-// ── Step state helpers ────────────────────────────────────────────────
-function updateStepStateByName(stepStates, stepName, state, meta = '') {
-    // Find the closest matching key
-    const key = PIPELINE_STEPS.find(s => stepName.includes(s.key) || s.key.includes(stepName))?.key
-             || stepName;
-    stepStates[key] = state;
-    if (meta) stepStates[key + '_meta'] = meta;
-    renderPipelineNav('active', stepStates);
-}
-
-function updateStepState(stepStates, stepKey, state) {
-    stepStates[stepKey] = state;
-    renderPipelineNav('active', stepStates);
-}
-
-// ── Message renderers ─────────────────────────────────────────────────
+// ── DOM message builders ──────────────────────────────────────────────
 function appendMessage(role, text) {
     const el = document.createElement('div');
     el.className = `message ${role}`;
-    const avatar = role === 'user' ? 'USER' : '3GPP';
     el.innerHTML = `
-        <div class="msg-avatar">${avatar}</div>
+        <div class="msg-avatar">${role === 'user' ? 'YOU' : '3GPP'}</div>
         <div class="msg-bubble">
-            <div class="msg-text">${role === 'user' ? escapeHtml(text) : marked.parse(text)}</div>
+            <div class="msg-text"><p>${escapeHtml(text)}</p></div>
         </div>`;
     messagesContainer.appendChild(el);
     scrollToBottom();
-    return el;
 }
 
 function appendThinkingBubble() {
     const el = document.createElement('div');
-    el.className = 'message assistant';
+    el.className = 'message assistant thinking';
     el.innerHTML = `
         <div class="msg-avatar">3GPP</div>
         <div class="msg-bubble">
-            <div class="typing-indicator">
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-                <div class="typing-dot"></div>
-            </div>
+            <div class="thinking-dots"><span></span><span></span><span></span></div>
+            <span class="thinking-step-label">Initializing pipeline…</span>
         </div>`;
     messagesContainer.appendChild(el);
     scrollToBottom();
@@ -323,30 +510,28 @@ function appendAssistantMessage(result) {
 
     let contentHtml = '';
 
-    // Cache hit badge
+    // Cache hit banner
     if (result.pipeline_trace?.cache_hit) {
-        contentHtml += `<div class="cache-hit-banner">
-            <strong>Semantic Cache Hit</strong> — verified answer served from local cache
-        </div>`;
+        contentHtml += `
+            <div class="cache-hit-banner">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+                <span>Semantic Cache Hit — zero-latency verified standard response</span>
+            </div>`;
     }
 
-    // Abstention
+    // Abstention banner
     if (result.is_abstained) {
-        contentHtml += `<div class="abstention-banner">
-            <div><strong>System Abstained</strong><br>${escapeHtml(result.abstention_reason || 'Insufficient grounded technical evidence.')}</div>
-        </div>`;
+        contentHtml += `
+            <div class="abstention-banner">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+                <div>
+                    <strong>Query Abstained</strong> — Confidence score below threshold.<br>
+                    <span>${escapeHtml(result.abstention_reason || 'Insufficient domain evidence in Release 17 specifications.')}</span>
+                </div>
+            </div>`;
     } else {
-        // Warning banners
-        if (result.guardrails?.answered_from_general_knowledge) {
-            contentHtml += `<div class="warning-banner">Notice: Answer synthesized from parametric knowledge (no 3GPP specification chunks matched).</div>`;
-        }
-        if (result.guardrails?.web_fallback_used) {
-            contentHtml += `<div class="warning-banner">Notice: Evidence augmented via external technical documentation fallback.</div>`;
-        }
-
-        // Main answer
+        // Markdown Answer with inline citations
         let answerText = result.answer || '';
-        // Replace UUIDs in answer with [1], [2], etc.
         const citationMap = {};
         (result.citations || []).forEach((cit, i) => { citationMap[cit] = i + 1; });
         Object.entries(citationMap).forEach(([uuid, num]) => {
@@ -438,7 +623,7 @@ function appendErrorMessage(msg) {
         <div class="msg-avatar">3GPP</div>
         <div class="msg-bubble">
             <div class="abstention-banner">
-                <div><strong>Service Notice</strong><br>${escapeHtml(msg)}<br><small>Endpoint: http://localhost:8001</small></div>
+                <div><strong>Service Notice</strong><br>${escapeHtml(msg)}<br><small>Endpoint: ${API_BASE}</small></div>
             </div>
         </div>`;
     messagesContainer.appendChild(el);

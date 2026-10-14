@@ -34,6 +34,7 @@ from services.search_duckduckgo import DuckDuckGoSearch
 from services.redis_cache import SemanticCache
 from services.rate_limiter import QuotaLimiter
 from services.database import DatabaseManager
+from services.auth import verify_google_id_token, create_session_token, verify_session_token
 
 # Pipeline Orchestration
 from pipeline.orchestrator import PipelineOrchestrator
@@ -89,34 +90,47 @@ except Exception as e:
     embedder, reranker, qdrant, web_search, generator, redis_cache, orchestrator, limiter = None, None, None, None, None, None, None, None
 
 
+# -------------------------------------------------------------------------
+# Authentication Models & Helpers
+# -------------------------------------------------------------------------
+class GoogleAuthRequest(BaseModel):
+    credential: str
 
-# -------------------------------------------------------------------------
-# Helpers
-# -------------------------------------------------------------------------
+
+def _get_current_user(http_req: Request) -> Optional[dict]:
+    """Extracts and verifies JWT session token from Authorization header."""
+    auth_header = http_req.headers.get("Authorization", "")
+    if auth_header.startswith("Bearer "):
+        token = auth_header[7:].strip()
+        return verify_session_token(token)
+    return None
+
+
 def _load_conversation_history(session_id: str) -> List[ConversationTurn]:
     """Load last N turns from Redis for a session."""
     if not redis_cache or not session_id:
         return []
     try:
-        key = f"session:{session_id}"
+        key = f"session:{session_id}:turns"
         raw = redis_cache.client.get(key)
-        if raw:
-            data = json.loads(raw)
-            return [ConversationTurn(**t) for t in data]
+        if not raw:
+            return []
+        data = json.loads(raw)
+        return [ConversationTurn(**t) for t in data]
     except Exception as e:
         logger.error(f"[Session] Failed to load history: {e}")
-    return []
+        return []
 
 
-def _save_conversation_turn(session_id: str, question: str, answer: str):
-    """Append this Q&A turn to Redis session history (TTL: 1 hour)."""
+def _save_conversation_turn(session_id: str, query: str, answer: str):
+    """Append a turn to the Redis session history, capping at 10 messages (5 turns)."""
     if not redis_cache or not session_id:
         return
     try:
-        key = f"session:{session_id}"
+        key = f"session:{session_id}:turns"
         raw = redis_cache.client.get(key)
         history = json.loads(raw) if raw else []
-        history.append({"role": "user", "content": question})
+        history.append({"role": "user", "content": query[:300]})       # cap at 300 chars
         history.append({"role": "assistant", "content": answer[:500]})  # cap at 500 chars
         history = history[-10:]  # keep last 5 turns (10 messages)
         redis_cache.client.setex(key, 3600, json.dumps(history))
@@ -167,14 +181,96 @@ async def analytics_endpoint():
     return db_manager.get_metrics_summary()
 
 
+# -------------------------------------------------------------------------
+# Auth Endpoints
+# -------------------------------------------------------------------------
+
+@app.post("/auth/google")
+async def google_auth_endpoint(payload: GoogleAuthRequest):
+    """
+    Authenticates Google ID Token (Google Identity Services GSI).
+    Registers or updates the user record in PostgreSQL/SQLite and issues an HMAC session token.
+    """
+    profile = verify_google_id_token(payload.credential)
+    if not profile:
+        raise HTTPException(status_code=401, detail="Invalid or unverified Google token.")
+
+    user = db_manager.upsert_user(
+        google_id=profile["google_id"],
+        email=profile["email"],
+        name=profile["name"],
+        picture_url=profile.get("picture", "")
+    )
+
+    token = create_session_token(
+        user_id=user["id"],
+        email=user["email"],
+        name=user["name"],
+        picture=user["picture_url"]
+    )
+
+    return {
+        "status": "authenticated",
+        "token": token,
+        "user": user
+    }
+
+
+@app.get("/auth/me")
+async def auth_me_endpoint(http_req: Request):
+    """Returns currently authenticated user profile, or authenticated=false."""
+    user = _get_current_user(http_req)
+    if not user:
+        return {"authenticated": False, "user": None}
+    return {"authenticated": True, "user": user}
+
+
+@app.get("/auth/guest-status")
+async def guest_status_endpoint(http_req: Request):
+    """Returns remaining queries for a guest session."""
+    guest_id = http_req.headers.get("X-Guest-ID") or (http_req.client.host if http_req.client else "guest_default")
+    remaining = limiter.get_guest_remaining(guest_id) if limiter else 3
+    return {
+        "guest_id": guest_id,
+        "remaining_queries": remaining,
+        "max_queries": 3
+    }
+
+
+# -------------------------------------------------------------------------
+# Query Pipeline Endpoints
+# -------------------------------------------------------------------------
+
 @app.post("/query", response_model=QueryResponse)
 async def query_endpoint(request: QueryRequest, http_req: Request):
-    """Standard blocking query endpoint with rate and quota limits."""
+    """Standard blocking query endpoint with guest limit and rate protection."""
     if not generator or not embedder or not orchestrator:
         raise HTTPException(status_code=500, detail="Backend ML services are not running.")
 
-    # Free-tier quota & rate limit check
     client_ip = http_req.headers.get("X-Forwarded-For", http_req.client.host if http_req.client else "127.0.0.1").split(",")[0].strip()
+
+    # Check authentication status
+    current_user = _get_current_user(http_req)
+    is_authenticated = current_user is not None
+    user_id = current_user.get("user_id") if current_user else None
+
+    # Enforce Guest 3-Query Cap
+    if not is_authenticated:
+        guest_id = http_req.headers.get("X-Guest-ID") or client_ip
+        if limiter:
+            allowed, remaining, reason = limiter.check_guest_quota(guest_id)
+            if not allowed:
+                raise HTTPException(
+                    status_code=403,
+                    detail={
+                        "error": "guest_limit_reached",
+                        "require_auth": True,
+                        "message": reason,
+                        "remaining_queries": 0
+                    }
+                )
+
+    # Free-tier rate limit check
     if limiter:
         allowed, reason = limiter.check_and_increment(client_ip)
         if not allowed:
@@ -202,6 +298,7 @@ async def query_endpoint(request: QueryRequest, http_req: Request):
                     session_id=session_id,
                     query=request.query,
                     answer=cached_data.get("answer", ""),
+                    user_id=user_id,
                     is_abstained=cached_data.get("is_abstained", False),
                     abstention_reason=cached_data.get("abstention_reason"),
                     confidence_score=cached_data.get("confidence_score", 0.0),
@@ -264,11 +361,12 @@ async def query_endpoint(request: QueryRequest, http_req: Request):
     if ctx.final_answer and not ctx.is_abstained:
         _save_conversation_turn(session_id, request.query, ctx.final_answer)
 
-    # Log query execution to SQLite audit database
+    # Log query execution to audit database
     db_manager.log_query(
         session_id=session_id,
         query=request.query,
         answer=response.answer,
+        user_id=user_id,
         is_abstained=response.is_abstained,
         abstention_reason=response.abstention_reason,
         confidence_score=response.confidence_score,
@@ -284,14 +382,36 @@ async def query_endpoint(request: QueryRequest, http_req: Request):
 @app.post("/query/stream")
 async def query_stream_endpoint(request: QueryRequest, http_req: Request):
     """
-    Streaming SSE endpoint with free-tier rate & session limiting.
+    Streaming SSE endpoint with guest limit & free-tier rate protection.
     Emits one JSON event per pipeline step as it completes.
     """
     if not generator or not embedder or not orchestrator:
         raise HTTPException(status_code=500, detail="Backend ML services are not running.")
 
-    # Free-tier quota & rate limit check
     client_ip = http_req.headers.get("X-Forwarded-For", http_req.client.host if http_req.client else "127.0.0.1").split(",")[0].strip()
+
+    # Check authentication status
+    current_user = _get_current_user(http_req)
+    is_authenticated = current_user is not None
+    user_id = current_user.get("user_id") if current_user else None
+
+    # Enforce Guest 3-Query Cap
+    if not is_authenticated:
+        guest_id = http_req.headers.get("X-Guest-ID") or client_ip
+        if limiter:
+            allowed, remaining, reason = limiter.check_guest_quota(guest_id)
+            if not allowed:
+                raise HTTPException(
+                    status_code=403,
+                    detail={
+                        "error": "guest_limit_reached",
+                        "require_auth": True,
+                        "message": reason,
+                        "remaining_queries": 0
+                    }
+                )
+
+    # Free-tier rate limit check
     if limiter:
         allowed, reason = limiter.check_and_increment(client_ip)
         if not allowed:
@@ -324,6 +444,7 @@ async def query_stream_endpoint(request: QueryRequest, http_req: Request):
                         session_id=session_id,
                         query=request.query,
                         answer=cached_data.get("answer", ""),
+                        user_id=user_id,
                         is_abstained=cached_data.get("is_abstained", False),
                         abstention_reason=cached_data.get("abstention_reason"),
                         confidence_score=cached_data.get("confidence_score", 0.0),
@@ -377,11 +498,12 @@ async def query_stream_endpoint(request: QueryRequest, http_req: Request):
         if ctx.final_answer and not ctx.is_abstained:
             _save_conversation_turn(session_id, request.query, ctx.final_answer)
 
-        # Log to SQLite audit database
+        # Log to audit database
         db_manager.log_query(
             session_id=session_id,
             query=request.query,
             answer=result.answer,
+            user_id=user_id,
             is_abstained=result.is_abstained,
             abstention_reason=result.abstention_reason,
             confidence_score=result.confidence_score,
@@ -409,6 +531,27 @@ async def query_compare_endpoint(request: QueryRequest, http_req: Request):
         raise HTTPException(status_code=500, detail="Backend ML services are not running.")
 
     client_ip = http_req.headers.get("X-Forwarded-For", http_req.client.host if http_req.client else "127.0.0.1").split(",")[0].strip()
+
+    # Check authentication status
+    current_user = _get_current_user(http_req)
+    is_authenticated = current_user is not None
+
+    # Enforce Guest 3-Query Cap
+    if not is_authenticated:
+        guest_id = http_req.headers.get("X-Guest-ID") or client_ip
+        if limiter:
+            allowed, remaining, reason = limiter.check_guest_quota(guest_id)
+            if not allowed:
+                raise HTTPException(
+                    status_code=403,
+                    detail={
+                        "error": "guest_limit_reached",
+                        "require_auth": True,
+                        "message": reason,
+                        "remaining_queries": 0
+                    }
+                )
+
     if limiter:
         allowed, reason = limiter.check_and_increment(client_ip)
         if not allowed:
@@ -458,4 +601,3 @@ async def query_compare_endpoint(request: QueryRequest, http_req: Request):
         advanced_rag=advanced_result,
         baseline_naive_rag=naive_result,
     )
-

@@ -4,9 +4,10 @@ services/rate_limiter.py
 Lightweight rate-limiting and quota management for free-tier deployments.
 
 Protects Gemini API quotas and server resources:
-  1. Per-minute rate limit: Max 5 queries / minute per client IP.
-  2. Per-day quota: Max 25 queries / day per client IP.
-  3. Session cap: Max 10 turns per conversation session.
+  1. Guest Query Cap: Max 3 queries for unauthenticated guest users before prompting sign-up.
+  2. Per-minute rate limit: Max 5 queries / minute per client IP.
+  3. Per-day quota: Max 30 queries / day per client IP.
+  4. Session cap: Max 10 turns per conversation session.
 
 Uses Redis when available, with an automatic in-memory fallback.
 """
@@ -18,7 +19,7 @@ from collections import defaultdict
 
 class QuotaLimiter:
     """
-    Manages client quotas and request rate limits.
+    Manages client quotas, guest limits, and request rate limits.
     """
 
     def __init__(
@@ -27,15 +28,72 @@ class QuotaLimiter:
         max_per_minute: int = 5,
         max_per_day: int = 30,
         max_turns_per_session: int = 10,
+        max_guest_queries: int = 3,
     ):
         self.redis = redis_client
         self.max_per_minute = max_per_minute
         self.max_per_day = max_per_day
         self.max_turns_per_session = max_turns_per_session
+        self.max_guest_queries = max_guest_queries
 
-        # In-memory fallback if Redis is unavailable
+        # In-memory fallbacks if Redis is unavailable
         self._minute_buckets: Dict[str, List[float]] = defaultdict(list)
         self._day_counts: Dict[str, Tuple[int, str]] = {}  # ip -> (count, yyyy-mm-dd)
+        self._guest_counts: Dict[str, int] = defaultdict(int)  # guest_id -> count
+
+    def get_guest_remaining(self, guest_id: str) -> int:
+        """Returns the number of remaining free guest queries without incrementing."""
+        if not guest_id:
+            return self.max_guest_queries
+
+        if self.redis:
+            try:
+                val = self.redis.get(f"guest:queries:{guest_id}")
+                count = int(val) if val else 0
+                return max(0, self.max_guest_queries - count)
+            except Exception:
+                pass
+
+        count = self._guest_counts.get(guest_id, 0)
+        return max(0, self.max_guest_queries - count)
+
+    def check_guest_quota(self, guest_id: str) -> Tuple[bool, int, str]:
+        """
+        Enforces maximum queries (3 max) for unauthenticated guest sessions.
+        Returns: (is_allowed, remaining_queries, reason)
+        """
+        if not guest_id:
+            return False, 0, "Missing guest identifier."
+
+        # 1. Redis tracking
+        if self.redis:
+            try:
+                key = f"guest:queries:{guest_id}"
+                current = self.redis.get(key)
+                count = int(current) if current else 0
+
+                if count >= self.max_guest_queries:
+                    return False, 0, "Guest query limit reached (3/3). Please sign in with Google to continue."
+
+                new_count = self.redis.incr(key)
+                # Keep guest record for 30 days
+                if new_count == 1:
+                    self.redis.expire(key, 2592000)
+
+                remaining = max(0, self.max_guest_queries - new_count)
+                return True, remaining, "OK"
+            except Exception as e:
+                print(f"[RateLimiter] Redis guest check notice: {e}. Using in-memory.")
+
+        # 2. In-memory fallback
+        count = self._guest_counts.get(guest_id, 0)
+        if count >= self.max_guest_queries:
+            return False, 0, "Guest query limit reached (3/3). Please sign in with Google to continue."
+
+        count += 1
+        self._guest_counts[guest_id] = count
+        remaining = max(0, self.max_guest_queries - count)
+        return True, remaining, "OK"
 
     def check_and_increment(self, client_ip: str, session_turn_count: int = 0) -> Tuple[bool, str]:
         """
@@ -49,7 +107,6 @@ class QuotaLimiter:
         # 2. Redis-backed rate limiting (preferred in production)
         if self.redis:
             try:
-                pipe = self.redis.pipeline()
                 minute_key = f"rate:min:{client_ip}"
                 day_key = f"rate:day:{client_ip}"
 

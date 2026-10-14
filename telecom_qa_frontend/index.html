@@ -9,7 +9,9 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-    <link rel="stylesheet" href="style.css?v=6">
+    <!-- Google Identity Services (GSI) SDK -->
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <link rel="stylesheet" href="style.css?v=7">
 </head>
 <body>
     <!-- Subtle Warm Ambient Canvas -->
@@ -60,18 +62,43 @@
 
             <!-- Top Bar -->
             <header class="top-bar">
-                <button class="topbar-toggle-btn" id="topbarSidebarToggle" title="Toggle sidebar" aria-label="Toggle sidebar">
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-                        <rect x="3" y="3" width="18" height="18" rx="3"/>
-                        <line x1="9" y1="3" x2="9" y2="21"/>
-                    </svg>
-                </button>
-                <div class="session-badge" id="sessionBadge">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
-                    <span id="sessionIdText">No active session</span>
+                <div class="top-bar-left">
+                    <button class="topbar-toggle-btn" id="topbarSidebarToggle" title="Toggle sidebar" aria-label="Toggle sidebar">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+                            <rect x="3" y="3" width="18" height="18" rx="3"/>
+                            <line x1="9" y1="3" x2="9" y2="21"/>
+                        </svg>
+                    </button>
+                    <div class="session-badge" id="sessionBadge">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M12 1v4M12 19v4M4.22 4.22l2.83 2.83M16.95 16.95l2.83 2.83M1 12h4M19 12h4M4.22 19.78l2.83-2.83M16.95 7.05l2.83-2.83"/></svg>
+                        <span id="sessionIdText">No active session</span>
+                    </div>
                 </div>
+
                 <div class="top-bar-right">
-                    <span class="pipeline-badge">12-Step Grounding Pipeline</span>
+                    <!-- Guest Quota Counter Badge -->
+                    <div id="guestQuotaBadge" class="guest-quota-badge" title="Free guest queries remaining">
+                        <span class="quota-dot" id="quotaDot"></span>
+                        <span id="guestQuotaText">Guest: 3 / 3 left</span>
+                    </div>
+
+                    <!-- Auth Section: Google Button or Logged-in User Profile -->
+                    <div id="authContainer" class="auth-container">
+                        <button id="googleSignInBtn" class="google-auth-btn" title="Sign in with Google">
+                            <svg class="google-icon" viewBox="0 0 24 24" width="15" height="15">
+                                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                            </svg>
+                            <span>Sign in</span>
+                        </button>
+                        <div id="userProfile" class="user-profile-menu hidden">
+                            <img id="userAvatar" class="user-avatar" src="" alt="Avatar" />
+                            <span id="userName" class="user-name">User</span>
+                            <button id="signOutBtn" class="sign-out-btn" title="Sign out of TelecomRAG">Sign out</button>
+                        </div>
+                    </div>
                 </div>
             </header>
 
@@ -118,6 +145,48 @@
 
     </div>
 
-    <script src="app.js?v=6"></script>
+    <!-- ===== GOOGLE AUTH & GUEST LIMIT MODAL ===== -->
+    <div id="authModal" class="auth-modal-overlay hidden">
+        <div class="auth-modal-card">
+            <button class="modal-close-btn" id="closeAuthModalBtn" aria-label="Close dialog">&times;</button>
+            <div class="modal-badge-icon">
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+                </svg>
+            </div>
+            <h2 class="modal-title" id="modalTitle">Guest Limit Reached</h2>
+            <p class="modal-desc" id="modalDesc">You've reached the free guest limit of 3 queries. Sign in with your Google account to unlock full, unlimited access to 3GPP standards intelligence.</p>
+
+            <div class="modal-google-action">
+                <div id="gsiModalButton"></div>
+                <button id="modalGoogleFallbackBtn" class="modal-google-btn">
+                    <svg class="google-icon" viewBox="0 0 24 24" width="18" height="18">
+                        <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                        <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                        <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"/>
+                        <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                    </svg>
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+
+            <div class="modal-perks">
+                <div class="perk-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2a7b4c" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Unlimited 5G & 3GPP Technical Queries</span>
+                </div>
+                <div class="perk-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2a7b4c" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Session Persistence & Conversation History</span>
+                </div>
+                <div class="perk-item">
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#2a7b4c" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span>Grounded Clause Citations & Spec Verification</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js?v=7"></script>
 </body>
 </html>

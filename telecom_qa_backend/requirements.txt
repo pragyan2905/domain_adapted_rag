@@ -11,3 +11,4 @@ redis
 httpx
 numpy
 psycopg2-binary
+google-auth
